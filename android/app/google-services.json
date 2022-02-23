@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "337094269864",
+    "project_id": "dima-project-14beb",
+    "storage_bucket": "dima-project-14beb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:337094269864:android:16e23448afed1d7f2d9b9d",
+        "android_client_info": {
+          "package_name": "com.project.dima"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "337094269864-fs63kcvm6uqb4en3qqvo3frm5k3fjl59.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2a64yuY9QvaHEiDdBg-rL1X3T19_mXVA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "337094269864-fs63kcvm6uqb4en3qqvo3frm5k3fjl59.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
