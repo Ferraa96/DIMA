@@ -1,12 +1,22 @@
 import 'package:flutter/material.dart';
 
-const textInputDecoration = InputDecoration(
+var textInputDecoration = InputDecoration(
   fillColor: Colors.white,
   filled: true,
+  hintStyle: const TextStyle(
+    //fontWeight: FontWeight.bold,
+    color: Colors.grey,
+  ),
   enabledBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.white, width: 2.0),
+    borderSide: const BorderSide(width: 1, color: Colors.white),
+    borderRadius: BorderRadius.circular(30),
   ),
   focusedBorder: OutlineInputBorder(
-    borderSide: BorderSide(color: Colors.blue, width: 2.0),
+    borderSide: const BorderSide(width: 2, color: Colors.red),
+    borderRadius: BorderRadius.circular(30),
+  ),
+  contentPadding: const EdgeInsets.symmetric(
+    vertical: 10.0,
+    horizontal: 15.0,
   ),
 );
