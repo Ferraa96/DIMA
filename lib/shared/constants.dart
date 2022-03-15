@@ -4,7 +4,6 @@ var textInputDecoration = InputDecoration(
   fillColor: Colors.white,
   filled: true,
   hintStyle: const TextStyle(
-    //fontWeight: FontWeight.bold,
     color: Colors.grey,
   ),
   enabledBorder: OutlineInputBorder(

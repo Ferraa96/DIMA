@@ -1,4 +1,5 @@
 import 'package:dima/models/user.dart';
+import 'package:dima/screens/home/home.dart';
 import 'package:dima/screens/wrapper.dart';
 import 'package:dima/services/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -21,7 +22,11 @@ class MyApp extends StatelessWidget {
       value: AuthService().user,
       initialData: null,
       child: MaterialApp(
-        home: Wrapper(),
+        initialRoute: '/',
+        routes: {
+          '/':(context) => Wrapper(),
+          '/home':(context) => Home(),
+        },
       ),
     );
   }
