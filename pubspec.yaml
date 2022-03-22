@@ -43,7 +43,8 @@ dependencies:
   flutter_facebook_auth: '^3.5.0'
   firebase_messaging: ^11.2.8
   fluttertoast: ^8.0.9
-  qr_code_scanner: ^0.7.0
+  share_plus: ^4.0.1
+  curved_navigation_bar: ^1.0.3
 
 dev_dependencies:
   flutter_test:

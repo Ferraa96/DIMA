@@ -127,16 +127,15 @@ class _RegisterState extends State<Register> {
                           setState(() {
                             loading = true;
                           });
-                          if (await auth
-                                  .registerWithEmailAndPass(email, password) ==
+                          if (await auth.registerWithEmailAndPass(
+                                  email, password) ==
                               false) {
                             setState(() {
                               error = 'The email is not valid';
                               loading = false;
                             });
                           } else {
-                            db.registerUser(
-                                auth.getUser()!.getUid(), email);
+                            db.registerUser(auth.getUser()!.getUid(), email);
                           }
                         }
                       },
@@ -172,11 +171,14 @@ class _RegisterState extends State<Register> {
                             setState(() {
                               loading = true;
                             });
-                            if (await auth.signInWithGoogle() == false) {
+                            String email = await auth.signInWithGoogle();
+                            if(email == '') {
                               setState(() {
                                 error = 'Could not sign in';
                                 loading = false;
                               });
+                            } else {
+                              db.registerUser(auth.getUser()!.getUid(), email);
                             }
                           },
                           child: Image.asset(
@@ -195,8 +197,7 @@ class _RegisterState extends State<Register> {
                             setState(() {
                               loading = true;
                             });
-                            if (await auth.signInWithFacebook() ==
-                                false) {
+                            if (await auth.signInWithFacebook() == false) {
                               setState(() {
                                 error = 'Could not sign in';
                                 loading = false;

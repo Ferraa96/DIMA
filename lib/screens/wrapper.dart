@@ -2,6 +2,8 @@ import 'package:dima/models/user.dart';
 import 'package:dima/screens/authenticate/authenticate.dart';
 import 'package:dima/screens/getUserInfo.dart';
 import 'package:dima/screens/home/home.dart';
+import 'package:dima/screens/home/home.dart';
+import 'package:dima/screens/home/mainPage.dart';
 import 'package:dima/services/auth.dart';
 import 'package:dima/services/database.dart';
 import 'package:dima/shared/loading.dart';
@@ -16,7 +18,10 @@ class Wrapper extends StatelessWidget {
 
     // if we are logged in we go to home, else we go to the authenticate screen
     if (user == null) {
-      return Authenticate();
+      return WillPopScope(
+        child: Authenticate(),
+        onWillPop: () async => false,
+      );
     } else {
       // wait for the user's info to be loaded, then return home
       AuthService auth = AuthService();
@@ -29,11 +34,10 @@ class Wrapper extends StatelessWidget {
             case ConnectionState.waiting:
               return const Loading();
             default:
-              auth.setUser(myUser!);
-              if (auth.getUser()!.getGroupId() == '') {
+              if (myUser!.getGroupId() == null) {
                 return GetUserInfo();
               } else {
-                return Home();
+                return MainPage();
               }
           }
         },

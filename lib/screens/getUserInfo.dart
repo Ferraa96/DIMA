@@ -1,5 +1,4 @@
 import 'package:dima/screens/home/home.dart';
-import 'package:dima/screens/qr_scan.dart';
 import 'package:dima/services/auth.dart';
 import 'package:dima/services/database.dart';
 import 'package:dima/shared/constants.dart';
@@ -15,6 +14,9 @@ class GetUserInfo extends StatelessWidget {
           children: [
             Row(
               children: <Widget>[
+                const SizedBox(
+                  height: 40,
+                ),
                 const Text('Group code: '),
                 Flexible(
                   child: TextField(
@@ -27,15 +29,17 @@ class GetUserInfo extends StatelessWidget {
               height: 20.0,
             ),
             ElevatedButton(
-              onPressed: () {},
+              onPressed: () async {
+                if (groupId.length == 6) {
+                  DatabaseService db = DatabaseService();
+                  bool joined =
+                      await db.joinGroup(AuthService().getUserId(), groupId);
+                  if (joined) {
+                    Navigator.of(context).pop(true);
+                  }
+                }
+              },
               child: const Text('Join'),
-            ),
-            const SizedBox(
-              height: 40.0,
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text('Use QR code'),
             ),
           ],
         ),
@@ -103,7 +107,13 @@ class GetUserInfo extends StatelessWidget {
                     );
                   },
                   transitionDuration: const Duration(milliseconds: 300),
-                );
+                ).then((value) {
+                  if (value == true) {
+                    AuthService auth = AuthService();
+                    db.addUserName(auth.getUserId(), name);
+                    Navigator.of(context).pushNamed('/home');
+                  }
+                });
               } else {
                 Fluttertoast.showToast(
                   msg: 'Please insert your name',
@@ -121,8 +131,9 @@ class GetUserInfo extends StatelessWidget {
               if (activate) {
                 AuthService auth = AuthService();
                 db.addUserName(auth.getUserId(), name);
-                db.createGroup(auth.getUserId());
-                Navigator.of(context).pushNamed('/home');
+                String code = db.createGroup(auth.getUserId());
+                // Navigator.push(context, MaterialPageRoute(builder: (context) => Home(groupId: code)));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
               } else {
                 Fluttertoast.showToast(
                   msg: 'Please insert your name',

@@ -1,4 +1,5 @@
 import 'package:dima/services/auth.dart';
+import 'package:dima/services/database.dart';
 import 'package:dima/shared/constants.dart';
 import 'package:dima/shared/loading.dart';
 import 'package:flutter/material.dart';
@@ -101,8 +102,8 @@ class _SignInState extends State<SignIn> {
                           setState(() {
                             loading = true;
                           });
-                          dynamic result = await auth
-                              .signInWithEmailAndPass(email, password);
+                          dynamic result = await auth.signInWithEmailAndPass(
+                              email, password);
                           if (result == null) {
                             setState(() {
                               error = 'Could not sign in';
@@ -141,13 +142,15 @@ class _SignInState extends State<SignIn> {
                             setState(() {
                               loading = true;
                             });
-                            dynamic result =
-                                await auth.signInWithGoogle();
-                            if (result == null) {
+                            String email = await auth.signInWithGoogle();
+                            if (email == '') {
                               setState(() {
                                 error = 'Could not sign in';
                                 loading = false;
                               });
+                            } else {
+                              DatabaseService db = DatabaseService();
+                              db.registerUser(auth.getUser()!.getUid(), email);
                             }
                           },
                           child: Image.asset(
@@ -166,8 +169,7 @@ class _SignInState extends State<SignIn> {
                             setState(() {
                               loading = true;
                             });
-                            dynamic result =
-                                await auth.signInWithFacebook();
+                            dynamic result = await auth.signInWithFacebook();
                             if (result == null) {
                               setState(() {
                                 error = 'Could not sign in';

@@ -1,7 +1,7 @@
 class MyUser {
   final String uid;
   late String name = '';
-  late String groupId = '';
+  static late String groupId = '';
 
   MyUser({required this.uid});
 
@@ -17,8 +17,8 @@ class MyUser {
     return name;
   }
 
-  void setGroupId(String groupId) {
-    this.groupId = groupId;
+  static void setGroupId(String gId) {
+    groupId = gId;
   }
 
   String getGroupId() {
