@@ -1,4 +1,7 @@
 import 'package:dima/screens/home/home.dart';
+import 'package:dima/screens/home/mainPage.dart';
+import 'package:dima/screens/home/mainPage.dart';
+import 'package:dima/services/appData.dart';
 import 'package:dima/services/auth.dart';
 import 'package:dima/services/database.dart';
 import 'package:dima/shared/constants.dart';
@@ -8,25 +11,44 @@ import 'package:fluttertoast/fluttertoast.dart';
 class GetUserInfo extends StatelessWidget {
   Widget _joinGroupPopup(BuildContext context) {
     String groupId = '';
+    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery.of(context).size.width;
     return Dialog(
       child: Container(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.of(context).size.width / 3,
+          maxHeight: height / 3,
+        ),
         child: Column(
           children: [
+            SizedBox(
+              height: height / 50,
+            ),
+            const Text('Enter the code your friends gave you'),
+            SizedBox(
+              height: height / 50,
+            ),
             Row(
               children: <Widget>[
-                const SizedBox(
-                  height: 40,
+                SizedBox(
+                  width: width / 30,
                 ),
                 const Text('Group code: '),
+                SizedBox(
+                  width: width / 30,
+                ),
                 Flexible(
                   child: TextField(
                     onChanged: (value) => groupId = value,
                   ),
                 ),
+                SizedBox(
+                  width: width / 30,
+                ),
               ],
             ),
-            const SizedBox(
-              height: 20.0,
+            SizedBox(
+              height: height / 10,
             ),
             ElevatedButton(
               onPressed: () async {
@@ -36,6 +58,11 @@ class GetUserInfo extends StatelessWidget {
                       await db.joinGroup(AuthService().getUserId(), groupId);
                   if (joined) {
                     Navigator.of(context).pop(true);
+                  } else {
+                    Fluttertoast.showToast(
+                      msg: 'Please provide a valid group code',
+                      toastLength: Toast.LENGTH_SHORT,
+                    );
                   }
                 }
               },
@@ -110,8 +137,10 @@ class GetUserInfo extends StatelessWidget {
                 ).then((value) {
                   if (value == true) {
                     AuthService auth = AuthService();
-                    db.addUserName(auth.getUserId(), name);
-                    Navigator.of(context).pushNamed('/home');
+                    db.updateUserName(auth.getUserId(), name);
+                    AppData().user.setName(name);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MainPage()));
                   }
                 });
               } else {
@@ -130,10 +159,11 @@ class GetUserInfo extends StatelessWidget {
             onPressed: () {
               if (activate) {
                 AuthService auth = AuthService();
-                db.addUserName(auth.getUserId(), name);
+                db.updateUserName(auth.getUserId(), name);
                 String code = db.createGroup(auth.getUserId());
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => Home(groupId: code)));
-                Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => MainPage()));
               } else {
                 Fluttertoast.showToast(
                   msg: 'Please insert your name',

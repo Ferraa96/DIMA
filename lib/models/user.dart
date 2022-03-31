@@ -1,9 +1,15 @@
+import 'package:flutter/material.dart';
+
 class MyUser {
-  final String uid;
+  late String uid = '';
   late String name = '';
   static late String groupId = '';
+  String picUrl = '';
+  late Image picture;
 
-  MyUser({required this.uid});
+  void setUserId(String uid) {
+    this.uid = uid;
+  }
 
   String getUid() {
     return uid;
@@ -17,11 +23,27 @@ class MyUser {
     return name;
   }
 
-  static void setGroupId(String gId) {
+  void setGroupId(String gId) {
     groupId = gId;
   }
 
   String getGroupId() {
     return groupId;
+  }
+
+  void setPicUrl(String picUrl) {
+    this.picUrl = picUrl;
+  }
+
+  String getPicUrl() {
+    return picUrl;
+  }
+
+  void setPicture(Image picture) {
+    this.picture = picture;
+  }
+
+  Image getPicture() {
+    return picture;
   }
 }

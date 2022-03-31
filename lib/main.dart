@@ -1,7 +1,7 @@
 import 'package:dima/models/user.dart';
-import 'package:dima/screens/home/home.dart';
 import 'package:dima/screens/wrapper.dart';
 import 'package:dima/services/auth.dart';
+import 'package:dima/shared/themes.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

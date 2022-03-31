@@ -16,9 +16,9 @@
     <attr format="float" name="splitRatio"/>
     <attr format="string" name="title"/>
     <bool name="abc_action_bar_embed_tabs">true</bool>
-    <bool name="abc_allow_stacked_button_bar">false</bool>
     <bool name="abc_config_actionMenuItemAllCaps">true</bool>
-    <color name="abc_input_method_navigation_guard">@android:color/black</color>
+    <color name="abc_decor_view_status_guard">#ff000000</color>
+    <color name="abc_decor_view_status_guard_light">#ffffffff</color>
     <color name="abc_search_url_text_normal">#7fa87f</color>
     <color name="abc_search_url_text_pressed">@android:color/black</color>
     <color name="abc_search_url_text_selected">@android:color/black</color>
@@ -111,6 +111,30 @@
     <color name="switch_thumb_normal_material_light">#fff1f1f1</color>
     <color name="tooltip_background_dark">#e6616161</color>
     <color name="tooltip_background_light">#e6FFFFFF</color>
+    <color name="ucrop_color_active_aspect_ratio">@color/ucrop_color_blaze_orange</color>
+    <color name="ucrop_color_active_controls_color">@color/ucrop_color_blaze_orange</color>
+    <color name="ucrop_color_black">#000</color>
+    <color name="ucrop_color_blaze_orange">#FF6300</color>
+    <color name="ucrop_color_crop_background">@color/ucrop_color_black</color>
+    <color name="ucrop_color_default_crop_frame">#ffffff</color>
+    <color name="ucrop_color_default_crop_grid">#80ffffff</color>
+    <color name="ucrop_color_default_dimmed">#8c000000</color>
+    <color name="ucrop_color_default_logo">#4f212121</color>
+    <color name="ucrop_color_ebony_clay">#20242F</color>
+    <color name="ucrop_color_heather">#B3BECE</color>
+    <color name="ucrop_color_inactive_aspect_ratio">@color/ucrop_color_ebony_clay</color>
+    <color name="ucrop_color_inactive_controls_color">@color/ucrop_color_heather</color>
+    <color name="ucrop_color_progress_wheel_line">@color/ucrop_color_ebony_clay</color>
+    <color name="ucrop_color_statusbar">#f5f5f5</color>
+    <color name="ucrop_color_toolbar">@color/ucrop_color_white</color>
+    <color name="ucrop_color_toolbar_widget">@color/ucrop_color_black</color>
+    <color name="ucrop_color_white">#FFF</color>
+    <color name="ucrop_color_widget">@color/ucrop_color_black</color>
+    <color name="ucrop_color_widget_active">@color/ucrop_color_white</color>
+    <color name="ucrop_color_widget_background">@color/ucrop_color_ebony_clay</color>
+    <color name="ucrop_color_widget_rotate_angle">@color/ucrop_color_ebony_clay</color>
+    <color name="ucrop_color_widget_rotate_mid_line">@color/ucrop_color_blaze_orange</color>
+    <color name="ucrop_color_widget_text">@color/ucrop_color_blaze_orange</color>
     <dimen name="abc_action_bar_content_inset_material">16dp</dimen>
     <dimen name="abc_action_bar_content_inset_with_nav">72dp</dimen>
     <dimen name="abc_action_bar_default_height_material">56dp</dimen>
@@ -170,6 +194,9 @@
     <dimen name="abc_seekbar_track_background_height_material">2dp</dimen>
     <dimen name="abc_seekbar_track_progress_height_material">2dp</dimen>
     <dimen name="abc_select_dialog_padding_start_material">20dp</dimen>
+    <dimen name="abc_star_big">48dp</dimen>
+    <dimen name="abc_star_medium">36dp</dimen>
+    <dimen name="abc_star_small">16dp</dimen>
     <dimen name="abc_switch_padding">3dp</dimen>
     <dimen name="abc_text_size_body_1_material">14sp</dimen>
     <dimen name="abc_text_size_body_2_material">14sp</dimen>
@@ -253,6 +280,28 @@
     <dimen name="tooltip_vertical_padding">6.5dp</dimen>
     <dimen name="tooltip_y_offset_non_touch">0dp</dimen>
     <dimen name="tooltip_y_offset_touch">16dp</dimen>
+    <dimen name="ucrop_default_crop_frame_stoke_width">1dp</dimen>
+    <dimen name="ucrop_default_crop_grid_stoke_width">1dp</dimen>
+    <dimen name="ucrop_default_crop_logo_size">200dp</dimen>
+    <dimen name="ucrop_default_crop_rect_corner_touch_area_line_length">10dp</dimen>
+    <dimen name="ucrop_default_crop_rect_corner_touch_threshold">30dp</dimen>
+    <dimen name="ucrop_default_crop_rect_min_size">100dp</dimen>
+    <dimen name="ucrop_height_crop_aspect_ratio_text">40dp</dimen>
+    <dimen name="ucrop_height_divider_shadow">3dp</dimen>
+    <dimen name="ucrop_height_horizontal_wheel_progress_line">20dp</dimen>
+    <dimen name="ucrop_height_wrapper_controls">64dp</dimen>
+    <dimen name="ucrop_height_wrapper_states">72dp</dimen>
+    <dimen name="ucrop_margin_horizontal_wheel_progress_line">10dp</dimen>
+    <dimen name="ucrop_margin_top_controls_text">4dp</dimen>
+    <dimen name="ucrop_margin_top_widget_text">10dp</dimen>
+    <dimen name="ucrop_padding_crop_frame">16dp</dimen>
+    <dimen name="ucrop_progress_size">30dp</dimen>
+    <dimen name="ucrop_size_dot_scale_text_view">8dp</dimen>
+    <dimen name="ucrop_size_wrapper_rotate_button">50dp</dimen>
+    <dimen name="ucrop_text_size_controls_text">11sp</dimen>
+    <dimen name="ucrop_text_size_widget_text">13sp</dimen>
+    <dimen name="ucrop_width_horizontal_wheel_progress_line">2dp</dimen>
+    <dimen name="ucrop_width_middle_wheel_progress_line">4dp</dimen>
     <drawable name="notification_template_icon_bg">#3333B5E5</drawable>
     <drawable name="notification_template_icon_low_bg">#0cffffff</drawable>
     <item name="accessibility_action_clickable_span" type="id"/>
@@ -294,11 +343,16 @@
     <item name="action_menu_presenter" type="id"/>
     <item name="androidx_window_activity_scope" type="id"/>
     <item name="fragment_container_view_tag" type="id"/>
+    <item name="ghost_view" type="id"/>
+    <item name="ghost_view_holder" type="id"/>
     <item name="home" type="id"/>
     <item name="line1" type="id"/>
     <item name="line3" type="id"/>
+    <item name="parent_matrix" type="id"/>
     <item name="progress_circular" type="id"/>
     <item name="progress_horizontal" type="id"/>
+    <item name="save_non_transition_alpha" type="id"/>
+    <item name="save_overlay_view" type="id"/>
     <item name="special_effects_controller_view_tag" type="id"/>
     <item name="split_action_bar" type="id"/>
     <item name="tag_accessibility_actions" type="id"/>
@@ -317,6 +371,11 @@
     <item name="text" type="id"/>
     <item name="text2" type="id"/>
     <item name="title" type="id"/>
+    <item name="transition_current_scene" type="id"/>
+    <item name="transition_layout_save" type="id"/>
+    <item name="transition_position" type="id"/>
+    <item name="transition_scene_layoutid_cache" type="id"/>
+    <item name="transition_transform" type="id"/>
     <item name="up" type="id"/>
     <id name="view_tree_lifecycle_owner"/>
     <id name="view_tree_saved_state_registry_owner"/>
@@ -328,6 +387,7 @@
     <integer name="config_tooltipAnimTime">150</integer>
     <integer name="google_play_services_version">12451000</integer>
     <integer name="status_bar_notification_info_maxnum">999</integer>
+    <integer name="ucrop_progress_loading_anim_time">1500</integer>
     <string name="abc_action_bar_home_description">Navigate home</string>
     <string name="abc_action_bar_up_description">Navigate up</string>
     <string name="abc_action_menu_overflow_description">More options</string>
@@ -406,6 +466,14 @@
     <string name="project_id" translatable="false">dima-project-14beb</string>
     <string name="search_menu_title">Search</string>
     <string name="status_bar_notification_info_overflow">999+</string>
+    <string name="ucrop_crop">Crop</string>
+    <string name="ucrop_error_input_data_is_absent" translatable="false">Both input and output Uri must be specified</string>
+    <string name="ucrop_label_edit_photo">Edit Photo</string>
+    <string name="ucrop_label_original">Original</string>
+    <string name="ucrop_menu_crop">Crop</string>
+    <string name="ucrop_mutate_exception_hint" translatable="false">Therefore, override color resource (ucrop_color_toolbar_widget) in your app to make it work on pre-L devices</string>
+    <string name="ucrop_rotate">Rotate</string>
+    <string name="ucrop_scale">Scale</string>
     <style name="AlertDialog.AppCompat" parent="Base.AlertDialog.AppCompat"/>
     <style name="AlertDialog.AppCompat.Light" parent="Base.AlertDialog.AppCompat.Light"/>
     <style name="Animation.AppCompat.Dialog" parent="Base.Animation.AppCompat.Dialog"/>
@@ -648,6 +716,7 @@
         <item name="actionBarPopupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="actionBarWidgetTheme">@null</item>
         <item name="actionBarTheme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+        <item name="actionModeTheme">?attr/actionBarTheme</item>
 
         <!-- Panel attributes -->
         <item name="listChoiceBackgroundIndicator">@drawable/abc_list_selector_holo_dark</item>
@@ -741,7 +810,6 @@
         <item name="isLightTheme">true</item>
     </style>
     <style name="Base.V7.Theme.AppCompat" parent="Platform.AppCompat">
-        <item name="viewInflaterClass">androidx.appcompat.app.AppCompatViewInflater</item>
         <item name="windowNoTitle">false</item>
         <item name="windowActionBar">true</item>
         <item name="windowActionBarOverlay">false</item>
@@ -782,9 +850,11 @@
         <item name="actionDropDownStyle">@style/Widget.AppCompat.Spinner.DropDown.ActionBar</item>
 
         <!-- Action Mode -->
+        <item name="actionModeTheme">?attr/actionBarTheme</item>
         <item name="actionModeStyle">@style/Widget.AppCompat.ActionMode</item>
         <item name="actionModeBackground">@drawable/abc_cab_background_top_material</item>
         <item name="actionModeSplitBackground">?attr/colorPrimaryDark</item>
+        <item name="actionModeCloseContentDescription">@string/abc_action_mode_done</item>
         <item name="actionModeCloseDrawable">@drawable/abc_ic_ab_back_material</item>
         <item name="actionModeCloseButtonStyle">@style/Widget.AppCompat.ActionButton.CloseMode</item>
 
@@ -938,8 +1008,6 @@
         <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
     <style name="Base.V7.Theme.AppCompat.Light" parent="Platform.AppCompat.Light">
-        <item name="viewInflaterClass">androidx.appcompat.app.AppCompatViewInflater</item>
-
         <item name="windowNoTitle">false</item>
         <item name="windowActionBar">true</item>
         <item name="windowActionBarOverlay">false</item>
@@ -977,9 +1045,11 @@
         <item name="actionMenuTextColor">?android:attr/textColorPrimaryDisableOnly</item>
 
         <!-- Action Mode -->
+        <item name="actionModeTheme">?attr/actionBarTheme</item>
         <item name="actionModeStyle">@style/Widget.AppCompat.ActionMode</item>
         <item name="actionModeBackground">@drawable/abc_cab_background_top_material</item>
         <item name="actionModeSplitBackground">?attr/colorPrimaryDark</item>
+        <item name="actionModeCloseContentDescription">@string/abc_action_mode_done</item>
         <item name="actionModeCloseDrawable">@drawable/abc_ic_ab_back_material</item>
         <item name="actionModeCloseButtonStyle">@style/Widget.AppCompat.ActionButton.CloseMode</item>
 
@@ -1192,7 +1262,9 @@
         <item name="contentInsetStart">16dp</item>
         <item name="contentInsetStartWithNavigation">@dimen/abc_action_bar_content_inset_with_nav</item>
         <item name="android:paddingLeft">@dimen/abc_action_bar_default_padding_start_material</item>
+        <item name="android:paddingStart">@dimen/abc_action_bar_default_padding_start_material</item>
         <item name="android:paddingRight">@dimen/abc_action_bar_default_padding_end_material</item>
+        <item name="android:paddingEnd">@dimen/abc_action_bar_default_padding_end_material</item>
     </style>
     <style name="Base.Widget.AppCompat.ActionBar" parent="">
         <item name="displayOptions">showTitle</item>
@@ -1272,6 +1344,17 @@
         <item name="titleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionMode.Title</item>
         <item name="subtitleTextStyle">@style/TextAppearance.AppCompat.Widget.ActionMode.Subtitle</item>
         <item name="closeItemLayout">@layout/abc_action_mode_close_item_material</item>
+
+        <item name="android:minHeight">?attr/actionBarSize</item>
+        <item name="titleMargin">4dp</item>
+        <item name="maxButtonHeight">@dimen/abc_action_bar_default_height_material</item>
+        <item name="buttonGravity">top</item>
+        <item name="contentInsetStart">16dp</item>
+        <item name="contentInsetStartWithNavigation">@dimen/abc_action_bar_content_inset_with_nav</item>
+        <item name="android:paddingLeft">@dimen/abc_action_bar_default_padding_start_material</item>
+        <item name="android:paddingStart">@dimen/abc_action_bar_default_padding_start_material</item>
+        <item name="android:paddingRight">@dimen/abc_action_bar_default_padding_end_material</item>
+        <item name="android:paddingEnd">@dimen/abc_action_bar_default_padding_end_material</item>
     </style>
     <style name="Base.Widget.AppCompat.ActivityChooserView" parent="">
         <item name="android:gravity">center</item>
@@ -1568,9 +1651,9 @@
         <item name="android:actionModePasteDrawable">?actionModePasteDrawable</item>
         <item name="android:actionModeSelectAllDrawable">?actionModeSelectAllDrawable</item>
 
-        <item name="android:textSelectHandle">@drawable/abc_text_select_handle_middle_mtrl_dark</item>
-        <item name="android:textSelectHandleLeft">@drawable/abc_text_select_handle_left_mtrl_dark</item>
-        <item name="android:textSelectHandleRight">@drawable/abc_text_select_handle_right_mtrl_dark</item>
+        <item name="android:textSelectHandle">@drawable/abc_text_select_handle_middle_mtrl</item>
+        <item name="android:textSelectHandleLeft">@drawable/abc_text_select_handle_left_mtrl</item>
+        <item name="android:textSelectHandleRight">@drawable/abc_text_select_handle_right_mtrl</item>
     </style>
     <style name="Platform.AppCompat.Light" parent="android:Theme.Holo.Light">
         <item name="android:windowNoTitle">true</item>
@@ -1638,9 +1721,9 @@
         <item name="android:actionModePasteDrawable">?actionModePasteDrawable</item>
         <item name="android:actionModeSelectAllDrawable">?actionModeSelectAllDrawable</item>
 
-        <item name="android:textSelectHandle">@drawable/abc_text_select_handle_middle_mtrl_light</item>
-        <item name="android:textSelectHandleLeft">@drawable/abc_text_select_handle_left_mtrl_light</item>
-        <item name="android:textSelectHandleRight">@drawable/abc_text_select_handle_right_mtrl_light</item>
+        <item name="android:textSelectHandle">@drawable/abc_text_select_handle_middle_mtrl</item>
+        <item name="android:textSelectHandleLeft">@drawable/abc_text_select_handle_left_mtrl</item>
+        <item name="android:textSelectHandleRight">@drawable/abc_text_select_handle_right_mtrl</item>
     </style>
     <style name="Platform.ThemeOverlay.AppCompat" parent=""/>
     <style name="Platform.ThemeOverlay.AppCompat.Dark">
@@ -1810,6 +1893,7 @@
     <style name="Theme.AppCompat.Dialog.MinWidth" parent="Base.Theme.AppCompat.Dialog.MinWidth"/>
     <style name="Theme.AppCompat.DialogWhenLarge" parent="Base.Theme.AppCompat.DialogWhenLarge">
     </style>
+    <style name="Theme.AppCompat.Empty" parent=""/>
     <style name="Theme.AppCompat.Light" parent="Base.Theme.AppCompat.Light"/>
     <style name="Theme.AppCompat.Light.DarkActionBar" parent="Base.Theme.AppCompat.Light.DarkActionBar"/>
     <style name="Theme.AppCompat.Light.Dialog" parent="Base.Theme.AppCompat.Light.Dialog"/>
@@ -1981,6 +2065,53 @@
         <item name="android:shadowDy">-1</item>
         <item name="android:shadowRadius">0.25</item>
         <item name="android:shadowColor">#40000000</item>
+    </style>
+    <style name="ucrop_ImageViewWidgetIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:duplicateParentState">true</item>
+    </style>
+    <style name="ucrop_TextViewCropAspectRatio">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">@dimen/ucrop_height_crop_aspect_ratio_text</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:duplicateParentState">true</item>
+        <item name="android:textColor">@color/ucrop_scale_text_view_selector</item>
+    </style>
+    <style name="ucrop_TextViewWidget">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginTop">@dimen/ucrop_margin_top_controls_text</item>
+        <item name="android:textColor">@color/ucrop_color_widget_active</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/ucrop_text_size_controls_text</item>
+    </style>
+    <style name="ucrop_TextViewWidgetText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/ucrop_color_widget_text</item>
+        <item name="android:layout_marginTop">@dimen/ucrop_margin_top_widget_text</item>
+        <item name="android:textSize">@dimen/ucrop_text_size_widget_text</item>
+    </style>
+    <style name="ucrop_WrapperIconState">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="background">?attr/selectableItemBackground</item>
+        <item name="android:clickable">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+    <style name="ucrop_WrapperRotateButton">
+        <item name="android:layout_width">@dimen/ucrop_size_wrapper_rotate_button</item>
+        <item name="android:layout_height">@dimen/ucrop_size_wrapper_rotate_button</item>
+        <item name="background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:clickable">true</item>
     </style>
     <declare-styleable name="ActionBar">
         <!-- The type of navigation to use. -->
@@ -2386,6 +2517,10 @@
              action bar. This will be inherited by any widget inflated
              into the action bar. -->
         <attr format="reference" name="actionBarTheme"/>
+        <!-- Reference to a theme that should be used to inflate the
+             action bar in action mode. This will be inherited by any widget inflated
+             into the action bar. -->
+        <attr format="reference" name="actionModeTheme"/>
         <!-- Reference to a theme that should be used to inflate widgets
              and layouts destined for the action bar. Most of the time
              this will be a reference to the current theme, but when
@@ -2438,9 +2573,11 @@
         <!-- Drawable to use for the Web Search action button in WebView selection action modes -->
         <attr format="reference" name="actionModeWebSearchDrawable"/>
 
+        <!-- Content description to use for the close action mode button -->
+        <attr format="string" name="actionModeCloseContentDescription"/>
+
         <!-- PopupWindow style to use for action modes when showing as a window overlay. -->
         <attr format="reference" name="actionModePopupWindowStyle"/>
-
 
         <!-- =================== -->
         <!-- Text styles -->
@@ -2699,9 +2836,9 @@
         <eat-comment/>
 
         <!-- Animated Drawable to use for single choice indicators. -->
-        <attr format="reference" name="listChoiceIndicatorMultipleAnimated"/>
-        <!-- Animated Drawable to use for multiple choice indicators. -->
         <attr format="reference" name="listChoiceIndicatorSingleAnimated"/>
+        <!-- Animated Drawable to use for multiple choice indicators. -->
+        <attr format="reference" name="listChoiceIndicatorMultipleAnimated"/>
 
     </declare-styleable>
     <declare-styleable name="ButtonBarLayout">
@@ -3691,5 +3828,35 @@
             <enum name="large" value="-4"/>
         </attr>
         <attr format="boolean" name="com_facebook_is_cropped"/>
+    </declare-styleable>
+    <declare-styleable name="ucrop_AspectRatioTextView">
+
+        <attr format="string" name="ucrop_artv_ratio_title"/>
+
+        <attr format="float" name="ucrop_artv_ratio_x"/>
+        <attr format="float" name="ucrop_artv_ratio_y"/>
+
+    </declare-styleable>
+    <declare-styleable name="ucrop_UCropView">
+
+        <!--Crop image view-->
+        <attr format="float" name="ucrop_aspect_ratio_x"/>
+        <attr format="float" name="ucrop_aspect_ratio_y"/>
+
+        <!--Overlay view-->
+        <attr format="boolean" name="ucrop_show_oval_crop_frame"/>
+        <attr format="boolean" name="ucrop_circle_dimmed_layer"/>
+        <attr format="color" name="ucrop_dimmed_color"/>
+
+        <attr format="dimension" name="ucrop_grid_stroke_size"/>
+        <attr format="color" name="ucrop_grid_color"/>
+        <attr format="integer" name="ucrop_grid_row_count"/>
+        <attr format="integer" name="ucrop_grid_column_count"/>
+        <attr format="boolean" name="ucrop_show_grid"/>
+
+        <attr format="dimension" name="ucrop_frame_stroke_size"/>
+        <attr format="color" name="ucrop_frame_color"/>
+        <attr format="boolean" name="ucrop_show_frame"/>
+
     </declare-styleable>
 </resources>

@@ -1,9 +1,8 @@
 import 'package:dima/models/user.dart';
 import 'package:dima/screens/authenticate/authenticate.dart';
 import 'package:dima/screens/getUserInfo.dart';
-import 'package:dima/screens/home/home.dart';
-import 'package:dima/screens/home/home.dart';
 import 'package:dima/screens/home/mainPage.dart';
+import 'package:dima/services/appData.dart';
 import 'package:dima/services/auth.dart';
 import 'package:dima/services/database.dart';
 import 'package:dima/shared/loading.dart';
@@ -11,6 +10,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {
+  
+  Future<void> _getUserAndGroup() async {
+    DatabaseService db = DatabaseService();
+    AppData().user = await db.retrieveUser(AuthService().getUserId());
+    AppData().group = await db.retrieveGroup(AppData().user.getUid());
+    return;
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<MyUser?>(
@@ -24,17 +31,15 @@ class Wrapper extends StatelessWidget {
       );
     } else {
       // wait for the user's info to be loaded, then return home
-      AuthService auth = AuthService();
-      DatabaseService db = DatabaseService();
-      return FutureBuilder<MyUser>(
-        future: db.retrieveUser(auth.getUserId()),
+      return FutureBuilder<void>(
+        // future: db.retrieveUser(auth.getUserId()),
+        future: _getUserAndGroup(),
         builder: (context, snapshot) {
-          MyUser? myUser = snapshot.data;
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
               return const Loading();
             default:
-              if (myUser!.getGroupId() == null) {
+              if (AppData().user.getGroupId() == null) {
                 return GetUserInfo();
               } else {
                 return MainPage();

@@ -21,7 +21,13 @@ class AuthService {
 
   //create user object based on firebase User
   MyUser? _userFromFirebaseUser(User? user) {
-    return user != null ? MyUser(uid: user.uid) : null;
+    if (user != null) {
+      MyUser myUser = MyUser();
+      myUser.setUserId(user.uid);
+      return myUser;
+    } else {
+      return null;
+    }
   }
 
   //auth change user stream

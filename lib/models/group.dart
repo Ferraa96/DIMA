@@ -2,7 +2,7 @@ import 'package:dima/models/user.dart';
 
 class Group {
   List<MyUser> users = [];
-  late String groupCode;
+  String groupCode = '';
 
   void addUser(MyUser user) {
     users.add(user);
@@ -22,5 +22,14 @@ class Group {
 
   void setMembers(List<MyUser> members) {
     users = members;
+  }
+
+  MyUser? getUserFromId(String uid) {
+    for (MyUser user in users) {
+      if (uid == user.getUid()) {
+        return user;
+      }
+    }
+    return null;
   }
 }

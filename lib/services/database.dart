@@ -1,7 +1,18 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dima/models/chatMessage.dart';
 import 'package:dima/models/group.dart';
 import 'package:dima/models/user.dart';
 import 'dart:math';
+
+import 'package:dima/services/appData.dart';
+import 'package:dima/services/imageEditor.dart';
+import 'package:dima/services/imageGetter.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 class DatabaseService {
   void registerUser(String userID, String email) {
@@ -12,24 +23,54 @@ class DatabaseService {
     }, SetOptions(merge: true));
   }
 
-  Future<void> addUserName(String userID, String name) async {
+  Future<void> updateUserName(String userID, String name) async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     users.doc(userID).update({
       'name': name,
     });
   }
 
+  Future<void> updateImage(String userId, ImageSource source) async {
+    String? path = await ImageGetter().selectFile(source);
+    if (path == null) {
+      return;
+    }
+    File? file = await ImageEditor().cropSquareImage(File(path));
+    if (file == null) {
+      return;
+    }
+    try {
+      final ref = FirebaseStorage.instance.ref('profilePictures/$userId');
+      await ref.putFile(file);
+      final String url = await ref.getDownloadURL();
+      CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+      users.doc(userId).update({
+        'picture': url,
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   Future<MyUser> retrieveUser(String uid) async {
-    MyUser user = MyUser(uid: uid);
+    MyUser user = MyUser();
+    user.setUserId(uid);
+    String pictureUrl = '';
 
     var collection = FirebaseFirestore.instance.collection('users');
 
     var docSnapshot = await collection.doc(uid).get();
     if (docSnapshot.exists) {
       Map<String, dynamic>? data = docSnapshot.data();
+      user.setUserId(uid);
       user.setName(data?['name']);
       MyUser.groupId = data?['groupId'];
-      // user.setGroupId(data?['groupId']);
+      pictureUrl = data?['picture'];
+    }
+    if (pictureUrl != null) {
+      user.setPicUrl(pictureUrl);
+      user.setPicture(Image.network(pictureUrl));
     }
     return user;
   }
@@ -43,16 +84,21 @@ class DatabaseService {
     return newUsers;
   }
 
-  void _addUserToGroup(String uid, String groupId) {
+  Future<bool> _addUserToGroup(String uid, String groupId) async {
     CollectionReference groups =
         FirebaseFirestore.instance.collection('groups');
     CollectionReference users = FirebaseFirestore.instance.collection('users');
-    groups.doc(groupId).update({
-      'members': FieldValue.arrayUnion([uid])
-    });
-    users.doc(uid).update({
-      'groupId': groupId,
-    });
+    final snapshot = await groups.doc(groupId).get();
+    if (snapshot.exists) {
+      groups.doc(groupId).update({
+        'members': FieldValue.arrayUnion([uid]),
+      });
+      users.doc(uid).update({
+        'groupId': groupId,
+      });
+      return true;
+    }
+    return false;
   }
 
   String _getRandomString() {
@@ -101,11 +147,12 @@ class DatabaseService {
         FirebaseFirestore.instance.collection('groups');
     String groupId = await _getGroupFromCode(code);
     if (groupId != '') {
-      _addUserToGroup(uid, groupId);
-      return true;
-    } else {
-      return false;
+      if (await _addUserToGroup(uid, groupId)) {
+        AppData().user.setGroupId(groupId);
+        return true;
+      }
     }
+    return false;
   }
 
   Future<Group> retrieveGroup(String uid) async {
@@ -126,7 +173,7 @@ class DatabaseService {
     }
 
     // get the id of all the users in the group
-    if (groupId.isNotEmpty) {
+    if (groupId != null) {
       var docSnapshot = await groupsColl.doc(groupId).get();
       if (docSnapshot.exists) {
         Map<String, dynamic>? data = docSnapshot.data();
@@ -144,7 +191,23 @@ class DatabaseService {
         group.addUser(await retrieveUser(user));
       }
     }
-
     return group;
+  }
+
+  Future<void> sendMessage(ChatMessage message, String groupId) async {
+    CollectionReference chatColl =
+        FirebaseFirestore.instance.collection('chats');
+    chatColl.doc(groupId).set(
+      {
+        'messages': FieldValue.arrayUnion([
+          {
+            'sender': message.senderId,
+            'content': message.messageContent,
+            'timestamp': DateFormat("yyyy-MM-dd HH:mm:ss.mmm").format(message.timestamp.toUtc()),
+          }
+        ]),
+      },
+      SetOptions(merge: true),
+    );
   }
 }
