@@ -1,16 +1,20 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima/models/chatMessage.dart';
+import 'package:dima/models/chat_message.dart';
 import 'package:dima/models/group.dart';
+import 'package:dima/models/payment_message.dart';
+import 'package:dima/models/reminder.dart';
 import 'package:dima/models/user.dart';
 import 'dart:math';
 
-import 'package:dima/services/appData.dart';
-import 'package:dima/services/imageEditor.dart';
-import 'package:dima/services/imageGetter.dart';
+import 'package:dima/services/app_data.dart';
+import 'package:dima/services/image_editor.dart';
+import 'package:dima/services/image_getter.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -35,7 +39,9 @@ class DatabaseService {
     if (path == null) {
       return;
     }
-    File? file = await ImageEditor().cropSquareImage(File(path));
+    File? file = await ImageEditor().cropSquareImage(
+      File(path),
+    );
     if (file == null) {
       return;
     }
@@ -143,8 +149,6 @@ class DatabaseService {
   }
 
   Future<bool> joinGroup(String uid, String code) async {
-    CollectionReference groups =
-        FirebaseFirestore.instance.collection('groups');
     String groupId = await _getGroupFromCode(code);
     if (groupId != '') {
       if (await _addUserToGroup(uid, groupId)) {
@@ -194,20 +198,140 @@ class DatabaseService {
     return group;
   }
 
-  Future<void> sendMessage(ChatMessage message, String groupId) async {
+  Future<void> sendMessage(
+      ChatMessage message, String groupId, String path) async {
     CollectionReference chatColl =
         FirebaseFirestore.instance.collection('chats');
-    chatColl.doc(groupId).set(
+    if (!message.hasMedia) {
+      chatColl.doc(groupId).set(
+        {
+          'messages': FieldValue.arrayUnion([
+            {
+              'sender': message.senderId,
+              'content': message.messageContent,
+              'hasMedia': message.hasMedia,
+              'timestamp': DateFormat("yyyy-MM-dd HH:mm:ss.mmm")
+                  .format(message.timestamp.toUtc()),
+            }
+          ]),
+        },
+        SetOptions(merge: true),
+      );
+    } else {
+      if (path == '') {
+        return;
+      }
+      File file = await FlutterNativeImage.compressImage(
+        path,
+        quality: 50,
+      );
+      if (!file.existsSync()) {
+        Fluttertoast.showToast(msg: 'Error: the file does not exists');
+        return;
+      }
+      String timestamp = DateFormat("yyyy-MM-dd HH:mm:ss.mmm")
+          .format(message.timestamp.toUtc());
+      final String url;
+      try {
+        final ref =
+            FirebaseStorage.instance.ref('chatImages/$groupId/$timestamp');
+        await ref.putFile(file);
+        url = await ref.getDownloadURL();
+      } catch (e) {
+        Fluttertoast.showToast(msg: 'The file cannot be uploaded');
+        return;
+      }
+      chatColl.doc(groupId).set(
+        {
+          'messages': FieldValue.arrayUnion([
+            {
+              'sender': message.senderId,
+              'hasMedia': message.hasMedia,
+              'image': url,
+              'timestamp': timestamp,
+            }
+          ]),
+        },
+        SetOptions(merge: true),
+      );
+    }
+  }
+
+  Future<void> addPayment(Payment payment, String groupId) async {
+    CollectionReference paymentsColl =
+        FirebaseFirestore.instance.collection('payments');
+    paymentsColl.doc(groupId).set(
       {
-        'messages': FieldValue.arrayUnion([
-          {
-            'sender': message.senderId,
-            'content': message.messageContent,
-            'timestamp': DateFormat("yyyy-MM-dd HH:mm:ss.mmm").format(message.timestamp.toUtc()),
-          }
-        ]),
+        'payments': FieldValue.arrayUnion(
+          [
+            {
+              'title': payment.title,
+              'amount': payment.amount,
+              'date': payment.date,
+              'payedBy': payment.payedBy,
+              'payedTo': payment.payedTo,
+            },
+          ],
+        ),
       },
       SetOptions(merge: true),
     );
+  }
+
+  Future<void> removePayments(List<Payment> payments, String groupId) async {
+    CollectionReference paymentsColl =
+        FirebaseFirestore.instance.collection('payments');
+    for (Payment payment in payments) {
+      paymentsColl.doc(groupId).update(
+        {
+          'payments': FieldValue.arrayRemove(
+            [
+              {
+                'title': payment.title,
+                'amount': payment.amount,
+                'date': payment.date,
+                'payedBy': payment.payedBy,
+                'payedTo': payment.payedTo,
+              }
+            ],
+          ),
+        },
+      );
+    }
+  }
+
+  Future<void> addReminder(Reminder reminder, String groupId) async {
+    CollectionReference remindersColl =
+        FirebaseFirestore.instance.collection('reminders');
+    remindersColl.doc(groupId).set({
+      'reminders': FieldValue.arrayUnion([
+        {
+          'title': reminder.title,
+          'dateTime': reminder.dateTime,
+          'creator': reminder.creatorUid,
+        }
+      ]),
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> removeReminders(List<Reminder> reminders, String groupId) async {
+    print('Received ' + reminders.length.toString() + ' reminders');
+    CollectionReference remindersColl =
+        FirebaseFirestore.instance.collection('reminders');
+    for (Reminder reminder in reminders) {
+      remindersColl.doc(groupId).update(
+        {
+          'reminders': FieldValue.arrayRemove(
+            [
+              {
+                'title': reminder.title,
+                'dateTime': reminder.dateTime,
+                'creator': reminder.creatorUid,
+              }
+            ],
+          ),
+        },
+      );
+    }
   }
 }

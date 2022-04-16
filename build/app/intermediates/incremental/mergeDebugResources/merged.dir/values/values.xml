@@ -72,6 +72,7 @@
     <color name="dim_foreground_material_light">#ff323232</color>
     <color name="error_color_material_dark">#ff7043</color>
     <color name="error_color_material_light">#ff5722</color>
+    <color name="fcm_test_color">#4285F4</color>
     <color name="foreground_material_dark">@android:color/white</color>
     <color name="foreground_material_light">@android:color/black</color>
     <color name="highlighted_text_material_dark">#6680cbc4</color>
@@ -345,6 +346,7 @@
     <item name="fragment_container_view_tag" type="id"/>
     <item name="ghost_view" type="id"/>
     <item name="ghost_view_holder" type="id"/>
+    <item name="glide_custom_view_target_tag" type="id"/>
     <item name="home" type="id"/>
     <item name="line1" type="id"/>
     <item name="line3" type="id"/>
@@ -457,7 +459,9 @@
     <string name="common_signin_button_text">Sign in</string>
     <string name="common_signin_button_text_long">Sign in with Google</string>
     <string name="default_web_client_id" translatable="false">337094269864-fs63kcvm6uqb4en3qqvo3frm5k3fjl59.apps.googleusercontent.com</string>
+    <string name="fcm_2_args">First: %1$s and second %2$s</string>
     <string name="fcm_fallback_notification_channel_label">Miscellaneous</string>
+    <string name="fcm_no_args">String with no arguments</string>
     <string name="gcm_defaultSenderId" translatable="false">337094269864</string>
     <string name="google_api_key" translatable="false">AIzaSyD2a64yuY9QvaHEiDdBg-rL1X3T19_mXVA</string>
     <string name="google_app_id" translatable="false">1:337094269864:android:16e23448afed1d7f2d9b9d</string>

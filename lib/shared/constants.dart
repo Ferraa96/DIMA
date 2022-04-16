@@ -19,3 +19,5 @@ var textInputDecoration = InputDecoration(
     horizontal: 15.0,
   ),
 );
+
+final List<Color> colors = [Colors.red, Colors.blue, Colors.green,];

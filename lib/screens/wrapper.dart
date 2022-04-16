@@ -1,8 +1,8 @@
 import 'package:dima/models/user.dart';
 import 'package:dima/screens/authenticate/authenticate.dart';
-import 'package:dima/screens/getUserInfo.dart';
-import 'package:dima/screens/home/mainPage.dart';
-import 'package:dima/services/appData.dart';
+import 'package:dima/screens/get_user_info.dart';
+import 'package:dima/screens/home/main_page.dart';
+import 'package:dima/services/app_data.dart';
 import 'package:dima/services/auth.dart';
 import 'package:dima/services/database.dart';
 import 'package:dima/shared/loading.dart';
@@ -10,6 +10,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {
+  const Wrapper({Key? key}) : super(key: key);
+
   
   Future<void> _getUserAndGroup() async {
     DatabaseService db = DatabaseService();
@@ -26,7 +28,7 @@ class Wrapper extends StatelessWidget {
     // if we are logged in we go to home, else we go to the authenticate screen
     if (user == null) {
       return WillPopScope(
-        child: Authenticate(),
+        child: const Authenticate(),
         onWillPop: () async => false,
       );
     } else {
@@ -40,9 +42,9 @@ class Wrapper extends StatelessWidget {
               return const Loading();
             default:
               if (AppData().user.getGroupId() == null) {
-                return GetUserInfo();
+                return const GetUserInfo();
               } else {
-                return MainPage();
+                return const MainPage();
               }
           }
         },

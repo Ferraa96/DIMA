@@ -469,6 +469,7 @@ color dim_foreground_material_dark
 color dim_foreground_material_light
 color error_color_material_dark
 color error_color_material_light
+color fcm_test_color
 color foreground_material_dark
 color foreground_material_light
 color highlighted_text_material_dark
@@ -781,6 +782,9 @@ drawable abc_textfield_search_activated_mtrl_alpha
 drawable abc_textfield_search_default_mtrl_alpha
 drawable abc_textfield_search_material
 drawable abc_vector_test
+drawable adaptive_icon
+drawable adaptive_icon_background
+drawable adaptive_icon_foreground
 drawable btn_checkbox_checked_mtrl
 drawable btn_checkbox_checked_to_unchecked_mtrl_animation
 drawable btn_checkbox_unchecked_mtrl
@@ -828,8 +832,11 @@ drawable common_google_signin_btn_text_light_focused
 drawable common_google_signin_btn_text_light_normal
 drawable common_google_signin_btn_text_light_normal_background
 drawable corner
+drawable gcm_icon
+drawable gcm_icon2
 drawable googleg_disabled_color_18
 drawable googleg_standard_color_18
+drawable icon_with_gradient
 drawable launch_background
 drawable notification_action_background
 drawable notification_bg
@@ -991,6 +998,7 @@ id forever
 id fragment_container_view_tag
 id ghost_view
 id ghost_view_holder
+id glide_custom_view_target_tag
 id group_divider
 id home
 id homeAsUp
@@ -1223,6 +1231,7 @@ menu example_menu
 menu example_menu2
 menu ucrop_menu_activity
 mipmap ic_launcher
+raw gcm_bip
 string abc_action_bar_home_description
 string abc_action_bar_up_description
 string abc_action_menu_overflow_description
@@ -1292,7 +1301,9 @@ string common_open_on_phone
 string common_signin_button_text
 string common_signin_button_text_long
 string default_web_client_id
+string fcm_2_args
 string fcm_fallback_notification_channel_label
+string fcm_no_args
 string gcm_defaultSenderId
 string google_api_key
 string google_app_id

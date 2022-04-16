@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 class Register extends StatefulWidget {
   final Function toggleView;
-  Register({required this.toggleView});
+  const Register({Key? key, required this.toggleView}) : super(key: key);
 
   @override
   _RegisterState createState() => _RegisterState();
@@ -29,196 +29,218 @@ class _RegisterState extends State<Register> {
     AuthService auth = AuthService();
     return loading
         ? const Loading()
-        : Scaffold(
-            backgroundColor: const Color.fromARGB(255, 245, 245, 255),
-            appBar: AppBar(
-              backgroundColor: const Color.fromARGB(255, 245, 245, 255),
-              elevation: 0.0,
-              actions: <Widget>[
-                TextButton.icon(
-                    onPressed: () {
-                      widget.toggleView();
-                    },
-                    icon: const Icon(Icons.person),
-                    label: const Text('Sign in'))
-              ],
+        : Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                begin: FractionalOffset(0.0, 0.0),
+                end: FractionalOffset(1.0, 1.0),
+                colors: [Color(0xff8e9eab), Color(0xffeef2f3)],
+              ),
             ),
-            body: Container(
-              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
-              child: Form(
-                key: _formKey, //track the state of the form and validates it
-                child: Column(
-                  children: <Widget>[
-                    const Text(
-                      'Sign up',
-                      style: TextStyle(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                elevation: 0.0,
+                actions: <Widget>[
+                  TextButton.icon(
+                      onPressed: () {
+                        widget.toggleView();
+                      },
+                      icon: const Icon(
+                        Icons.person,
                         color: Colors.teal,
-                        fontSize: 42,
-                        fontWeight: FontWeight.bold,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 40.0,
-                    ),
-                    TextFormField(
-                      decoration:
-                          textInputDecoration.copyWith(hintText: 'Email'),
-                      validator: (val) {
-                        if (val == null || val.isEmpty) {
-                          return 'Enter an email';
-                        } else {
-                          return null;
-                        }
-                      },
-                      onChanged: (val) {
-                        setState(() {
-                          email = val;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    TextFormField(
-                      decoration:
-                          textInputDecoration.copyWith(hintText: 'Password'),
-                      validator: (val) {
-                        if (val == null || val.length < 6) {
-                          return 'Enter a password of at least 6 characters';
-                        } else {
-                          return null;
-                        }
-                      },
-                      obscureText: true,
-                      onChanged: (val) {
-                        setState(() {
-                          password = val;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    TextFormField(
-                      decoration: textInputDecoration.copyWith(
-                          hintText: 'Repeat password'),
-                      validator: (val) {
-                        if (password.length < 6) {
-                          return 'Enter a password of at least 6 characters';
-                        } else if (val == null || val != password) {
-                          return 'The password does not match';
-                        } else {
-                          return null;
-                        }
-                      },
-                      obscureText: true,
-                      onChanged: (val) {
-                        setState(() {
-                          confirmPass = val;
-                        });
-                      },
-                    ),
-                    const SizedBox(
-                      height: 20.0,
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            loading = true;
-                          });
-                          if (await auth.registerWithEmailAndPass(
-                                  email, password) ==
-                              false) {
-                            setState(() {
-                              error = 'The email is not valid';
-                              loading = false;
-                            });
-                          } else {
-                            db.registerUser(auth.getUser()!.getUid(), email);
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                        ),
-                        shadowColor: Colors.black,
-                        minimumSize: const Size(120, 40),
-                      ),
-                      child: const Text(
-                        'Register',
+                      label: const Text(
+                        'Sign in',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Colors.teal,
+                        ),
+                      ))
+                ],
+              ),
+              body: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
+                child: Form(
+                  key: _formKey, //track the state of the form and validates it
+                  child: Column(
+                    children: <Widget>[
+                      const Text(
+                        'Sign up',
+                        style: TextStyle(
+                          color: Colors.teal,
+                          fontSize: 42,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 40.0,
-                    ),
-                    const Text(
-                      'Sign up with social account',
-                      style: TextStyle(color: Colors.teal),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
+                      const SizedBox(
+                        height: 40.0,
+                      ),
+                      TextFormField(
+                        decoration:
+                            textInputDecoration.copyWith(hintText: 'Email'),
+                        validator: (val) {
+                          if (val == null || val.isEmpty) {
+                            return 'Enter an email';
+                          } else {
+                            return null;
+                          }
+                        },
+                        onChanged: (val) {
+                          setState(() {
+                            email = val;
+                          });
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      TextFormField(
+                        decoration:
+                            textInputDecoration.copyWith(hintText: 'Password'),
+                        validator: (val) {
+                          if (val == null || val.length < 6) {
+                            return 'Enter a password of at least 6 characters';
+                          } else {
+                            return null;
+                          }
+                        },
+                        obscureText: true,
+                        onChanged: (val) {
+                          setState(() {
+                            password = val;
+                          });
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      TextFormField(
+                        decoration: textInputDecoration.copyWith(
+                            hintText: 'Repeat password'),
+                        validator: (val) {
+                          if (password.length < 6) {
+                            return 'Enter a password of at least 6 characters';
+                          } else if (val == null || val != password) {
+                            return 'The password does not match';
+                          } else {
+                            return null;
+                          }
+                        },
+                        obscureText: true,
+                        onChanged: (val) {
+                          setState(() {
+                            confirmPass = val;
+                          });
+                        },
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
                             setState(() {
                               loading = true;
                             });
-                            String email = await auth.signInWithGoogle();
-                            if(email == '') {
+                            if (await auth.registerWithEmailAndPass(
+                                    email, password) ==
+                                false) {
                               setState(() {
-                                error = 'Could not sign in';
+                                error = 'The email is not valid';
                                 loading = false;
                               });
                             } else {
                               db.registerUser(auth.getUser()!.getUid(), email);
                             }
-                          },
-                          child: Image.asset(
-                            'assets/logos/google.png',
-                            width: 30,
-                            height: 30,
+                          }
+                        },
+                        style: ElevatedButton.styleFrom(
+                          primary: const Color(0xff8e9eab),
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
                           ),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            fixedSize: const Size(30, 30),
-                            shape: const CircleBorder(),
+                          shadowColor: Colors.black,
+                          minimumSize: const Size(120, 40),
+                        ),
+                        child: const Text(
+                          'Register',
+                          style: TextStyle(
+                            color: Colors.black54,
                           ),
                         ),
-                        ElevatedButton(
-                          onPressed: () async {
-                            setState(() {
-                              loading = true;
-                            });
-                            if (await auth.signInWithFacebook() == false) {
+                      ),
+                      const SizedBox(
+                        height: 40.0,
+                      ),
+                      const Text(
+                        'Sign up with social account',
+                        style: TextStyle(color: Colors.teal),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () async {
                               setState(() {
-                                error = 'Could not sign in';
-                                loading = false;
+                                loading = true;
                               });
-                            }
-                          },
-                          child: Image.asset('assets/logos/facebook.png'),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.white,
-                            fixedSize: const Size(30, 30),
-                            shape: const CircleBorder(),
+                              String email = await auth.signInWithGoogle();
+                              if (email == '') {
+                                setState(() {
+                                  error = 'Could not sign in';
+                                  loading = false;
+                                });
+                              } else {
+                                db.registerUser(
+                                    auth.getUser()!.getUid(), email);
+                              }
+                            },
+                            child: Image.asset(
+                              'assets/logos/google.png',
+                              width: 30,
+                              height: 30,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              fixedSize: const Size(30, 30),
+                              shape: const CircleBorder(),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12.0),
-                    Text(
-                      error,
-                      style: const TextStyle(color: Colors.red, fontSize: 14.0),
-                    ),
-                  ],
+                          ElevatedButton(
+                            onPressed: () async {
+                              setState(() {
+                                loading = true;
+                              });
+                              if (await auth.signInWithFacebook() == false) {
+                                setState(() {
+                                  error = 'Could not sign in';
+                                  loading = false;
+                                });
+                              }
+                            },
+                            child: Image.asset('assets/logos/facebook.png'),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              fixedSize: const Size(30, 30),
+                              shape: const CircleBorder(),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12.0),
+                      Text(
+                        error,
+                        style:
+                            const TextStyle(color: Colors.red, fontSize: 14.0),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

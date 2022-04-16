@@ -32,4 +32,13 @@ class Group {
     }
     return null;
   }
+
+  int getUserIndexFromId(String uid) {
+    for (int i = 0; i < users.length; i++) {
+      if (uid == users[i].getUid()) {
+        return i;
+      }
+    }
+    return -1;
+  }
 }
