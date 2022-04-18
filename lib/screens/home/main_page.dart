@@ -2,6 +2,7 @@ import 'package:dima/screens/home/chat_page.dart';
 import 'package:dima/screens/home/dates.dart';
 import 'package:dima/screens/home/home.dart';
 import 'package:dima/screens/home/payments_page.dart';
+import 'package:dima/screens/home/shopping_page.dart';
 import 'package:dima/services/notification_services.dart';
 import 'package:dima/shared/themes.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -35,6 +36,7 @@ class _MainPageState extends State<MainPage> {
         const ChatPage(),
         const PaymentsPage(),
         const Dates(),
+        const ShoppingPage(),
       ];
 
   @override
@@ -92,6 +94,17 @@ class _MainPageState extends State<MainPage> {
         ),
         activeIcon: Icon(
           Icons.calendar_today_outlined,
+          size: 30,
+        ),
+      ),
+      const BottomNavigationBarItem(
+        label: 'Shopping',
+        icon: Icon(
+          Icons.shopping_cart,
+          size: 20,
+        ),
+        activeIcon: Icon(
+          Icons.shopping_cart_outlined,
           size: 30,
         ),
       ),

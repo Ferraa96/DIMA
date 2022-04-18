@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/models/chat_message.dart';
 import 'package:dima/models/group.dart';
 import 'package:dima/models/payment_message.dart';
+import 'package:dima/models/product.dart';
 import 'package:dima/models/reminder.dart';
 import 'package:dima/models/user.dart';
 import 'dart:math';
@@ -334,4 +335,44 @@ class DatabaseService {
       );
     }
   }
+
+  Future<void> addProduct(Product product, String groupId) async {
+    CollectionReference paymentsColl =
+        FirebaseFirestore.instance.collection('shoppinglist');
+    paymentsColl.doc(groupId).set(
+      {
+        'shoppinglist': FieldValue.arrayUnion(
+          [
+            {
+              'item': product.item,
+              'quantity': product.quantity,
+              'unit': product.unit,
+            },
+          ],
+        ),
+      },
+      SetOptions(merge: true),
+    );
+  }
+
+  Future<void> removeProducts(List<Product> products, String groupId) async {
+    CollectionReference paymentsColl =
+        FirebaseFirestore.instance.collection('shoppinglist');
+    for (Product product in products) {
+      paymentsColl.doc(groupId).update(
+        {
+          'shoppinglist': FieldValue.arrayRemove(
+            [
+              {
+                'item': product.item,
+                'quantity': product.quantity,
+                'unit': product.unit,
+              }
+            ],
+          ),
+        },
+      );
+    }
+  }
+
 }

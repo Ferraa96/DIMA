@@ -247,6 +247,10 @@ class _PaymentsPageState extends State<PaymentsPage> {
                             }
                             DatabaseService().removePayments(
                                 toBeRemoved, AppData().user.getGroupId());
+                            setState(() {
+                              addPayment = true;
+                              selectedItems.clear();
+                            });
                             Navigator.of(ctx).pop();
                           },
                           child: const Text(
@@ -384,6 +388,14 @@ class _PaymentsPageState extends State<PaymentsPage> {
                                             DatabaseService().addPayment(
                                                 payment,
                                                 AppData().user.getGroupId());
+                                            setState (() {
+                                              allChecked = false;
+                                              for (int i = 0;
+                                                  i < checkList.length;
+                                                  i++) {
+                                                checkList[i] = false;
+                                              }
+                                            }); 
                                             Navigator.of(context).pop();
                                           } else {
                                             Fluttertoast.showToast(
