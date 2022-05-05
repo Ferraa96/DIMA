@@ -2,111 +2,96 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/models/reminder.dart';
 import 'package:dima/services/app_data.dart';
 import 'package:dima/services/database.dart';
+import 'package:dima/shared/constants.dart';
 import 'package:dima/shared/formatter.dart';
-import 'package:dima/shared/loading.dart';
 import 'package:dima/shared/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class Dates extends StatefulWidget {
-  const Dates({Key? key}) : super(key: key);
-
-  @override
-  State<Dates> createState() => _DatesState();
-}
-
-class _DatesState extends State<Dates> {
+class Dates extends StatelessWidget {
+  List remindersList;
+  Dates({Key? key, required this.remindersList}) : super(key: key);
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
   CalendarFormat _format = CalendarFormat.month;
   bool addReminder = true;
   final List<Reminder> _allReminders = [];
   final List<int> _selectedItems = [];
+  late BuildContext context;
 
-  Widget _getReminders() {
-    _allReminders.clear();
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection('reminders')
-          .doc(AppData().user.getGroupId())
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data!.data() == null) {
-            return const Center(
-              child: Text('You have no reminders'),
+  Widget _getReminders(Function setState) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 80),
+      child: Scrollbar(
+        child: ListView.separated(
+          reverse: true,
+          shrinkWrap: true,
+          itemBuilder: (_, index) {
+            Reminder reminder = Reminder(
+              title: remindersList[index]['title'],
+              dateTime:
+                  (remindersList[index]['dateTime'] as Timestamp).toDate(),
+              creatorUid: remindersList[index]['creator'],
             );
-          }
-          List list = List.from(snapshot.data!.data()!['reminders']);
-          return Container(
-            margin: const EdgeInsets.only(bottom: 80),
-            child: Scrollbar(
-              child: ListView.separated(
-                reverse: true,
-                shrinkWrap: true,
-                itemBuilder: (_, index) {
-                  Reminder reminder = Reminder(
-                    title: list[index]['title'],
-                    dateTime: (list[index]['dateTime'] as Timestamp).toDate(),
-                    creatorUid: list[index]['creator'],
-                  );
-                  _allReminders.add(reminder);
-                  return GestureDetector(
-                    onLongPress: () {
-                      setState(() {
-                        addReminder = false;
-                        _selectedItems.add(index);
-                      });
-                    },
-                    onTap: () {
-                      if (!addReminder) {
-                        setState(() {
-                          if (!_selectedItems.contains(index)) {
-                            _selectedItems.add(index);
-                          } else {
-                            _selectedItems.remove(index);
-                            if (_selectedItems.isEmpty) {
-                              addReminder = true;
-                            }
-                          }
-                        });
+            _allReminders.add(reminder);
+            return GestureDetector(
+              onLongPress: () {
+                setState(() {
+                  addReminder = false;
+                  _selectedItems.add(index);
+                });
+              },
+              onTap: () {
+                if (!addReminder) {
+                  setState(() {
+                    if (!_selectedItems.contains(index)) {
+                      _selectedItems.add(index);
+                    } else {
+                      _selectedItems.remove(index);
+                      if (_selectedItems.isEmpty) {
+                        addReminder = true;
                       }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        color: !_selectedItems.contains(index)
-                            ? Colors.transparent
-                            : Colors.blue,
-                      ),
-                      margin: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                      ),
-                      child: reminder,
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(
-                    height: 5,
-                  );
-                },
-                itemCount: list.length,
+                    }
+                  });
+                }
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: colors[AppData()
+                            .group
+                            .getUserIndexFromId(reminder.creatorUid) %
+                        colors.length],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  color: !_selectedItems.contains(index)
+                      ? colors[AppData()
+                            .group
+                            .getUserIndexFromId(reminder.creatorUid) %
+                        colors.length].withOpacity(0.3)
+                      : Colors.blue,
+                ),
+                margin: const EdgeInsets.only(
+                  left: 10,
+                  right: 10,
+                ),
+                child: reminder,
               ),
-            ),
-          );
-        }
-        return const Loading();
-      },
+            );
+          },
+          separatorBuilder: (context, index) {
+            return const SizedBox(
+              height: 5,
+            );
+          },
+          itemCount: remindersList.length,
+        ),
+      ),
     );
   }
 
-  Widget get _buildCalendar {
+  Widget _buildCalendar(Function setState) {
     return TableCalendar(
       selectedDayPredicate: (day) {
         return isSameDay(_selectedDay, day);
@@ -119,6 +104,9 @@ class _DatesState extends State<Dates> {
           });
         }
       },
+      headerStyle: const HeaderStyle(
+        formatButtonVisible: false,
+      ),
       onFormatChanged: (format) {
         if (format != _format) {
           setState(() {
@@ -150,7 +138,7 @@ class _DatesState extends State<Dates> {
               scale: curve,
               child: Dialog(
                 backgroundColor: ThemeProvider().isDarkMode
-                    ? Colors.grey[900]
+                    ? const Color(0xff1e314d)
                     : Colors.white,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -188,6 +176,7 @@ class _DatesState extends State<Dates> {
                             }
                             DatabaseService().removeReminders(
                                 toBeRemoved, AppData().user.getGroupId());
+                            _selectedItems.clear();
                             Navigator.of(ctx).pop();
                           },
                           child: const Text(
@@ -261,9 +250,11 @@ class _DatesState extends State<Dates> {
                       minChildSize: 0.1,
                       builder: (_, controller) {
                         return Container(
-                          decoration: const BoxDecoration(
-                              color: Colors.black,
-                              borderRadius: BorderRadius.only(
+                          decoration: BoxDecoration(
+                              color: ThemeProvider().isDarkMode
+                                  ? const Color(0xff000624)
+                                  : Colors.white,
+                              borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(30),
                                 topRight: Radius.circular(30),
                               )),
@@ -285,7 +276,10 @@ class _DatesState extends State<Dates> {
                                         fontSize: 18,
                                       ),
                                     ),
-                                    IconButton(
+                                    ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const CircleBorder(),
+                                      ),
                                       onPressed: () {
                                         if (titleController.text.isNotEmpty) {
                                           DatabaseService db =
@@ -297,13 +291,11 @@ class _DatesState extends State<Dates> {
                                             pickedTime.hour,
                                             pickedTime.minute,
                                           );
-                                          Fluttertoast.showToast(
-                                              msg: dateTime.toString());
                                           Reminder reminder = Reminder(
                                               title: titleController.text,
                                               dateTime: dateTime,
                                               creatorUid:
-                                                  AppData().user.getGroupId());
+                                                  AppData().user.getUid());
                                           db.addReminder(reminder,
                                               AppData().user.getGroupId());
                                           Navigator.of(context).pop();
@@ -312,7 +304,10 @@ class _DatesState extends State<Dates> {
                                               msg: 'Set a title');
                                         }
                                       },
-                                      icon: const Icon(Icons.check),
+                                      child: const Icon(
+                                        Icons.check,
+                                        color: Colors.black,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -417,43 +412,48 @@ class _DatesState extends State<Dates> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      if (constraints.maxWidth < constraints.maxHeight) {
-        return Column(
-          children: [
-            _buildCalendar,
-            const Divider(),
-            Expanded(
-              child: Scaffold(
-                body: _getReminders(),
-                floatingActionButton: addReminder
-                    ? _buildAddReminderFloatingActionButton()
-                    : _buildRemoveRemindersFloatingActionButton(),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerFloat,
+    this.context = context;
+    return StatefulBuilder(builder: (context, setState) {
+      return LayoutBuilder(builder: (context, constraints) {
+        if (constraints.maxWidth < constraints.maxHeight) {
+          return Column(
+            children: [
+              _buildCalendar(setState),
+              const Divider(),
+              Expanded(
+                child: Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: _getReminders(setState),
+                  floatingActionButton: addReminder
+                      ? _buildAddReminderFloatingActionButton()
+                      : _buildRemoveRemindersFloatingActionButton(),
+                  floatingActionButtonLocation:
+                      FloatingActionButtonLocation.centerFloat,
+                ),
               ),
-            ),
-          ],
-        );
-      } else {
-        return Row(
-          children: [
-            Expanded(
-              child: _buildCalendar,
-            ),
-            Flexible(
-              child: Scaffold(
-                body: _getReminders(),
-                floatingActionButton: addReminder
-                    ? _buildAddReminderFloatingActionButton()
-                    : _buildRemoveRemindersFloatingActionButton(),
-                floatingActionButtonLocation:
-                    FloatingActionButtonLocation.centerFloat,
+            ],
+          );
+        } else {
+          return Row(
+            children: [
+              Expanded(
+                child: _buildCalendar(setState),
               ),
-            ),
-          ],
-        );
-      }
+              Flexible(
+                child: Scaffold(
+                  backgroundColor: Colors.transparent,
+                  body: _getReminders(setState),
+                  floatingActionButton: addReminder
+                      ? _buildAddReminderFloatingActionButton()
+                      : _buildRemoveRemindersFloatingActionButton(),
+                  floatingActionButtonLocation:
+                      FloatingActionButtonLocation.centerFloat,
+                ),
+              ),
+            ],
+          );
+        }
+      });
     });
   }
 }

@@ -54,6 +54,7 @@ dependencies:
   shared_preferences: ^2.0.13
   table_calendar: ^3.0.5
   flutter_local_notifications: ^9.4.0
+  badges: ^2.0.2
 
 dev_dependencies:
   flutter_test:

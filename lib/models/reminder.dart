@@ -1,3 +1,5 @@
+import 'package:dima/models/user.dart';
+import 'package:dima/services/app_data.dart';
 import 'package:dima/shared/formatter.dart';
 import 'package:flutter/material.dart';
 
@@ -6,12 +8,12 @@ class Reminder extends StatelessWidget {
   DateTime dateTime;
   String creatorUid;
 
-  Reminder(
-      {Key? key,
-      required this.title,
-      required this.dateTime,
-      required this.creatorUid})
-      : super(key: key);
+  Reminder({
+    Key? key,
+    required this.title,
+    required this.dateTime,
+    required this.creatorUid,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,13 @@ class Reminder extends StatelessWidget {
               Text(formatter.formatDateAndTime(dateTime)),
             ],
           ),
-          //Text(AppData().group.getUserFromId(creatorUid)!.getName()),
+          const Divider(),
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              'Created by ' + AppData().group.getUserFromId(creatorUid)!.getName(),
+            ),
+          ),
         ],
       ),
     );

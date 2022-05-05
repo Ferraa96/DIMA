@@ -1,56 +1,110 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:dima/models/reminder.dart';
 import 'package:dima/services/app_data.dart';
-import 'package:dima/shared/loading.dart';
 import 'package:flutter/material.dart';
 
-class Listeners {
-  late Widget _reminders;
-  late List messages;
+class Listeners extends ChangeNotifier {
+  Function notifyChange;
+  Listeners({required this.notifyChange});
+  List<Stream<DocumentSnapshot<Map<String, dynamic>>>> streamList = [];
+  List<String> groupList = [];
+  List chatList = [];
+  List paymentsList = [];
+  List remindersList = [];
+  List shoppingList = [];
 
   void startListening() {
-    _reminders = StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection('reminders')
-          .doc(AppData().user.getGroupId())
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data!.data() == null) {
-            return const Center(
-              child: Text('You have no reminders'),
-            );
-          }
-          List list = List.from(snapshot.data!.data()!['reminders']);
-          return Container(
-            margin: const EdgeInsets.only(bottom: 80),
-            child: Scrollbar(
-              child: ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: (_, index) {
-                  Reminder reminder = Reminder(
-                    title: list[index]['title'],
-                    dateTime: (list[index]['dateTime'] as Timestamp).toDate(),
-                    creatorUid: list[index]['creator'],
-                  );
-                  return reminder;
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(
-                    height: 5,
-                  );
-                },
-                itemCount: list.length,
-              ),
-            ),
-          );
-        }
-        return const Loading();
-      },
-    );
+    String groupId = AppData().user.getGroupId();
+    Stream<DocumentSnapshot<Map<String, dynamic>>> groupReference =
+        FirebaseFirestore.instance
+            .collection('groups')
+            .doc(groupId)
+            .snapshots();
+    groupReference.listen((event) {
+      groupList = List.from(event.data()!['members']);
+      notifyChange(0);
+    });
+
+    bool listenChat = false;
+    Stream<DocumentSnapshot<Map<String, dynamic>>> chatReference =
+        FirebaseFirestore.instance.collection('chats').doc(groupId).snapshots();
+    chatReference.listen((event) {
+      chatList = event.data()!['messages'];
+      if (listenChat) {
+        notifyChange(1);
+      } else {
+        listenChat = true;
+      }
+    });
+    streamList.add(chatReference);
+
+    bool listenPayment = false;
+    Stream<DocumentSnapshot<Map<String, dynamic>>> paymentsReference =
+        FirebaseFirestore.instance
+            .collection('payments')
+            .doc(groupId)
+            .snapshots();
+    paymentsReference.listen((event) {
+      paymentsList = event.data()!['payments'];
+      if (listenPayment) {
+        notifyChange(2);
+      } else {
+        listenPayment = true;
+      }
+    });
+    streamList.add(paymentsReference);
+
+    bool listenReminder = false;
+    Stream<DocumentSnapshot<Map<String, dynamic>>> remindersReference =
+        FirebaseFirestore.instance
+            .collection('reminders')
+            .doc(groupId)
+            .snapshots();
+    remindersReference.listen((event) {
+      remindersList = event.data()!['reminders'];
+      if (listenReminder) {
+        notifyChange(3);
+      } else {
+        listenReminder = true;
+      }
+    });
+    streamList.add(remindersReference);
+
+    bool listenShopping = false;
+    Stream<DocumentSnapshot<Map<String, dynamic>>> shoppingListReference =
+        FirebaseFirestore.instance
+            .collection('shoppingList')
+            .doc(groupId)
+            .snapshots();
+    shoppingListReference.listen((event) {
+      shoppingList = event.data()!['shoppingList'];
+      if (listenShopping) {
+        notifyChange(4);
+      } else {
+        listenShopping = true;
+      }
+    });
+    streamList.add(shoppingListReference);
   }
 
-  Widget getReminders() {
-    return _reminders;
+  List<String> getGroupList() {
+    return groupList;
+  }
+
+  List getChatsList() {
+    return chatList;
+  }
+
+  List getPaymentsList() {
+    return paymentsList;
+  }
+
+  List getRemindersList() {
+    return remindersList;
+  }
+
+  List getShoppingList() {
+    return shoppingList;
   }
 }

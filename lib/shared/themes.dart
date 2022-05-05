@@ -17,7 +17,7 @@ class ThemeProvider extends ChangeNotifier {
 class MyThemes {
   static final darkTheme = ThemeData(
     dialogTheme: const DialogTheme(
-      backgroundColor: Colors.amber,
+      backgroundColor: Colors.orangeAccent,
       contentTextStyle: TextStyle(
         color: Colors.white,
       ),
@@ -34,10 +34,19 @@ class MyThemes {
       ),
     ),
     focusColor: Colors.grey,
-    scaffoldBackgroundColor: Colors.grey.shade900,
+    scaffoldBackgroundColor: const Color(0xff000624),
     primaryColor: Colors.black,
     secondaryHeaderColor: Colors.orange,
-    colorScheme: const ColorScheme.dark(),
+    colorScheme: const ColorScheme.dark(
+      primary: Colors.orangeAccent,
+      onPrimary: Colors.black,
+      onSurface: Colors.white,
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        primary: Colors.white,
+      ),
+    ),
     iconTheme: const IconThemeData(color: Colors.white),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       unselectedItemColor: Colors.white,
@@ -64,10 +73,19 @@ class MyThemes {
     ),
   );
   static final lightTheme = ThemeData(
-    scaffoldBackgroundColor: Colors.white,
+    scaffoldBackgroundColor: const Color(0xfff5f5f5),
     primaryColor: Colors.white,
     secondaryHeaderColor: Colors.orange,
-    colorScheme: const ColorScheme.light(),
+    colorScheme: const ColorScheme.light(
+      primary: Colors.orangeAccent,
+      onPrimary: Colors.black,
+      onSurface: Colors.black,
+    ),
+    textButtonTheme: TextButtonThemeData(
+      style: TextButton.styleFrom(
+        primary: Colors.black,
+      ),
+    ),
     iconTheme: const IconThemeData(color: Colors.black),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       unselectedItemColor: Colors.black,

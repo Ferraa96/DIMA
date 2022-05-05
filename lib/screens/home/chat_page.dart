@@ -1,21 +1,13 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/models/chat_message.dart';
 import 'package:dima/services/app_data.dart';
 import 'package:dima/services/database.dart';
 import 'package:dima/services/image_getter.dart';
-import 'package:dima/shared/loading.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-class ChatPage extends StatefulWidget {
-  const ChatPage({Key? key}) : super(key: key);
-
-  @override
-  State<ChatPage> createState() => _ChatPageState();
-}
-
-class _ChatPageState extends State<ChatPage> {
-  late Widget _messages;
+class ChatPage extends StatelessWidget {
+  final List chatList;
+  ChatPage({required this.chatList});
   final ScrollController _scrollController = ScrollController();
 
   void scrollDown() {
@@ -26,63 +18,43 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _messages = StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection('chats')
-          .doc(AppData().user.getGroupId())
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data!.data() == null) {
-            return const Center(
-              child: Text('Send the first message'),
+  Widget _getMessages() {
+    return Container(
+      padding: const EdgeInsets.only(bottom: 60),
+      child: ListView.separated(
+        controller: _scrollController,
+        itemCount: chatList.length,
+        reverse: true,
+        itemBuilder: (_, index) {
+          if (chatList.isEmpty) {
+            return const Text('Send the first message');
+          }
+          if (!chatList[chatList.length - index - 1]['hasMedia']) {
+            return ChatMessage(
+              senderId: chatList[chatList.length - index - 1]['sender'],
+              messageContent: chatList[chatList.length - index - 1]['content'],
+              hasMedia: false,
+              timestamp: DateTime.parse(
+                chatList[chatList.length - index - 1]['timestamp'],
+              ),
+            );
+          } else {
+            return ChatMessage(
+              senderId: chatList[chatList.length - index - 1]['sender'],
+              hasMedia: true,
+              img: Image.network(chatList[chatList.length - index - 1]['image']),
+              timestamp: DateTime.parse(
+                chatList[chatList.length - index - 1]['timestamp'],
+              ),
             );
           }
-          List list = List.from(snapshot.data!.data()!['messages']);
-          return Container(
-            padding: const EdgeInsets.only(bottom: 60),
-            child: ListView.separated(
-              controller: _scrollController,
-              itemCount: list.length,
-              reverse: true,
-              itemBuilder: (_, index) {
-                if (list.isEmpty) {
-                  return const Text('Send the first message');
-                }
-                if (!list[list.length - index - 1]['hasMedia']) {
-                  return ChatMessage(
-                    senderId: list[list.length - index - 1]['sender'],
-                    messageContent: list[list.length - index - 1]['content'],
-                    hasMedia: false,
-                    timestamp: DateTime.parse(
-                      list[list.length - index - 1]['timestamp'],
-                    ),
-                  );
-                } else {
-                  return ChatMessage(
-                    senderId: list[list.length - index - 1]['sender'],
-                    hasMedia: true,
-                    img: Image.network(list[list.length - index - 1]['image']),
-                    timestamp: DateTime.parse(
-                      list[list.length - index - 1]['timestamp'],
-                    ),
-                  );
-                }
-              },
-              separatorBuilder: (context, index) {
-                return const SizedBox(
-                  height: 0,
-                );
-              },
-            ),
+        },
+        separatorBuilder: (context, index) {
+          return const SizedBox(
+            height: 0,
           );
-        } else {
-          return const Loading();
-        }
-      },
+        },
+      ),
     );
   }
 
@@ -91,7 +63,7 @@ class _ChatPageState extends State<ChatPage> {
     final TextEditingController chatController = TextEditingController();
     return Stack(
       children: <Widget>[
-        _messages,
+        _getMessages(),
         Align(
           alignment: Alignment.bottomLeft,
           child: Container(
@@ -177,15 +149,17 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   child: FloatingActionButton(
                     onPressed: () {
-                      ChatMessage msg = ChatMessage(
-                        senderId: AppData().user.getUid(),
-                        messageContent: chatController.text,
-                        hasMedia: false,
-                        timestamp: DateTime.now(),
-                      );
-                      DatabaseService()
-                          .sendMessage(msg, AppData().user.getGroupId(), '');
-                      chatController.clear();
+                      if (chatController.text.isNotEmpty) {
+                        ChatMessage msg = ChatMessage(
+                          senderId: AppData().user.getUid(),
+                          messageContent: chatController.text,
+                          hasMedia: false,
+                          timestamp: DateTime.now(),
+                        );
+                        DatabaseService()
+                            .sendMessage(msg, AppData().user.getGroupId(), '');
+                        chatController.clear();
+                      }
                     },
                     child: const Icon(
                       Icons.send,

@@ -1,29 +1,22 @@
-import 'dart:ui';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/models/product.dart';
-import 'package:dima/models/return_payment.dart';
 import 'package:dima/services/app_data.dart';
 import 'package:dima/services/database.dart';
-import 'package:dima/shared/loading.dart';
+import 'package:dima/shared/constants.dart';
 import 'package:dima/shared/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class ShoppingPage extends StatefulWidget {
-  const ShoppingPage({Key? key}) : super(key: key);
-
-  @override
-  State<ShoppingPage> createState() => _ShoppingPageState();
-}
-
-class _ShoppingPageState extends State<ShoppingPage> {
+class ShoppingPage extends StatelessWidget {
+  final List shoppingList;
+  ShoppingPage({Key? key, required this.shoppingList}) : super(key: key);
   bool addProduct = true;
-  List<int> selectedItems = [];
-  List<Product> allProducts = []; 
+  final List<int> selectedItems = [];
+  final List<Product> allProducts = [];
+  late BuildContext context;
+  late final String userId;
 
-
-  FloatingActionButton _buildRemoveProductFloatingActionButton() {
+  FloatingActionButton _buildRemoveProductFloatingActionButton(Function setState) {
     return FloatingActionButton.extended(
       onPressed: () async {
         showGeneralDialog(
@@ -39,7 +32,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
               scale: curve,
               child: Dialog(
                 backgroundColor: ThemeProvider().isDarkMode
-                    ? Colors.grey[900]
+                    ? const Color(0xff1e314d)
                     : Colors.white,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -77,10 +70,11 @@ class _ShoppingPageState extends State<ShoppingPage> {
                             }
                             DatabaseService().removeProducts(
                                 toBeRemoved, AppData().user.getGroupId());
+                            selectedItems.clear();
                             setState(() {
-                                addProduct = true;
-                                selectedItems.clear();
-                              });
+                            addProduct = true;
+                            selectedItems.clear();
+                            });
                             Navigator.of(ctx).pop();
                           },
                           child: const Text(
@@ -124,8 +118,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
     );
   }
 
-
-  FloatingActionButton _buildAddProductFloatingActionButton() {
+  FloatingActionButton _buildAddProductFloatingActionButton(Function setState) {
     final TextEditingController itemController = TextEditingController();
     final TextEditingController quantityController = TextEditingController();
     final TextEditingController unitController = TextEditingController();
@@ -160,9 +153,11 @@ class _ShoppingPageState extends State<ShoppingPage> {
                       maxChildSize: 0.9,
                       builder: (_, controller) {
                         return Container(
-                          decoration: const BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.only(
+                          decoration: BoxDecoration(
+                            color: ThemeProvider().isDarkMode
+                                ? const Color(0xff000624)
+                                : Colors.white,
+                            borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(30),
                               topRight: Radius.circular(30),
                             ),
@@ -192,18 +187,24 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                         ),
                                         onPressed: () {
                                           if (itemController.text.isNotEmpty &&
-                                              quantityController.text.isNotEmpty &&
-                                              double.parse(quantityController.text) > 0 &&
-                                              unitController.text.isNotEmpty) { //&&
+                                              quantityController
+                                                  .text.isNotEmpty &&
+                                              double.parse(
+                                                      quantityController.text) >
+                                                  0 &&
+                                              unitController.text.isNotEmpty) {
+                                            //&&
                                             Product product = Product(
-                                                item: itemController.text,
-                                                quantity: double.parse(
-                                                    quantityController.text),
-                                                unit: unitController.text,
+                                              item: itemController.text,
+                                              quantity: double.parse(
+                                                  quantityController.text),
+                                              unit: unitController.text,
+                                              user: userId,
                                             );
                                             DatabaseService().addProduct(
                                                 product,
-                                                AppData().user.getGroupId());
+                                                AppData().user.getGroupId(),
+                                                userId);
                                             Navigator.of(context).pop();
                                           } else {
                                             Fluttertoast.showToast(
@@ -211,7 +212,8 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                                     'Set a value for all the fields');
                                           }
                                         },
-                                        child: const Icon(Icons.check),
+                                        child: const Icon(Icons.check,
+                                            color: Colors.black),
                                       ),
                                     ],
                                   ),
@@ -266,7 +268,7 @@ class _ShoppingPageState extends State<ShoppingPage> {
                                       Flexible(
                                         child: TextField(
                                           textCapitalization:
-                                            TextCapitalization.sentences,
+                                              TextCapitalization.sentences,
                                           controller: unitController,
                                           cursorColor: Colors.orangeAccent,
                                           decoration: const InputDecoration(
@@ -303,119 +305,116 @@ class _ShoppingPageState extends State<ShoppingPage> {
     );
   }
 
-
-  Widget createPage() {
-    allProducts.clear();
-    ReturnPayment rp = ReturnPayment();
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection('shoppinglist')
-          .doc(AppData().user.getGroupId())
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          if (snapshot.data!.data() == null) {
-            return Scaffold(
-              body: const Center(
-              child: Text('Empty cart'),
-              ),
-              floatingActionButton: _buildAddProductFloatingActionButton(),
-              floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            );
-          }
-          List list = List.from(snapshot.data!.data()!['shoppinglist']);
-          return Scaffold(
-            floatingActionButton: addProduct
-                ? _buildAddProductFloatingActionButton()
-                : _buildRemoveProductFloatingActionButton(),
-            floatingActionButtonLocation:
-                FloatingActionButtonLocation.centerFloat,
-            body: Scrollbar(
-              child: ListView.separated(
-                reverse: true,
-                shrinkWrap: true,
-                itemCount: list.length,
-                itemBuilder: (_, index) {
-                  if (list.isEmpty) {
-                    return const Center(
-                      child: Text('Empty cart'),
-                    );
-                  }
-                  Product p = Product(
-                    item: list[index]['item'],
-                    quantity: list[index]['quantity'].toDouble(),
-                    unit: list[index]['unit'],
-                  );
-                  allProducts.add(p);
-                  return GestureDetector(
-                    onLongPress: () {
-                      if (selectedItems.isEmpty) {
-                        setState(() {
-                          selectedItems.add(index);
-                          addProduct = false;
-                        });
-                      }
-                    },
-                    onTap: () {
-                      if (!addProduct) {
-                        setState(() {
-                          if (!selectedItems.contains(index)) {
-                            selectedItems.add(index);
-                          } else {
-                            selectedItems.remove(index);
-                            if (selectedItems.isEmpty) {
-                              addProduct = true;
-                            }
-                          }
-                        });
-                      }
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.grey,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                        color: selectedItems.contains(index)
-                            ? Colors.blue
-                            : Colors.transparent,
-                      ),
-                      margin: const EdgeInsets.only(
-                        left: 10,
-                        right: 10,
-                      ),
-                      child: p,
-                    ),
-                  );
-                },
-                separatorBuilder: (context, index) {
-                  return const SizedBox(
-                    height: 10,
-                  );
-                },
-              ),
-            ),
-          );
-        } else {
-          return const Loading();
-        }
-      },
-    );
-  }
-
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        margin: const EdgeInsets.only(top: 20),
-        child: createPage(),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    this.context = context;
+    userId = AppData().user.getUid();
+    return StatefulBuilder(
+      builder: (context, setState) {
+        return Scaffold(
+          floatingActionButton: addProduct
+              ? _buildAddProductFloatingActionButton(setState)
+              : _buildRemoveProductFloatingActionButton(setState),
+          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          body: Container(
+            margin: const EdgeInsets.only(top: 10),
+            child: Column(
+              children: [
+                const Center(
+                  child: Text(
+                    'Shopping list',
+                    style: TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orangeAccent,
+                    ),
+                  ),
+                ),
+                const Divider(),
+                shoppingList.isNotEmpty ? Scrollbar(
+                  child: ListView.separated(
+                    reverse: true,
+                    shrinkWrap: true,
+                    itemCount: shoppingList.length,
+                    itemBuilder: (_, index) {
+                      if (shoppingList.isEmpty) {
+                        return const Center(
+                          child: Text('Empty cart'),
+                        );
+                      }
+                      Product p = Product(
+                        item: shoppingList[index]['item'],
+                        quantity: shoppingList[index]['quantity'].toDouble(),
+                        unit: shoppingList[index]['unit'],
+                        user: shoppingList[index]['user'],
+                      );
+                      allProducts.add(p);
+                      return GestureDetector(
+                        onLongPress: () {
+                          if (selectedItems.isEmpty) {
+                            setState(() {
+                            selectedItems.add(index);
+                            addProduct = false;
+                            });
+                          }
+                        },
+                        onTap: () {
+                          if (!addProduct) {
+                            setState(() {
+                            if (!selectedItems.contains(index)) {
+                              selectedItems.add(index);
+                            } else {
+                              selectedItems.remove(index);
+                              if (selectedItems.isEmpty) {
+                                addProduct = true;
+                              }
+                            }
+                            });
+                          }
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                    color: colors[AppData()
+                            .group
+                            .getUserIndexFromId(p.user) %
+                        colors.length],
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                  color: !selectedItems.contains(index)
+                      ? colors[AppData()
+                            .group
+                            .getUserIndexFromId(p.user) %
+                        colors.length].withOpacity(0.3)
+                      : Colors.blue,
+                          ),
+                          margin: const EdgeInsets.only(
+                            left: 10,
+                            right: 10,
+                          ),
+                          child: p,
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, index) {
+                      return const SizedBox(
+                        height: 10,
+                      );
+                    },
+                  ),
+                ) : const Flexible(
+                  child: Center(
+                    child: Text('Add elements to the shopping list'),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }
     );
   }
 }
-
 
 class DecimalTextInputFormatter extends TextInputFormatter {
   @override
@@ -429,4 +428,3 @@ class DecimalTextInputFormatter extends TextInputFormatter {
     return newString == newValue.text ? newValue : oldValue;
   }
 }
-

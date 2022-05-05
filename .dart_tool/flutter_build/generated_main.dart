@@ -12,6 +12,7 @@ import 'package:dima/main.dart' as entrypoint;
 import 'dart:io'; // flutter_ignore: dart_io_import.
 import 'package:shared_preferences_android/shared_preferences_android.dart';
 import 'package:url_launcher_android/url_launcher_android.dart';
+import 'package:image_picker_ios/image_picker_ios.dart';
 import 'package:shared_preferences_ios/shared_preferences_ios.dart';
 import 'package:url_launcher_ios/url_launcher_ios.dart';
 import 'package:share_plus_linux/share_plus_linux.dart';
@@ -50,6 +51,16 @@ class _PluginRegistrant {
       }
 
     } else if (Platform.isIOS) {
+      try {
+        ImagePickerIOS.registerWith();
+      } catch (err) {
+        print(
+          '`image_picker_ios` threw an error: $err. '
+          'The app may not function as expected until you remove this plugin from pubspec.yaml'
+        );
+        rethrow;
+      }
+
       try {
         SharedPreferencesIOS.registerWith();
       } catch (err) {

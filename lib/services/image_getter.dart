@@ -1,4 +1,5 @@
 import 'package:dima/services/asset_thumbnail.dart';
+import 'package:dima/shared/themes.dart';
 import 'package:flutter/material.dart';
 
 import 'package:image_picker/image_picker.dart';
@@ -38,6 +39,9 @@ class _GalleryState extends State<Gallery> {
       type: RequestType.image,
       onlyAll: true,
     );
+    if (albums.isEmpty) {
+      return;
+    }
     final recentAlbum = albums.first;
     final recentAssets = await recentAlbum.getAssetListRange(
       start: 0,
@@ -65,9 +69,11 @@ class _GalleryState extends State<Gallery> {
           maxChildSize: 0.9,
           builder: (_, controller) {
             return Container(
-              decoration: const BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: ThemeProvider().isDarkMode
+                    ? const Color(0xff000624)
+                    : Colors.white,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(10),
                   topRight: Radius.circular(10),
                 ),
@@ -75,7 +81,7 @@ class _GalleryState extends State<Gallery> {
               child: Container(
                 margin: const EdgeInsets.only(top: 3),
                 child: GridView.builder(
-                  itemCount: assets.length,
+                  itemCount: assets.length + 1,
                   controller: controller,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: colNum),

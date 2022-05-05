@@ -35,17 +35,7 @@ class DatabaseService {
     });
   }
 
-  Future<void> updateImage(String userId, ImageSource source) async {
-    String? path = await ImageGetter().selectFile(source);
-    if (path == null) {
-      return;
-    }
-    File? file = await ImageEditor().cropSquareImage(
-      File(path),
-    );
-    if (file == null) {
-      return;
-    }
+  Future<void> updateImage(String userId, File file) async {
     try {
       final ref = FirebaseStorage.instance.ref('profilePictures/$userId');
       await ref.putFile(file);
@@ -336,17 +326,18 @@ class DatabaseService {
     }
   }
 
-  Future<void> addProduct(Product product, String groupId) async {
+  Future<void> addProduct(Product product, String groupId, String userId) async {
     CollectionReference paymentsColl =
-        FirebaseFirestore.instance.collection('shoppinglist');
+        FirebaseFirestore.instance.collection('shoppingList');
     paymentsColl.doc(groupId).set(
       {
-        'shoppinglist': FieldValue.arrayUnion(
+        'shoppingList': FieldValue.arrayUnion(
           [
             {
               'item': product.item,
               'quantity': product.quantity,
               'unit': product.unit,
+              'user': userId,
             },
           ],
         ),
@@ -357,16 +348,17 @@ class DatabaseService {
 
   Future<void> removeProducts(List<Product> products, String groupId) async {
     CollectionReference paymentsColl =
-        FirebaseFirestore.instance.collection('shoppinglist');
+        FirebaseFirestore.instance.collection('shoppingList');
     for (Product product in products) {
       paymentsColl.doc(groupId).update(
         {
-          'shoppinglist': FieldValue.arrayRemove(
+          'shoppingList': FieldValue.arrayRemove(
             [
               {
                 'item': product.item,
                 'quantity': product.quantity,
                 'unit': product.unit,
+                'user': product.user,
               }
             ],
           ),
