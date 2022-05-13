@@ -52,9 +52,8 @@ class _MainPageState extends State<MainPage> {
   List<Widget> screens() => [
         Home(
           callback: callback,
-          paymentsList: listeners.getPaymentsList(),
+          listener: listeners,
           moveToPage: moveToPage,
-          groupList: listeners.getGroupList(),
         ),
         ChatPage(
           chatList: listeners.getChatsList(),

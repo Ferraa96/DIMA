@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/services/app_data.dart';
+import 'package:dima/shared/constants.dart';
 import 'package:flutter/material.dart';
 
 class Listeners extends ChangeNotifier {
@@ -63,6 +64,9 @@ class Listeners extends ChangeNotifier {
             .snapshots();
     remindersReference.listen((event) {
       remindersList = event.data()!['reminders'];
+      remindersList.sort((a, b) => (b['dateTime'] as Timestamp)
+          .toDate()
+          .compareTo((a['dateTime'] as Timestamp).toDate()));
       if (listenReminder) {
         notifyChange(3);
       } else {
@@ -79,6 +83,7 @@ class Listeners extends ChangeNotifier {
             .snapshots();
     shoppingListReference.listen((event) {
       shoppingList = event.data()!['shoppingList'];
+      sortListPerCategory();
       if (listenShopping) {
         notifyChange(4);
       } else {
@@ -86,6 +91,21 @@ class Listeners extends ChangeNotifier {
       }
     });
     streamList.add(shoppingListReference);
+  }
+
+  void sortListPerCategory() {
+    List newList = [];
+    for (String cat in categories) {
+      for (int i = 0; i < shoppingList.length; i++) {
+        if (newList.length == shoppingList.length) {
+          break;
+        }
+        if (shoppingList[i]['category'] == cat) {
+          newList.add(shoppingList[i]);
+        }
+      }
+    }
+    shoppingList = newList;
   }
 
   List<String> getGroupList() {

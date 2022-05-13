@@ -8,15 +8,18 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class ShoppingPage extends StatelessWidget {
-  final List shoppingList;
+  List shoppingList;
   ShoppingPage({Key? key, required this.shoppingList}) : super(key: key);
   bool addProduct = true;
   final List<int> selectedItems = [];
   final List<Product> allProducts = [];
   late BuildContext context;
   late final String userId;
+  final List<DropdownMenuItem<String>> _menuItems = [];
+  String category = 'Other';
 
-  FloatingActionButton _buildRemoveProductFloatingActionButton(Function setState) {
+  FloatingActionButton _buildRemoveProductFloatingActionButton(
+      Function setState) {
     return FloatingActionButton.extended(
       onPressed: () async {
         showGeneralDialog(
@@ -72,8 +75,8 @@ class ShoppingPage extends StatelessWidget {
                                 toBeRemoved, AppData().user.getGroupId());
                             selectedItems.clear();
                             setState(() {
-                            addProduct = true;
-                            selectedItems.clear();
+                              addProduct = true;
+                              selectedItems.clear();
                             });
                             Navigator.of(ctx).pop();
                           },
@@ -193,13 +196,13 @@ class ShoppingPage extends StatelessWidget {
                                                       quantityController.text) >
                                                   0 &&
                                               unitController.text.isNotEmpty) {
-                                            //&&
                                             Product product = Product(
                                               item: itemController.text,
                                               quantity: double.parse(
                                                   quantityController.text),
                                               unit: unitController.text,
                                               user: userId,
+                                              category: category,
                                             );
                                             DatabaseService().addProduct(
                                                 product,
@@ -218,24 +221,52 @@ class ShoppingPage extends StatelessWidget {
                                     ],
                                   ),
                                   const Divider(),
-                                  TextField(
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    controller: itemController,
-                                    cursorColor: Colors.orangeAccent,
-                                    decoration: const InputDecoration(
-                                      label: Text(
-                                        'Product',
-                                        style: TextStyle(
-                                          color: Colors.grey,
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: TextField(
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
+                                          controller: itemController,
+                                          cursorColor: Colors.orangeAccent,
+                                          decoration: const InputDecoration(
+                                            label: Text(
+                                              'Product',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.grey,
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: const Color.fromARGB(
+                                              255, 37, 59, 92),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: DropdownButton<String>(
+                                          dropdownColor:
+                                              const Color(0xff1e314d),
+                                          underline: const SizedBox(),
+                                          value: category,
+                                          items: _menuItems,
+                                          onChanged: (newCategory) {
+                                            setState(
+                                              () {
+                                                category = newCategory!;
+                                              },
+                                            );
+                                          },
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   ),
                                   const Divider(),
                                   Row(
@@ -265,6 +296,7 @@ class ShoppingPage extends StatelessWidget {
                                           ),
                                         ),
                                       ),
+                                      const VerticalDivider(),
                                       Flexible(
                                         child: TextField(
                                           textCapitalization:
@@ -305,114 +337,178 @@ class ShoppingPage extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    this.context = context;
-    userId = AppData().user.getUid();
-    return StatefulBuilder(
-      builder: (context, setState) {
-        return Scaffold(
-          floatingActionButton: addProduct
-              ? _buildAddProductFloatingActionButton(setState)
-              : _buildRemoveProductFloatingActionButton(setState),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-          body: Container(
-            margin: const EdgeInsets.only(top: 10),
-            child: Column(
-              children: [
-                const Center(
-                  child: Text(
-                    'Shopping list',
-                    style: TextStyle(
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.orangeAccent,
-                    ),
-                  ),
+  void _buildMenuItems() {
+    for (String cat in categories) {
+      _menuItems.add(
+        DropdownMenuItem(
+          child: Row(
+            children: [
+              Image.asset(
+                'assets/icons/${cat.toLowerCase()}.png',
+                width: 20,
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Text(cat),
+            ],
+          ),
+          value: cat,
+        ),
+      );
+    }
+  }
+
+  List<Widget> _buildListView(Function setState) {
+    List<Widget> list = [];
+    String prevCategory = '';
+    for (int i = 0; i < shoppingList.length; i++) {
+      Product p = Product(
+        item: shoppingList[i]['item'],
+        quantity: shoppingList[i]['quantity'].toDouble(),
+        unit: shoppingList[i]['unit'],
+        category: shoppingList[i]['category'],
+        user: shoppingList[i]['user'],
+      );
+      allProducts.add(p);
+      if (prevCategory == p.category) {
+        list.add(
+          const SizedBox(
+            height: 5,
+          ),
+        );
+      } else {
+        list.add(
+          Row(
+            children: [
+              const Flexible(
+                child: Divider(),
+              ),
+              Text(
+                p.category,
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 12,
                 ),
-                const Divider(),
-                shoppingList.isNotEmpty ? Scrollbar(
-                  child: ListView.separated(
-                    reverse: true,
-                    shrinkWrap: true,
-                    itemCount: shoppingList.length,
-                    itemBuilder: (_, index) {
-                      if (shoppingList.isEmpty) {
-                        return const Center(
-                          child: Text('Empty cart'),
-                        );
-                      }
-                      Product p = Product(
-                        item: shoppingList[index]['item'],
-                        quantity: shoppingList[index]['quantity'].toDouble(),
-                        unit: shoppingList[index]['unit'],
-                        user: shoppingList[index]['user'],
-                      );
-                      allProducts.add(p);
-                      return GestureDetector(
-                        onLongPress: () {
-                          if (selectedItems.isEmpty) {
-                            setState(() {
-                            selectedItems.add(index);
-                            addProduct = false;
-                            });
-                          }
-                        },
-                        onTap: () {
-                          if (!addProduct) {
-                            setState(() {
-                            if (!selectedItems.contains(index)) {
-                              selectedItems.add(index);
-                            } else {
-                              selectedItems.remove(index);
-                              if (selectedItems.isEmpty) {
-                                addProduct = true;
-                              }
-                            }
-                            });
-                          }
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                    color: colors[AppData()
-                            .group
-                            .getUserIndexFromId(p.user) %
-                        colors.length],
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                  color: !selectedItems.contains(index)
-                      ? colors[AppData()
-                            .group
-                            .getUserIndexFromId(p.user) %
-                        colors.length].withOpacity(0.3)
-                      : Colors.blue,
-                          ),
-                          margin: const EdgeInsets.only(
-                            left: 10,
-                            right: 10,
-                          ),
-                          child: p,
-                        ),
-                      );
-                    },
-                    separatorBuilder: (context, index) {
-                      return const SizedBox(
-                        height: 10,
-                      );
-                    },
-                  ),
-                ) : const Flexible(
-                  child: Center(
-                    child: Text('Add elements to the shopping list'),
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const Flexible(
+                child: Divider(),
+              ),
+            ],
           ),
         );
       }
-    );
+      list.add(
+        GestureDetector(
+          onLongPress: () {
+            if (selectedItems.isEmpty) {
+              setState(() {
+                selectedItems.add(i);
+                addProduct = false;
+              });
+            }
+          },
+          onTap: () {
+            if (!addProduct) {
+              setState(
+                () {
+                  if (!selectedItems.contains(i)) {
+                    selectedItems.add(i);
+                  } else {
+                    selectedItems.remove(i);
+                    if (selectedItems.isEmpty) {
+                      addProduct = true;
+                    }
+                  }
+                },
+              );
+            }
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: colors[
+                    AppData().group.getUserIndexFromId(p.user) % colors.length],
+              ),
+              borderRadius: BorderRadius.circular(10),
+              color: !selectedItems.contains(i)
+                  ? colors[AppData().group.getUserIndexFromId(p.user) %
+                          colors.length]
+                      .withOpacity(0.6)
+                  : Colors.blue,
+            ),
+            margin: const EdgeInsets.only(
+              left: 10,
+              right: 10,
+            ),
+            child: p,
+          ),
+        ),
+      );
+      prevCategory = p.category;
+    }
+    return list;
+  }
+
+/*
+  void sortList() {
+    List newList = [];
+    for (String cat in _categories) {
+      for (int i = 0; i < shoppingList.length; i++) {
+        if (newList.length == shoppingList.length) {
+          break;
+        }
+        if (shoppingList[i]['category'] == cat) {
+          newList.add(shoppingList[i]);
+        }
+      }
+    }
+    shoppingList = newList;
+  }
+*/
+  @override
+  Widget build(BuildContext context) {
+    this.context = context;
+    _buildMenuItems();
+    userId = AppData().user.getUid();
+    return StatefulBuilder(builder: (context, setState) {
+      return Scaffold(
+        floatingActionButton: addProduct
+            ? _buildAddProductFloatingActionButton(setState)
+            : _buildRemoveProductFloatingActionButton(setState),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        body: Container(
+          margin: const EdgeInsets.only(top: 10),
+          child: Column(
+            children: [
+              const Center(
+                child: Text(
+                  'Shopping list',
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orangeAccent,
+                  ),
+                ),
+              ),
+              const Divider(),
+              shoppingList.isNotEmpty
+                  ? Scrollbar(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: _buildListView(setState),
+                      ),
+                    )
+                  : const Flexible(
+                      child: Center(
+                        child: Text('Add elements to the shopping list'),
+                      ),
+                    ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 }
 

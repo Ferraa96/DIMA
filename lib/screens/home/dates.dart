@@ -14,13 +14,22 @@ class Dates extends StatelessWidget {
   Dates({Key? key, required this.remindersList}) : super(key: key);
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  CalendarFormat _format = CalendarFormat.month;
   bool addReminder = true;
+  final Map<DateTime, List<Reminder>> _reminders = {};
   final List<Reminder> _allReminders = [];
   final List<int> _selectedItems = [];
+  final List _remindersInDate = [];
   late BuildContext context;
 
   Widget _getReminders(Function setState) {
+    _remindersInDate.clear();
+    for (var el in remindersList) {
+      if (((el['dateTime']) as Timestamp).toDate().day == _focusedDay.day &&
+          ((el['dateTime']) as Timestamp).toDate().month == _focusedDay.month &&
+          ((el['dateTime']) as Timestamp).toDate().year == _focusedDay.year) {
+        _remindersInDate.add(el);
+      }
+    }
     return Container(
       margin: const EdgeInsets.only(bottom: 80),
       child: Scrollbar(
@@ -28,13 +37,20 @@ class Dates extends StatelessWidget {
           reverse: true,
           shrinkWrap: true,
           itemBuilder: (_, index) {
+            DateTime date =
+                (_remindersInDate[index]['dateTime'] as Timestamp).toDate();
             Reminder reminder = Reminder(
-              title: remindersList[index]['title'],
+              title: _remindersInDate[index]['title'],
               dateTime:
-                  (remindersList[index]['dateTime'] as Timestamp).toDate(),
-              creatorUid: remindersList[index]['creator'],
+                  (_remindersInDate[index]['dateTime'] as Timestamp).toDate(),
+              creatorUid: _remindersInDate[index]['creator'],
             );
             _allReminders.add(reminder);
+            if (_reminders[date] != null) {
+              _reminders[date]!.add(reminder);
+            } else {
+              _reminders[date] = [reminder];
+            }
             return GestureDetector(
               onLongPress: () {
                 setState(() {
@@ -67,9 +83,10 @@ class Dates extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   color: !_selectedItems.contains(index)
                       ? colors[AppData()
-                            .group
-                            .getUserIndexFromId(reminder.creatorUid) %
-                        colors.length].withOpacity(0.3)
+                                  .group
+                                  .getUserIndexFromId(reminder.creatorUid) %
+                              colors.length]
+                          .withOpacity(0.6)
                       : Colors.blue,
                 ),
                 margin: const EdgeInsets.only(
@@ -85,7 +102,7 @@ class Dates extends StatelessWidget {
               height: 5,
             );
           },
-          itemCount: remindersList.length,
+          itemCount: _remindersInDate.length,
         ),
       ),
     );
@@ -107,14 +124,37 @@ class Dates extends StatelessWidget {
       headerStyle: const HeaderStyle(
         formatButtonVisible: false,
       ),
-      onFormatChanged: (format) {
-        if (format != _format) {
-          setState(() {
-            _format = format;
-          });
+      calendarStyle: const CalendarStyle(
+        selectedDecoration: BoxDecoration(
+          color: Colors.orangeAccent,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        markerDecoration: BoxDecoration(
+          color: Colors.green,
+          shape: BoxShape.circle,
+        ),
+        todayDecoration: BoxDecoration(
+          color: Colors.blueAccent,
+          shape: BoxShape.rectangle,
+          borderRadius: BorderRadius.all(Radius.circular(10)),
+        ),
+        defaultDecoration: BoxDecoration(),
+        outsideDecoration: BoxDecoration(),
+        weekendDecoration: BoxDecoration(),
+      ),
+      eventLoader: (day) {
+        List temp = [];
+        for (var el in remindersList) {
+          if (((el['dateTime']) as Timestamp).toDate().day == day.day &&
+          ((el['dateTime']) as Timestamp).toDate().month == day.month &&
+          ((el['dateTime']) as Timestamp).toDate().year == day.year) {
+            temp.add(el);
+          }
         }
+        return temp;
       },
-      calendarFormat: _format,
+      calendarFormat: CalendarFormat.month,
       startingDayOfWeek: StartingDayOfWeek.monday,
       focusedDay: _focusedDay,
       firstDay: DateTime(2000),
@@ -222,7 +262,7 @@ class Dates extends StatelessWidget {
 
   FloatingActionButton _buildAddReminderFloatingActionButton() {
     final TextEditingController titleController = TextEditingController();
-    DateTime pickedDate = DateTime.now();
+    DateTime pickedDate = _focusedDay;
     TimeOfDay pickedTime = TimeOfDay.now();
     Formatter formatter = Formatter();
     return FloatingActionButton.extended(
@@ -338,7 +378,7 @@ class Dates extends StatelessWidget {
                                   onTap: () {
                                     showDatePicker(
                                       context: context,
-                                      initialDate: DateTime.now(),
+                                      initialDate: _focusedDay,
                                       firstDate: DateTime(2000),
                                       lastDate: DateTime(2030),
                                     ).then(

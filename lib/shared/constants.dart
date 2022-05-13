@@ -21,3 +21,5 @@ var textInputDecoration = InputDecoration(
 );
 
 final List<Color> colors = [Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple, Colors.teal, Colors.lime];
+
+final List<String> categories = ['Meat', 'Vegetables', 'Fruit', 'Other'];

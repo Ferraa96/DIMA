@@ -23,7 +23,7 @@ class PaymentsPage extends StatelessWidget {
   late String pickedDate;
   List<double> balances = [];
   int currPage = 0;
-  List<DropdownMenuItem<String>> menuItems = [];
+  final List<DropdownMenuItem<String>> _menuItems = [];
   bool addPayment = true;
   List<int> selectedItems = [];
   List<Payment> allPayments = [];
@@ -142,14 +142,9 @@ class PaymentsPage extends StatelessWidget {
                 list.add(
                   Container(
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
+                      border: Border.all(color: colors[creditor % colors.length],),
                       borderRadius: BorderRadius.circular(10),
-                      gradient: LinearGradient(
-                        colors: [
-                          colors[debtor % colors.length],
-                          colors[creditor % colors.length],
-                        ],
-                      ),
+                      color: colors[creditor % colors.length].withOpacity(0.6),
                     ),
                     margin: const EdgeInsets.only(left: 10, right: 10),
                     child: Container(
@@ -165,13 +160,9 @@ class PaymentsPage extends StatelessWidget {
                                 AppData().group.getList()[debtor].getName(),
                                 style: const TextStyle(
                                   fontSize: 18,
-                                  color: Colors.black,
                                 ),
                               ),
                               const Text('ows',
-                              style: TextStyle(
-                                color: Colors.black,
-                              ),
                               ),
                               Text(
                                 'to ' +
@@ -181,7 +172,6 @@ class PaymentsPage extends StatelessWidget {
                                         .getName(),
                                 style: const TextStyle(
                                   fontSize: 18,
-                                  color: Colors.black,
                                 ),
                               ),
                             ],
@@ -191,7 +181,6 @@ class PaymentsPage extends StatelessWidget {
                                 ' €',
                             style: const TextStyle(
                               fontSize: 18,
-                              color: Colors.black,
                             ),
                           ),
                         ],
@@ -506,7 +495,7 @@ class PaymentsPage extends StatelessWidget {
                                       DropdownButton<String>(
                                         hint: Text(AppData().user.getName()),
                                         value: payedBy,
-                                        items: menuItems,
+                                        items: _menuItems,
                                         onChanged: (newValue) {
                                           setState(() {
                                             payedBy = newValue!;
@@ -753,11 +742,11 @@ class PaymentsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    menuItems.clear();
+    _menuItems.clear();
     uids.clear();
     for (int i = 0; i < AppData().group.getList().length; i++) {
       checkList.add(false);
-      menuItems.add(DropdownMenuItem(
+      _menuItems.add(DropdownMenuItem(
         child: Text(AppData().group.getList()[i].getName()),
         value: i.toString(),
       ));

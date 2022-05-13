@@ -6,6 +6,7 @@ class Product extends StatelessWidget {
   double quantity;
   String unit;
   String user;
+  String category;
 
   Product({
     Key? key,
@@ -13,32 +14,29 @@ class Product extends StatelessWidget {
     required this.quantity,
     required this.unit,
     required this.user,
+    required this.category,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                item,
-              ),
-              Text(
-                quantity.toString() + " " + unit,
-              ),
+              Text(item),
+              Text(quantity.toString() + ' ' + unit),
             ],
           ),
-          const Divider(),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              'Added by ' + AppData().group.getUserFromId(user)!.getName(),
-            ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(category),
+              Text('Added by ' + AppData().group.getUserFromId(user)!.getName()),
+            ],
           ),
         ],
       ),

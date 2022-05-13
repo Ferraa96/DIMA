@@ -306,7 +306,6 @@ class DatabaseService {
   }
 
   Future<void> removeReminders(List<Reminder> reminders, String groupId) async {
-    print('Received ' + reminders.length.toString() + ' reminders');
     CollectionReference remindersColl =
         FirebaseFirestore.instance.collection('reminders');
     for (Reminder reminder in reminders) {
@@ -326,7 +325,8 @@ class DatabaseService {
     }
   }
 
-  Future<void> addProduct(Product product, String groupId, String userId) async {
+  Future<void> addProduct(
+      Product product, String groupId, String userId) async {
     CollectionReference paymentsColl =
         FirebaseFirestore.instance.collection('shoppingList');
     paymentsColl.doc(groupId).set(
@@ -337,6 +337,7 @@ class DatabaseService {
               'item': product.item,
               'quantity': product.quantity,
               'unit': product.unit,
+              'category': product.category,
               'user': userId,
             },
           ],
@@ -358,6 +359,7 @@ class DatabaseService {
                 'item': product.item,
                 'quantity': product.quantity,
                 'unit': product.unit,
+                'category': product.category,
                 'user': product.user,
               }
             ],
@@ -366,5 +368,4 @@ class DatabaseService {
       );
     }
   }
-
 }

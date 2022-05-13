@@ -8,6 +8,7 @@ import 'package:dima/services/auth.dart';
 import 'package:dima/services/database.dart';
 import 'package:dima/services/image_editor.dart';
 import 'package:dima/services/image_getter.dart';
+import 'package:dima/services/listeners.dart';
 import 'package:dima/shared/constants.dart';
 import 'package:dima/shared/loading.dart';
 import 'package:dima/shared/themes.dart';
@@ -21,16 +22,14 @@ import 'package:charts_flutter/flutter.dart' as charts;
 
 class Home extends StatelessWidget {
   final Function callback;
-  final List paymentsList;
+  final Listeners listener;
   final Function moveToPage;
-  final List<String> groupList;
-  Home(
-      {Key? key,
-      required this.callback,
-      required this.paymentsList,
-      required this.moveToPage,
-      required this.groupList})
-      : super(key: key);
+  Home({
+    Key? key,
+    required this.callback,
+    required this.listener,
+    required this.moveToPage,
+  }) : super(key: key);
 
   Image _myImg = Image.asset('assets/defaultProfile.png');
   bool _modifyName = false;
@@ -40,13 +39,7 @@ class Home extends StatelessWidget {
     initialPage: 100,
   );
   late BuildContext context;
-/*
-  @override
-  void dispose() {
-    focusNode.dispose();
-    super.dispose();
-  }
-*/
+
   Widget _getUsersIcon(String name, int index, String url) {
     double height = window.physicalSize.height / window.devicePixelRatio;
     double width = window.physicalSize.width / window.devicePixelRatio;
@@ -238,6 +231,7 @@ class Home extends StatelessWidget {
 
   Widget _buildGroupTitle() {
     name = AppData().user.getName();
+    List<String> groupList = listener.getGroupList();
     DatabaseService db = DatabaseService();
     return FutureBuilder<List<MyUser>>(
       future: db.retrieveUsers(groupList),
@@ -253,67 +247,64 @@ class Home extends StatelessWidget {
               names.add(user.getName());
               pictures.add(user.getPicUrl());
             }
-            return ClipRRect(
-              child: SizedBox(
-                child: ListView.separated(
-                  itemCount: groupList.length + 1,
-                  itemBuilder: (_, index) {
-                    if (index < groupList.length) {
-                      return SizedBox(
-                        child:
-                            _getUsersIcon(names[index], index, pictures[index]),
-                      );
-                    } else {
-                      return Center(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.orangeAccent,
-                            borderRadius: BorderRadius.circular(40.0),
-                          ),
-                          child: Center(
-                            child: IconButton(
-                              onPressed: () {
-                                showGeneralDialog(
-                                  barrierLabel: 'addUser',
-                                  barrierDismissible: true,
-                                  context: context,
-                                  pageBuilder: (ctx, a1, a2) {
-                                    return Container();
-                                  },
-                                  transitionBuilder: (ctx, a1, a2, child) {
-                                    var curve =
-                                        Curves.easeInOut.transform(a1.value);
-                                    return Transform.scale(
-                                      scale: curve,
-                                      child: _buildAddUserPopupDialog(
-                                          ctx, AppData().group.getGroupCode()),
-                                    );
-                                  },
-                                  transitionDuration:
-                                      const Duration(milliseconds: 300),
-                                );
-                              },
-                              icon: const Icon(Icons.add),
-                              color: Colors.black,
-                            ),
-                          ),
-                          height: kToolbarHeight * 0.9,
-                          width: kToolbarHeight * 0.9,
-                        ),
-                      );
-                    }
-                  },
-                  scrollDirection: Axis.horizontal,
-                  shrinkWrap: true,
-                  separatorBuilder: (context, index) {
-                    return const SizedBox(
-                      width: kToolbarHeight * 0.1,
+            return SizedBox(
+              child: ListView.separated(
+                itemCount: groupList.length + 1,
+                itemBuilder: (_, index) {
+                  if (index < groupList.length) {
+                    return SizedBox(
+                      child:
+                          _getUsersIcon(names[index], index, pictures[index]),
                     );
-                  },
-                ),
-                height: kToolbarHeight * 0.9,
+                  } else {
+                    return Center(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.orangeAccent,
+                          borderRadius: BorderRadius.circular(40.0),
+                        ),
+                        child: Center(
+                          child: IconButton(
+                            onPressed: () {
+                              showGeneralDialog(
+                                barrierLabel: 'addUser',
+                                barrierDismissible: true,
+                                context: context,
+                                pageBuilder: (ctx, a1, a2) {
+                                  return Container();
+                                },
+                                transitionBuilder: (ctx, a1, a2, child) {
+                                  var curve =
+                                      Curves.easeInOut.transform(a1.value);
+                                  return Transform.scale(
+                                    scale: curve,
+                                    child: _buildAddUserPopupDialog(
+                                        ctx, AppData().group.getGroupCode()),
+                                  );
+                                },
+                                transitionDuration:
+                                    const Duration(milliseconds: 300),
+                              );
+                            },
+                            icon: const Icon(Icons.add),
+                            color: Colors.black,
+                          ),
+                        ),
+                        height: kToolbarHeight * 0.9,
+                        width: kToolbarHeight * 0.9,
+                      ),
+                    );
+                  }
+                },
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                separatorBuilder: (context, index) {
+                  return const SizedBox(
+                    width: kToolbarHeight * 0.1,
+                  );
+                },
               ),
-              borderRadius: BorderRadius.circular(30),
+              height: kToolbarHeight * 0.9,
             );
         }
       },
@@ -707,7 +698,7 @@ class Home extends StatelessWidget {
 
     for (MyUser user in AppData().group.users) {
       balance = 0;
-      for (var el in paymentsList) {
+      for (var el in listener.getPaymentsList()) {
         List<String> payedTo = List<String>.from(el['payedTo']);
         if (el['payedBy'] == user.uid) {
           balance += el['amount'];
@@ -741,7 +732,8 @@ class Home extends StatelessWidget {
         measureFn: (ChartSeries s, _) => s.balance,
         labelAccessorFn: (ChartSeries s, _) => s.balance.abs().toString() + '€',
         colorFn: (ChartSeries s, _) => charts.ColorUtil.fromDartColor(
-            colors[int.parse(s.name) % colors.length]),
+          colors[int.parse(s.name) % colors.length],
+        ),
         insideLabelStyleAccessorFn: (ChartSeries s, _) => charts.TextStyleSpec(
           color: charts.ColorUtil.fromDartColor(Colors.black),
         ),
@@ -759,128 +751,148 @@ class Home extends StatelessWidget {
         arcRendererDecorators: [
           charts.ArcLabelDecorator(
             labelPosition: charts.ArcLabelPosition.auto,
-          )
+          ),  
         ],
       ),
     );
   }
 
   Widget _paymentWidgetWideScreen(double size) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Flexible(
-          flex: 2,
-          child: Column(
-            children: [
-              const Text(
-                'Credits',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
+    double _size = size * 0.7;
+    return Container(
+      width: _size,
+      height: _size,
+      decoration: BoxDecoration(
+        color: Colors.orangeAccent,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: Column(
+                children: [
+                  const Text(
+                    'Credits',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(
+                    height: _size * 0.45,
+                    child: _constructPie(size, true),
+                  ),
+                ],
               ),
-              SizedBox(
-                height: size * 0.4,
-                child: _constructPie(size, true),
-              ),
-            ],
-          ),
-        ),
-        Flexible(
-          flex: 2,
-          child: Column(
-            children: [
-              const Text(
-                'Debits',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              SizedBox(
-                height: size * 0.4,
-                child: _constructPie(size, false),
-              ),
-            ],
-          ),
-        ),
-        Flexible(
-          flex: 1,
-          fit: FlexFit.loose,
-          child: SizedBox(
-            child: ListView(
-              shrinkWrap: true,
-              children: [
-                ...() {
-                  List<Widget> list = [];
-                  for (int i = 0; i < AppData().group.users.length; i++) {
-                    list.add(
-                      Row(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(3),
-                              color: colors[i % colors.length],
-                            ),
-                            height: 10,
-                            width: 10,
-                          ),
-                          const VerticalDivider(),
-                          Text(
-                            AppData().group.users[i].getName(),
-                            style: const TextStyle(
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-                  return list;
-                }(),
-              ],
             ),
           ),
-        ),
-      ],
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Flexible(
+              flex: 2,
+              child: Column(
+                children: [
+                  const Text(
+                    'Debits',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(
+                    height: _size * 0.45,
+                    child: _constructPie(size, false),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Align(
+            alignment: Alignment.topRight,
+            child: Flexible(
+              child: SizedBox(
+                child: Expanded(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      ...() {
+                        List<Widget> list = [];
+                        for (int i = 0; i < AppData().group.users.length; i++) {
+                          list.add(
+                            Row(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(3),
+                                    color: colors[i % colors.length],
+                                  ),
+                                  height: 10,
+                                  width: 10,
+                                ),
+                                const VerticalDivider(),
+                                Text(
+                                  AppData().group.users[i].getName(),
+                                  style: const TextStyle(
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                        return list;
+                      }(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _paymentWidgetNarrowScreen(double size) {
-    return PageView.builder(
-        scrollDirection: Axis.vertical,
-        controller: controller,
-        itemBuilder: (context, index) {
-          return Wrap(
-            children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: Text(
-                  index % 2 == 0 ? 'Credits' : 'Debts',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
-              Row(
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: SizedBox(
-                      height: size * 0.4,
-                      child: _constructPie(size, index % 2 == 0),
+    return Container(
+      height: size * 0.45,
+      decoration: BoxDecoration(
+        color: Colors.orangeAccent,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: PageView.builder(
+          scrollDirection: Axis.vertical,
+          controller: controller,
+          itemBuilder: (context, index) {
+            return Wrap(
+              children: [
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: Text(
+                    index % 2 == 0 ? 'Credits' : 'Debts',
+                    style: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
                     ),
                   ),
-                  Flexible(
-                    flex: 1,
-                    fit: FlexFit.loose,
-                    child: SizedBox(
+                ),
+                Row(
+                  children: [
+                    Flexible(
+                      flex: 2,
+                      child: SizedBox(
+                        height: size * 0.4,
+                        child: _constructPie(size, index % 2 == 0),
+                      ),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      fit: FlexFit.loose,
                       child: ListView(
                         shrinkWrap: true,
                         children: [
@@ -895,6 +907,10 @@ class Home extends StatelessWidget {
                                     Container(
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(3),
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 0.8,
+                                        ),
                                         color: colors[i % colors.length],
                                       ),
                                       height: 10,
@@ -905,6 +921,7 @@ class Home extends StatelessWidget {
                                       AppData().group.users[i].getName(),
                                       style: const TextStyle(
                                         color: Colors.black,
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ],
@@ -916,12 +933,12 @@ class Home extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        });
+                  ],
+                ),
+              ],
+            );
+          }),
+    );
   }
 
   @override
@@ -980,29 +997,177 @@ class Home extends StatelessWidget {
                   ),
                 )),
                 const Divider(),
-                ListView(
-                  shrinkWrap: true,
-                  children: [
-                    ...() {
-                      List<Widget> list = [];
-                      if (paymentsList.isNotEmpty) {
-                        list.add(GestureDetector(
-                          onTap: () => moveToPage(2),
-                          child: Container(
-                            height: size * 0.45,
-                            decoration: BoxDecoration(
-                              color: Colors.orangeAccent,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: (constraints.maxWidth > constraints.maxHeight
-                                ? _paymentWidgetWideScreen(size)
-                                : _paymentWidgetNarrowScreen(size)),
-                          ),
-                        ));
-                      }
-                      return list;
-                    }(),
-                  ],
+                Expanded(
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Wrap(
+                      runSpacing: 10,
+                      alignment: WrapAlignment.spaceBetween,
+                      children: [
+                        ...() {
+                          List<Widget> list = [];
+                          if (listener.getPaymentsList().isNotEmpty) {
+                            list.add(
+                              GestureDetector(
+                                onTap: () => moveToPage(2),
+                                child: (constraints.maxWidth >
+                                        constraints.maxHeight
+                                    ? _paymentWidgetWideScreen(size)
+                                    : _paymentWidgetNarrowScreen(size)),
+                              ),
+                            );
+                          }
+                          if (listener.getShoppingList().isNotEmpty) {
+                            List<String> categoriesInList = [];
+                            List<int> numPerCategory = [];
+                            int numProducts = listener.getShoppingList().length;
+                            int counter = 0;
+                            categoriesInList
+                                .add(listener.getShoppingList()[0]['category']);
+                            numPerCategory.add(1);
+                            for (int i = 1; i < numProducts; i++) {
+                              String cat =
+                                  listener.getShoppingList()[i]['category'];
+                              if (cat != categoriesInList[counter]) {
+                                categoriesInList.add(cat);
+                                numPerCategory.add(1);
+                                counter++;
+                              } else {
+                                numPerCategory[counter]++;
+                              }
+                            }
+                            list.add(
+                              GestureDetector(
+                                onTap: () => moveToPage(4),
+                                child: Container(
+                                  height: size * 0.45,
+                                  width: size * 0.47,
+                                  decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Container(
+                                    margin: const EdgeInsets.all(10),
+                                    child: numProducts == 1
+                                        ? Text(
+                                            'There is 1 product in the shopping list, in the category ${categories[0]}',
+                                            style: const TextStyle(
+                                              color: Colors.black,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          )
+                                        : Column(
+                                            children: [
+                                              Text(
+                                                'There are $numProducts products in the shopping list',
+                                                style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
+                                              const Divider(),
+                                              Expanded(
+                                                child: ListView(
+                                                    shrinkWrap: true,
+                                                    children: () {
+                                                      List<Widget> list = [];
+                                                      for (int i = 0;
+                                                          i <
+                                                              categoriesInList
+                                                                  .length;
+                                                          i++) {
+                                                        list.add(
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .spaceBetween,
+                                                            children: [
+                                                              Row(
+                                                                children: [
+                                                                  () {
+                                                                    switch (
+                                                                        categoriesInList[
+                                                                            i]) {
+                                                                      case 'Fruit':
+                                                                        return Image
+                                                                            .asset(
+                                                                          'assets/icons/fruit.png',
+                                                                          width:
+                                                                              25,
+                                                                        );
+                                                                      case 'Meat':
+                                                                        return Image
+                                                                            .asset(
+                                                                          'assets/icons/meat.png',
+                                                                          width:
+                                                                              25,
+                                                                        );
+                                                                      case 'Vegetables':
+                                                                        return Image
+                                                                            .asset(
+                                                                          'assets/icons/vegetables.png',
+                                                                          width:
+                                                                              25,
+                                                                        );
+                                                                      default:
+                                                                        return Image
+                                                                            .asset(
+                                                                          'assets/icons/other.png',
+                                                                          width:
+                                                                              25,
+                                                                        );
+                                                                    }
+                                                                  }(),
+                                                                  const VerticalDivider(),
+                                                                  Text(
+                                                                    categoriesInList[
+                                                                        i],
+                                                                    style:
+                                                                        const TextStyle(
+                                                                      color: Colors
+                                                                          .black,
+                                                                      fontWeight:
+                                                                          FontWeight
+                                                                              .w600,
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              Text(
+                                                                numPerCategory[
+                                                                        i]
+                                                                    .toString(),
+                                                                style:
+                                                                    const TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
+                                                        );
+                                                        list.add(const SizedBox(
+                                                          height: 5,
+                                                        ));
+                                                      }
+                                                      return list;
+                                                    }()),
+                                              ),
+                                            ],
+                                          ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+                          return list;
+                        }(),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             );
