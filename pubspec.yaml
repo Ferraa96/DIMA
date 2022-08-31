@@ -57,6 +57,14 @@ dependencies:
   badges: ^2.0.2
 
 dev_dependencies:
+
+  test: ^1.8.0
+  mockito: ^5.0.0
+  build_runner: ^2.2.0
+
+  integration_test:
+    sdk: flutter
+
   flutter_test:
     sdk: flutter
 

@@ -61,6 +61,7 @@ class _SignInState extends State<SignIn> {
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                 child: Form(
                   key: _formKey, //track the state of the form and validates it
+                  child: SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
                       const Text(
@@ -215,6 +216,7 @@ class _SignInState extends State<SignIn> {
                             const TextStyle(color: Colors.red, fontSize: 14.0),
                       ),
                     ],
+                  ),
                   ),
                 ),
               ),
