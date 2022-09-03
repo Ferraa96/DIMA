@@ -32,6 +32,9 @@ void main() {
       Finder buttons_signin = buttons.at(0);
       await tester.tap(buttons_signin);
 
+      //carica pagina Home
+      await tester.pumpAndSettle();
+
     });
 
   });

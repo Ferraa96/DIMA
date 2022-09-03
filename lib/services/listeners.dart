@@ -31,7 +31,9 @@ class Listeners extends ChangeNotifier {
     Stream<DocumentSnapshot<Map<String, dynamic>>> chatReference =
         FirebaseFirestore.instance.collection('chats').doc(groupId).snapshots();
     chatReference.listen((event) {
-      chatList = event.data()!['messages'];
+      if (event.data() != null) {
+        chatList = event.data()!['messages'];
+      }
       if (listenChat) {
         notifyChange(1);
       } else {
@@ -47,7 +49,9 @@ class Listeners extends ChangeNotifier {
             .doc(groupId)
             .snapshots();
     paymentsReference.listen((event) {
-      paymentsList = event.data()!['payments'];
+      if (event.data() != null) {
+        paymentsList = event.data()!['payments'];
+      }
       if (listenPayment) {
         notifyChange(2);
       } else {
@@ -63,10 +67,12 @@ class Listeners extends ChangeNotifier {
             .doc(groupId)
             .snapshots();
     remindersReference.listen((event) {
-      remindersList = event.data()!['reminders'];
-      remindersList.sort((a, b) => (b['dateTime'] as Timestamp)
-          .toDate()
-          .compareTo((a['dateTime'] as Timestamp).toDate()));
+      if (event.data() != null) {
+        remindersList = event.data()!['reminders'];
+        remindersList.sort((a, b) => (b['dateTime'] as Timestamp)
+            .toDate()
+            .compareTo((a['dateTime'] as Timestamp).toDate()));
+      }
       if (listenReminder) {
         notifyChange(3);
       } else {
@@ -82,8 +88,10 @@ class Listeners extends ChangeNotifier {
             .doc(groupId)
             .snapshots();
     shoppingListReference.listen((event) {
-      shoppingList = event.data()!['shoppingList'];
-      sortListPerCategory();
+      if (event.data() != null) {
+        shoppingList = event.data()!['shoppingList'];
+        sortListPerCategory();
+      }
       if (listenShopping) {
         notifyChange(4);
       } else {
