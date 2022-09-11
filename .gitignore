@@ -1,4 +1,8 @@
-build/app/outputs/
-build/app/outputs
+*
 
-*.apk
+!lib
+!assets
+!fonts
+!pubspec.yaml
+!integration_test
+!.gitignore
