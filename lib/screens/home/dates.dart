@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/models/reminder.dart';
 import 'package:dima/services/app_data.dart';
@@ -18,94 +20,126 @@ class Dates extends StatelessWidget {
   final Map<DateTime, List<Reminder>> _reminders = {};
   final List<Reminder> _allReminders = [];
   final List<int> _selectedItems = [];
-  final List _remindersInDate = [];
+  final List<int> _remindersToBeShown = [];
+  bool _showAll = false;
   late BuildContext context;
 
   Widget _getReminders(Function setState) {
-    _remindersInDate.clear();
-    for (var el in remindersList) {
-      if (((el['dateTime']) as Timestamp).toDate().day == _focusedDay.day &&
-          ((el['dateTime']) as Timestamp).toDate().month == _focusedDay.month &&
-          ((el['dateTime']) as Timestamp).toDate().year == _focusedDay.year) {
-        _remindersInDate.add(el);
+    if (remindersList.isNotEmpty) {
+      _remindersToBeShown.clear();
+      if (!_showAll) {
+        for (int i = 0; i < remindersList.length; i++) {
+          var el = remindersList[i];
+          if (((el['dateTime']) as Timestamp).toDate().day == _focusedDay.day &&
+              ((el['dateTime']) as Timestamp).toDate().month ==
+                  _focusedDay.month &&
+              ((el['dateTime']) as Timestamp).toDate().year ==
+                  _focusedDay.year) {
+            _remindersToBeShown.add(i);
+          }
+        }
+      } else {
+        for (int i = 0; i < remindersList.length; i++) {
+          _remindersToBeShown.add(i);
+        }
       }
-    }
-    return Container(
-      margin: const EdgeInsets.only(bottom: 80),
-      child: Scrollbar(
-        child: ListView.separated(
-          reverse: true,
-          shrinkWrap: true,
-          itemBuilder: (_, index) {
-            DateTime date =
-                (_remindersInDate[index]['dateTime'] as Timestamp).toDate();
-            Reminder reminder = Reminder(
-              title: _remindersInDate[index]['title'],
-              dateTime:
-                  (_remindersInDate[index]['dateTime'] as Timestamp).toDate(),
-              creatorUid: _remindersInDate[index]['creator'],
-            );
-            _allReminders.add(reminder);
-            if (_reminders[date] != null) {
-              _reminders[date]!.add(reminder);
-            } else {
-              _reminders[date] = [reminder];
-            }
-            return GestureDetector(
-              onLongPress: () {
-                setState(() {
-                  addReminder = false;
-                  _selectedItems.add(index);
-                });
-              },
-              onTap: () {
-                if (!addReminder) {
-                  setState(() {
-                    if (!_selectedItems.contains(index)) {
-                      _selectedItems.add(index);
-                    } else {
-                      _selectedItems.remove(index);
-                      if (_selectedItems.isEmpty) {
-                        addReminder = true;
-                      }
-                    }
-                  });
+      return Container(
+        margin: const EdgeInsets.only(bottom: 80),
+        child: Scrollbar(
+          child: ListView.separated(
+            reverse: true,
+            shrinkWrap: true,
+            itemCount: _remindersToBeShown.length + 1,
+            itemBuilder: (_, index) {
+              if (index != 0) {
+                DateTime date = (remindersList[_remindersToBeShown[index - 1]]
+                        ['dateTime'] as Timestamp)
+                    .toDate();
+                Reminder reminder = Reminder(
+                  title: remindersList[_remindersToBeShown[index - 1]]['title'],
+                  dateTime: date,
+                  creatorUid: remindersList[_remindersToBeShown[index - 1]]
+                      ['creator'],
+                );
+                _allReminders.add(reminder);
+                if (_reminders[date] != null) {
+                  _reminders[date]!.add(reminder);
+                } else {
+                  _reminders[date] = [reminder];
                 }
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: colors[AppData()
-                            .group
-                            .getUserIndexFromId(reminder.creatorUid) %
-                        colors.length],
+                return GestureDetector(
+                  onLongPress: () {
+                    setState(() {
+                      addReminder = false;
+                      _selectedItems.add(_remindersToBeShown[index - 1]);
+                    });
+                  },
+                  onTap: () {
+                    if (!addReminder) {
+                      setState(() {
+                        if (!_selectedItems
+                            .contains(_remindersToBeShown[index - 1])) {
+                          _selectedItems.add(_remindersToBeShown[index - 1]);
+                        } else {
+                          _selectedItems.remove(_remindersToBeShown[index - 1]);
+                          if (_selectedItems.isEmpty) {
+                            addReminder = true;
+                          }
+                        }
+                      });
+                    }
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        color: colors[AppData()
+                                .group
+                                .getUserIndexFromId(reminder.creatorUid) %
+                            colors.length],
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                      color: !_selectedItems.contains(index - 1)
+                          ? colors[AppData()
+                                      .group
+                                      .getUserIndexFromId(reminder.creatorUid) %
+                                  colors.length]
+                              .withOpacity(0.6)
+                          : Colors.blue,
+                    ),
+                    margin: const EdgeInsets.only(
+                      left: 10,
+                      right: 10,
+                    ),
+                    child: reminder,
                   ),
-                  borderRadius: BorderRadius.circular(10),
-                  color: !_selectedItems.contains(index)
-                      ? colors[AppData()
-                                  .group
-                                  .getUserIndexFromId(reminder.creatorUid) %
-                              colors.length]
-                          .withOpacity(0.6)
-                      : Colors.blue,
-                ),
-                margin: const EdgeInsets.only(
-                  left: 10,
-                  right: 10,
-                ),
-                child: reminder,
-              ),
-            );
-          },
-          separatorBuilder: (context, index) {
-            return const SizedBox(
-              height: 5,
-            );
-          },
-          itemCount: _remindersInDate.length,
+                );
+              } else {
+                return ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      _showAll = !_showAll;
+                    });
+                  },
+                  child: Text(
+                    _showAll ? 'Show only for this day' : 'Show all reminders',
+                  ),
+                );
+              }
+            },
+            separatorBuilder: (context, index) {
+              return const SizedBox(
+                height: 5,
+              );
+            },
+          ),
         ),
-      ),
-    );
+      );
+    } else {
+      return const Center(
+          child: Text('There are no reminders',
+        ),
+      );
+    }
   }
 
   Widget _buildCalendar(Function setState) {
@@ -147,8 +181,8 @@ class Dates extends StatelessWidget {
         List temp = [];
         for (var el in remindersList) {
           if (((el['dateTime']) as Timestamp).toDate().day == day.day &&
-          ((el['dateTime']) as Timestamp).toDate().month == day.month &&
-          ((el['dateTime']) as Timestamp).toDate().year == day.year) {
+              ((el['dateTime']) as Timestamp).toDate().month == day.month &&
+              ((el['dateTime']) as Timestamp).toDate().year == day.year) {
             temp.add(el);
           }
         }
@@ -446,7 +480,7 @@ class Dates extends StatelessWidget {
         );
       },
       label: const Text('Add reminder'),
-      icon: const Icon(Icons.lock_clock),
+      icon: const Icon(Icons.add),
     );
   }
 

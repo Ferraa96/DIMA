@@ -40,12 +40,14 @@ class _MainPageState extends State<MainPage> {
   }
 
   void notifyChange(int num) {
-    if (num != index) {
+    if (num != index && mounted) {
       setState(() {
         badges[num]++;
       });
     } else {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     }
   }
 
@@ -123,11 +125,8 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    List<Widget> pages = screens();
-
-    final List<BottomNavigationBarItem> items = [
+  List<BottomNavigationBarItem> _getBottomNavBarItems() {
+    return [
       BottomNavigationBarItem(
         backgroundColor:
             ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white,
@@ -214,6 +213,94 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
     ];
+  }
+
+  List<NavigationRailDestination> _getNavRailItems() {
+    return [
+      NavigationRailDestination(
+        icon: Badge(
+          showBadge: badges[0] != 0,
+          badgeContent: Text(badges[0].toString()),
+          child: const Icon(
+            Icons.home,
+            size: 20,
+          ),
+        ),
+        selectedIcon: const Icon(
+          Icons.home,
+          size: 30,
+        ),
+        label: const Text('Home'),
+      ),
+      NavigationRailDestination(
+        icon: Badge(
+          showBadge: badges[1] != 0,
+          badgeContent: Text(badges[1].toString()),
+          child: const Icon(
+            Icons.chat_rounded,
+            size: 20,
+          ),
+        ),
+        selectedIcon: const Icon(
+          Icons.chat_rounded,
+          size: 30,
+        ),
+        label: const Text('Chat'),
+      ),
+      NavigationRailDestination(
+        icon: Badge(
+          showBadge: badges[2] != 0,
+          badgeContent: Text(badges[2].toString()),
+          child: const Icon(
+            Icons.attach_money,
+            size: 20,
+          ),
+        ),
+        selectedIcon: const Icon(
+          Icons.attach_money,
+          size: 30,
+        ),
+        label: const Text('Payments'),
+      ),
+      NavigationRailDestination(
+        icon: Badge(
+          showBadge: badges[3] != 0,
+          badgeContent: Text(badges[3].toString()),
+          child: const Icon(
+            Icons.calendar_today_rounded,
+            size: 20,
+          ),
+        ),
+        selectedIcon: const Icon(
+          Icons.calendar_today_outlined,
+          size: 30,
+        ),
+        label: const Text('Dates'),
+      ),
+      NavigationRailDestination(
+        icon: Badge(
+          showBadge: badges[4] != 0,
+          badgeContent: Text(badges[4].toString()),
+          child: const Icon(
+            Icons.shopping_cart_outlined,
+            size: 20,
+          ),
+        ),
+        selectedIcon: const Icon(
+          Icons.shopping_cart_outlined,
+          size: 30,
+        ),
+        label: const Text('Shopping'),
+      ),
+    ];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> pages = screens();
+    bool isWideScreen =
+        MediaQuery.of(context).size.width > MediaQuery.of(context).size.height;
+  
     return ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
       builder: (context, _) {
@@ -221,24 +308,52 @@ class _MainPageState extends State<MainPage> {
           themeMode: ThemeProvider.themeMode,
           theme: MyThemes.lightTheme,
           darkTheme: MyThemes.darkTheme,
-          home: Scaffold(
-            body: pages[index],
-            extendBody: false,
-            bottomNavigationBar: BottomNavigationBar(
-              elevation: 1,
-              items: items,
-              currentIndex: index,
-              unselectedFontSize: 10,
-              selectedFontSize: 15,
-              showUnselectedLabels: true,
-              onTap: (index) {
-                if (this.index != index) {
-                  setState(() {
-                    this.index = index;
-                    badges[index] = 0;
-                  });
-                }
-              },
+          home: DefaultTabController(
+            length: 5,
+            child: Scaffold(
+              body: !isWideScreen
+                  ? pages[index]
+                  : Row(
+                      children: [
+                        NavigationRail(
+                          destinations: _getNavRailItems(),
+                          onDestinationSelected: (newIndex) {
+                            if (newIndex != index) {
+                              setState(() {
+                                index = newIndex;
+                              });
+                            }
+                          },
+                          labelType: NavigationRailLabelType.all,
+                          backgroundColor: ThemeProvider().isDarkMode
+                              ? const Color(0xff1e314d)
+                              : Colors.white,
+                          selectedIndex: index,
+                        ),
+                        Flexible(
+                          child: pages[index],
+                        ),
+                      ],
+                    ),
+              extendBody: false,
+              bottomNavigationBar: !isWideScreen
+                  ? BottomNavigationBar(
+                      elevation: 1,
+                      items: _getBottomNavBarItems(),
+                      currentIndex: index,
+                      unselectedFontSize: 10,
+                      selectedFontSize: 15,
+                      showUnselectedLabels: true,
+                      onTap: (index) {
+                        if (this.index != index) {
+                          setState(() {
+                            this.index = index;
+                            badges[index] = 0;
+                          });
+                        }
+                      },
+                    )
+                  : null,
             ),
           ),
         );

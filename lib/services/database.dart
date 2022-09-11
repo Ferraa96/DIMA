@@ -68,6 +68,9 @@ class DatabaseService {
     if (pictureUrl != null) {
       user.setPicUrl(pictureUrl);
       user.setPicture(Image.network(pictureUrl));
+    } else {
+      user.setPicUrl('');
+      user.setPicture(Image.asset('assets/defaultProfile.png'));
     }
     return user;
   }

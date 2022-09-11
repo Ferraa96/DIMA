@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/models/chart_series.dart';
 import 'package:dima/models/user.dart';
 import 'package:dima/services/app_data.dart';
@@ -10,7 +11,6 @@ import 'package:dima/services/image_editor.dart';
 import 'package:dima/services/image_getter.dart';
 import 'package:dima/services/listeners.dart';
 import 'package:dima/shared/constants.dart';
-import 'package:dima/shared/loading.dart';
 import 'package:dima/shared/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,7 +31,7 @@ class Home extends StatelessWidget {
     required this.moveToPage,
   }) : super(key: key);
 
-  Image _myImg = Image.asset('assets/defaultProfile.png');
+  Image _myImg = AppData().user.picture;
   bool _modifyName = false;
   FocusNode focusNode = FocusNode();
   String name = '';
@@ -40,24 +40,11 @@ class Home extends StatelessWidget {
   );
   late BuildContext context;
 
-  Widget _getUsersIcon(String name, int index, String url) {
+  Widget _getUsersIcon(String name, int index) {
     double height = window.physicalSize.height / window.devicePixelRatio;
     double width = window.physicalSize.width / window.devicePixelRatio;
     double size = height < width ? height : width;
-    Image img;
-    if (url != '') {
-      img = Image.network(url);
-      AppData().user.setPicture(img);
-    } else {
-      img = Image.asset('assets/defaultProfile.png');
-      AppData().user.setPicture(img);
-    }
-    if (name.length > 16) {
-      name = name.substring(0, 15);
-    }
-    if (index == AppData().group.getUserIndexFromId(AppData().user.getUid())) {
-      _myImg = img;
-    }
+    Image img = AppData().group.getList()[index].picture;
     return Container(
       height: kToolbarHeight,
       width: kToolbarHeight * 0.9,
@@ -230,84 +217,65 @@ class Home extends StatelessWidget {
   }
 
   Widget _buildGroupTitle() {
-    name = AppData().user.getName();
-    List<String> groupList = listener.getGroupList();
-    DatabaseService db = DatabaseService();
-    return FutureBuilder<List<MyUser>>(
-      future: db.retrieveUsers(groupList),
-      builder: (context, snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return const Loading();
-          default:
-            AppData().group.setMembers(snapshot.data!);
-            List<String> names = [];
-            List<String> pictures = [];
-            for (MyUser user in AppData().group.getList()) {
-              names.add(user.getName());
-              pictures.add(user.getPicUrl());
-            }
+    List<String> names = [];
+    for (MyUser user in AppData().group.getList()) {
+      names.add(user.name);
+    }
+    return SizedBox(
+      child: ListView.separated(
+        itemCount: names.length + 1,
+        itemBuilder: (_, index) {
+          if (index < names.length) {
             return SizedBox(
-              child: ListView.separated(
-                itemCount: groupList.length + 1,
-                itemBuilder: (_, index) {
-                  if (index < groupList.length) {
-                    return SizedBox(
-                      child:
-                          _getUsersIcon(names[index], index, pictures[index]),
-                    );
-                  } else {
-                    return Center(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.orangeAccent,
-                          borderRadius: BorderRadius.circular(40.0),
-                        ),
-                        child: Center(
-                          child: IconButton(
-                            onPressed: () {
-                              showGeneralDialog(
-                                barrierLabel: 'addUser',
-                                barrierDismissible: true,
-                                context: context,
-                                pageBuilder: (ctx, a1, a2) {
-                                  return Container();
-                                },
-                                transitionBuilder: (ctx, a1, a2, child) {
-                                  var curve =
-                                      Curves.easeInOut.transform(a1.value);
-                                  return Transform.scale(
-                                    scale: curve,
-                                    child: _buildAddUserPopupDialog(
-                                        ctx, AppData().group.getGroupCode()),
-                                  );
-                                },
-                                transitionDuration:
-                                    const Duration(milliseconds: 300),
-                              );
-                            },
-                            icon: const Icon(Icons.add),
-                            color: Colors.black,
-                          ),
-                        ),
-                        height: kToolbarHeight * 0.9,
-                        width: kToolbarHeight * 0.9,
-                      ),
-                    );
-                  }
-                },
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                separatorBuilder: (context, index) {
-                  return const SizedBox(
-                    width: kToolbarHeight * 0.1,
-                  );
-                },
-              ),
-              height: kToolbarHeight * 0.9,
+              child: _getUsersIcon(names[index], index),
             );
-        }
-      },
+          } else {
+            return Center(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.orangeAccent,
+                  borderRadius: BorderRadius.circular(40.0),
+                ),
+                child: Center(
+                  child: IconButton(
+                    onPressed: () {
+                      showGeneralDialog(
+                        barrierLabel: 'addUser',
+                        barrierDismissible: true,
+                        context: context,
+                        pageBuilder: (ctx, a1, a2) {
+                          return Container();
+                        },
+                        transitionBuilder: (ctx, a1, a2, child) {
+                          var curve = Curves.easeInOut.transform(a1.value);
+                          return Transform.scale(
+                            scale: curve,
+                            child: _buildAddUserPopupDialog(
+                                ctx, AppData().group.getGroupCode()),
+                          );
+                        },
+                        transitionDuration: const Duration(milliseconds: 300),
+                      );
+                    },
+                    icon: const Icon(Icons.add),
+                    color: Colors.black,
+                  ),
+                ),
+                height: kToolbarHeight * 0.9,
+                width: kToolbarHeight * 0.9,
+              ),
+            );
+          }
+        },
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        separatorBuilder: (context, index) {
+          return const SizedBox(
+            width: kToolbarHeight * 0.1,
+          );
+        },
+      ),
+      height: kToolbarHeight * 0.9,
     );
   }
 
@@ -326,14 +294,14 @@ class Home extends StatelessWidget {
     DatabaseService().updateImage(AppData().user.getUid(), file);
   }
 
-  Widget _userImageDialog(BuildContext context) {
+  Widget _userImageDialog(BuildContext context, double size) {
     AppData().user.setUserId(AuthService().getUserId());
     return Dialog(
       backgroundColor: Colors.transparent,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _myImg,
+          SizedBox(height: size * 0.7, child: _myImg),
           PopupMenuButton(
             color: ThemeProvider().isDarkMode
                 ? const Color(0xff1e314d)
@@ -415,7 +383,10 @@ class Home extends StatelessWidget {
 
   Widget _buildSettingsDialog(BuildContext ctx) {
     DatabaseService db = DatabaseService();
-    double height = window.physicalSize.height / window.devicePixelRatio;
+    double size = window.physicalSize.height > window.physicalSize.width
+        ? window.physicalSize.width
+        : window.physicalSize.height;
+    size = size / window.devicePixelRatio;
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(ctx);
     TextEditingController _nameController = TextEditingController(
       text: name,
@@ -438,7 +409,7 @@ class Home extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                height: height / 40,
+                height: size / 40,
               ),
               IconButton(
                 onPressed: () {
@@ -452,14 +423,16 @@ class Home extends StatelessWidget {
                     transitionBuilder: (ctx, a1, a2, child) {
                       var curve = Curves.easeInOut.transform(a1.value);
                       return Transform.scale(
-                          scale: curve, child: _userImageDialog(context));
+                        scale: curve,
+                        child: _userImageDialog(context, size),
+                      );
                     },
                     transitionDuration: const Duration(milliseconds: 300),
                   );
                 },
                 icon: _myImg,
                 color: Colors.grey,
-                iconSize: height / 10,
+                iconSize: size / 10,
               ),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -521,7 +494,7 @@ class Home extends StatelessWidget {
                 ],
               ),
               SizedBox(
-                height: height / 60,
+                height: size / 60,
               ),
               ToggleButtons(
                 selectedBorderColor: Colors.orangeAccent,
@@ -585,7 +558,7 @@ class Home extends StatelessWidget {
                 isSelected: isSelected,
               ),
               SizedBox(
-                height: height / 60,
+                height: size / 60,
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -683,7 +656,7 @@ class Home extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                height: height / 60,
+                height: size / 60,
               ),
             ],
           ),
@@ -712,14 +685,11 @@ class Home extends StatelessWidget {
     }
 
     List<ChartSeries> seriesList = [];
-    //List<double> balances = [];
     for (int i = 0; i < AppData().group.users.length; i++) {
-      //balances.add((i + 1).ceilToDouble());
       if ((isCredit && balances[i] > 0) || (!isCredit && balances[i] < 0)) {
         seriesList.add(
           ChartSeries(
             name: i.toString(),
-            //balance: (i + 1).ceilToDouble()));
             balance: balances[i],
           ),
         );
@@ -751,105 +721,95 @@ class Home extends StatelessWidget {
         arcRendererDecorators: [
           charts.ArcLabelDecorator(
             labelPosition: charts.ArcLabelPosition.auto,
-          ),  
+          ),
         ],
       ),
     );
   }
 
-  Widget _paymentWidgetWideScreen(double size) {
-    double _size = size * 0.7;
+  Widget _paymentWidgetWideScreen(double width, double height) {
+    double size = width > height ? height : width;
     return Container(
-      width: _size,
-      height: _size,
+      width: width * 0.5,
+      height: height * 0.8,
       decoration: BoxDecoration(
         color: Colors.orangeAccent,
         borderRadius: BorderRadius.circular(20),
       ),
-      child: Stack(
+      child: Row(
         children: [
-          Positioned.fill(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: Column(
-                children: [
-                  const Text(
-                    'Credits',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+          Flexible(
+            flex: 4,
+            child: Column(
+              children: [
+                Column(
+                  children: [
+                    const Text(
+                      'Credits',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    height: _size * 0.45,
-                    child: _constructPie(size, true),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomLeft,
-            child: Flexible(
-              flex: 2,
-              child: Column(
-                children: [
-                  const Text(
-                    'Debits',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                    SizedBox(
+                      height: size / 3,
+                      child: _constructPie(size, true),
                     ),
-                  ),
-                  SizedBox(
-                    height: _size * 0.45,
-                    child: _constructPie(size, false),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Align(
-            alignment: Alignment.topRight,
-            child: Flexible(
-              child: SizedBox(
-                child: Expanded(
-                  child: ListView(
-                    shrinkWrap: true,
-                    children: [
-                      ...() {
-                        List<Widget> list = [];
-                        for (int i = 0; i < AppData().group.users.length; i++) {
-                          list.add(
-                            Row(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(3),
-                                    color: colors[i % colors.length],
-                                  ),
-                                  height: 10,
-                                  width: 10,
-                                ),
-                                const VerticalDivider(),
-                                Text(
-                                  AppData().group.users[i].getName(),
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                        return list;
-                      }(),
-                    ],
-                  ),
+                  ],
                 ),
-              ),
+                Column(
+                  children: [
+                    const Text(
+                      'Debits',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                    SizedBox(
+                      height: size / 3,
+                      child: _constructPie(size, false),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                ...() {
+                  List<Widget> list = [];
+                  for (int i = 0; i < AppData().group.users.length; i++) {
+                    list.add(
+                      Row(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(3),
+                              color: colors[i % colors.length],
+                            ),
+                            height: 10,
+                            width: 10,
+                          ),
+                          const VerticalDivider(),
+                          Text(
+                            AppData().group.users[i].getName(),
+                            style: const TextStyle(
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  return list;
+                }(),
+              ],
             ),
           ),
         ],
@@ -865,60 +825,180 @@ class Home extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
       ),
       child: PageView.builder(
-          scrollDirection: Axis.vertical,
-          controller: controller,
-          itemBuilder: (context, index) {
-            return Wrap(
-              children: [
-                Align(
-                  alignment: Alignment.topCenter,
-                  child: Text(
-                    index % 2 == 0 ? 'Credits' : 'Debts',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
+        scrollDirection: Axis.vertical,
+        controller: controller,
+        itemBuilder: (context, index) {
+          return Wrap(
+            children: [
+              Align(
+                alignment: Alignment.topCenter,
+                child: Text(
+                  index % 2 == 0 ? 'Credits' : 'Debts',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-                Row(
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    flex: 2,
+                    child: SizedBox(
+                      height: size * 0.4,
+                      child: _constructPie(size, index % 2 == 0),
+                    ),
+                  ),
+                  Flexible(
+                    flex: 1,
+                    fit: FlexFit.loose,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: [
+                        ...() {
+                          List<Widget> list = [];
+                          for (int i = 0;
+                              i < AppData().group.users.length;
+                              i++) {
+                            list.add(
+                              Row(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(3),
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 0.8,
+                                      ),
+                                      color: colors[i % colors.length],
+                                    ),
+                                    height: 10,
+                                    width: 10,
+                                  ),
+                                  const VerticalDivider(),
+                                  Text(
+                                    AppData().group.users[i].getName(),
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          return list;
+                        }(),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildShoppingWidget(double size) {
+    List<String> categoriesInList = [];
+    List<int> numPerCategory = [];
+    int numProducts = listener.getShoppingList().length;
+    int counter = 0;
+    categoriesInList.add(listener.getShoppingList()[0]['category']);
+    numPerCategory.add(1);
+    for (int i = 1; i < numProducts; i++) {
+      String cat = listener.getShoppingList()[i]['category'];
+      if (cat != categoriesInList[counter]) {
+        categoriesInList.add(cat);
+        numPerCategory.add(1);
+        counter++;
+      } else {
+        numPerCategory[counter]++;
+      }
+    }
+    return GestureDetector(
+      onTap: () => moveToPage(4),
+      child: Container(
+        height: size * 0.45,
+        width: size * 0.47,
+        decoration: BoxDecoration(
+          color: Colors.green,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          child: numProducts == 1
+              ? Text(
+                  'There is 1 product in the shopping list, in the category ${categories[0]}',
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )
+              : Column(
                   children: [
-                    Flexible(
-                      flex: 2,
-                      child: SizedBox(
-                        height: size * 0.4,
-                        child: _constructPie(size, index % 2 == 0),
+                    Text(
+                      'There are $numProducts products in the shopping list',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    Flexible(
-                      flex: 1,
-                      fit: FlexFit.loose,
+                    const Divider(
+                      color: Colors.black45,
+                    ),
+                    Expanded(
                       child: ListView(
-                        shrinkWrap: true,
-                        children: [
-                          ...() {
+                          shrinkWrap: true,
+                          children: () {
                             List<Widget> list = [];
-                            for (int i = 0;
-                                i < AppData().group.users.length;
-                                i++) {
+                            for (int i = 0; i < categoriesInList.length; i++) {
                               list.add(
                                 Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(3),
-                                        border: Border.all(
-                                          color: Colors.black,
-                                          width: 0.8,
+                                    Row(
+                                      children: [
+                                        () {
+                                          switch (categoriesInList[i]) {
+                                            case 'Fruit':
+                                              return Image.asset(
+                                                'assets/icons/fruit.png',
+                                                width: 25,
+                                              );
+                                            case 'Meat':
+                                              return Image.asset(
+                                                'assets/icons/meat.png',
+                                                width: 25,
+                                              );
+                                            case 'Vegetables':
+                                              return Image.asset(
+                                                'assets/icons/vegetables.png',
+                                                width: 25,
+                                              );
+                                            default:
+                                              return Image.asset(
+                                                'assets/icons/other.png',
+                                                width: 25,
+                                              );
+                                          }
+                                        }(),
+                                        const VerticalDivider(),
+                                        Text(
+                                          categoriesInList[i],
+                                          style: const TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
-                                        color: colors[i % colors.length],
-                                      ),
-                                      height: 10,
-                                      width: 10,
+                                      ],
                                     ),
-                                    const VerticalDivider(),
                                     Text(
-                                      AppData().group.users[i].getName(),
+                                      numPerCategory[i].toString(),
                                       style: const TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w600,
@@ -927,27 +1007,172 @@ class Home extends StatelessWidget {
                                   ],
                                 ),
                               );
+                              list.add(const SizedBox(
+                                height: 5,
+                              ));
                             }
                             return list;
-                          }(),
-                        ],
-                      ),
+                          }()),
                     ),
                   ],
                 ),
-              ],
-            );
-          }),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRemindersWidget(double size, List reminders) {
+    Map<int, String> days = {
+      1: 'Monday',
+      2: 'Tuesday',
+      3: 'Wednesday',
+      4: 'Thursday',
+      5: 'Friday',
+      6: 'Saturday',
+      7: 'Sunday',
+    };
+    Map<int, String> months = {
+      1: 'Genuary',
+      2: 'February',
+      3: 'March',
+      4: 'April',
+      5: 'May',
+      6: 'June',
+      7: 'July',
+      8: 'August',
+      9: 'September',
+      10: 'October',
+      11: 'November',
+      12: 'December',
+    };
+    int futureRemindersNum = 0;
+    for (var el in reminders) {
+      if ((el['dateTime'] as Timestamp).toDate().isAfter(DateTime.now())) {
+        futureRemindersNum++;
+      }
+    }
+    return GestureDetector(
+      onTap: () => moveToPage(3),
+      child: Container(
+        height: size * 0.45,
+        width: size * 0.47,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 78, 128, 214),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          margin: const EdgeInsets.all(10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                days[DateTime.now().weekday]!.toUpperCase().substring(0, 3) +
+                    ', ' +
+                    DateTime.now().day.toString() +
+                    ' ' +
+                    months[DateTime.now().month]!.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.black87,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const Divider(
+                color: Colors.black45,
+              ),
+              Expanded(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: futureRemindersNum,
+                  itemBuilder: (context, index) {
+                    String time;
+                    DateTime dateTime =
+                        (reminders[futureRemindersNum - index - 1]['dateTime']
+                                as Timestamp)
+                            .toDate();
+                    if (dateTime.difference(DateTime.now()).inDays == 0) {
+                      if (dateTime.difference(DateTime.now()).inHours == 0) {
+                        time =
+                            'in ${dateTime.difference(DateTime.now()).inMinutes} minutes';
+                      } else {
+                        time =
+                            'in ${dateTime.difference(DateTime.now()).inHours} hours';
+                      }
+                    } else if (dateTime.difference(DateTime.now()).inDays ==
+                        1) {
+                      time = 'tomorrow';
+                    } else {
+                      time =
+                          'in ${dateTime.difference(DateTime.now()).inDays} days';
+                    }
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: colors[AppData().group.getUserIndexFromId(
+                                    reminders[futureRemindersNum - index - 1]
+                                        ['creator']) %
+                                colors.length],
+                            border: Border.all(
+                              color: Colors.black38,
+                            ),
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                reminders[futureRemindersNum - index - 1]
+                                    ['title'],
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            Text(
+                              time,
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.black45,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    );
+                  },
+                  separatorBuilder: (context, index) {
+                    return const SizedBox(
+                      height: 4,
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     this.context = context;
+    name = AppData().user.getName();
     double width = window.physicalSize.width / window.devicePixelRatio;
     double height = window.physicalSize.height / window.devicePixelRatio;
     double size = width > height ? height : width;
-    _buildGroupTitle();
     return MaterialApp(
       themeMode: ThemeProvider.themeMode,
       theme: MyThemes.lightTheme,
@@ -984,194 +1209,135 @@ class Home extends StatelessWidget {
         ),
         body: Container(
           margin: const EdgeInsets.all(10),
-          child: LayoutBuilder(builder: (context, constraints) {
-            return Column(
-              children: [
-                Center(
-                    child: Text(
-                  'Welcome back, $name',
-                  style: const TextStyle(
-                    fontSize: 30,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orangeAccent,
-                  ),
-                )),
-                const Divider(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Wrap(
-                      runSpacing: 10,
-                      alignment: WrapAlignment.spaceBetween,
-                      children: [
-                        ...() {
-                          List<Widget> list = [];
-                          if (listener.getPaymentsList().isNotEmpty) {
-                            list.add(
-                              GestureDetector(
-                                onTap: () => moveToPage(2),
-                                child: (constraints.maxWidth >
-                                        constraints.maxHeight
-                                    ? _paymentWidgetWideScreen(size)
-                                    : _paymentWidgetNarrowScreen(size)),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return Column(
+                children: [
+                  Center(
+                      child: Text(
+                    'Welcome back, $name',
+                    style: const TextStyle(
+                      fontSize: 30,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orangeAccent,
+                    ),
+                  )),
+                  const Divider(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Container(
+                        child: constraints.maxWidth < constraints.maxHeight
+                            ? Wrap(
+                                runSpacing: 10,
+                                spacing: 10,
+                                alignment: WrapAlignment.spaceBetween,
+                                children: [
+                                  ...() {
+                                    List<Widget> list = [];
+                                    if (listener.getPaymentsList().isNotEmpty) {
+                                      list.add(
+                                        GestureDetector(
+                                          onTap: () => moveToPage(2),
+                                          child:
+                                              _paymentWidgetNarrowScreen(size),
+                                        ),
+                                      );
+                                    }
+                                    if (listener.getShoppingList().isNotEmpty) {
+                                      list.add(_buildShoppingWidget(size));
+                                    }
+                                    List reminders =
+                                        listener.getRemindersList();
+                                    if (reminders.isNotEmpty &&
+                                        (reminders[0]['dateTime'] as Timestamp)
+                                            .toDate()
+                                            .isAfter(DateTime.now())) {
+                                      list.add(_buildRemindersWidget(
+                                          size, reminders));
+                                    }
+                                    return list;
+                                  }()
+                                ],
+                              )
+                            : Wrap(
+                                runSpacing: 10,
+                                spacing: 10,
+                                direction: Axis.horizontal,
+                                children: [
+                                  ...() {
+                                    List<Widget> list = [];
+                                    if (listener.getPaymentsList().isNotEmpty) {
+                                      list.add(
+                                        GestureDetector(
+                                          onTap: () => moveToPage(2),
+                                          child: _paymentWidgetWideScreen(
+                                              width, height),
+                                        ),
+                                      );
+                                    }
+                                    if (listener.getShoppingList().isNotEmpty) {
+                                      list.add(
+                                        _buildShoppingWidget(size * 0.7),
+                                      );
+                                    }
+                                    List reminders =
+                                        listener.getRemindersList();
+                                    if (reminders.isNotEmpty &&
+                                        (reminders[0]['dateTime'] as Timestamp)
+                                            .toDate()
+                                            .isAfter(DateTime.now())) {
+                                      list.add(
+                                        _buildRemindersWidget(
+                                            size * 0.7, reminders),
+                                      );
+                                    }
+
+                                    return list;
+                                  }()
+                                ],
                               ),
-                            );
-                          }
-                          if (listener.getShoppingList().isNotEmpty) {
-                            List<String> categoriesInList = [];
-                            List<int> numPerCategory = [];
-                            int numProducts = listener.getShoppingList().length;
-                            int counter = 0;
-                            categoriesInList
-                                .add(listener.getShoppingList()[0]['category']);
-                            numPerCategory.add(1);
-                            for (int i = 1; i < numProducts; i++) {
-                              String cat =
-                                  listener.getShoppingList()[i]['category'];
-                              if (cat != categoriesInList[counter]) {
-                                categoriesInList.add(cat);
-                                numPerCategory.add(1);
-                                counter++;
-                              } else {
-                                numPerCategory[counter]++;
-                              }
-                            }
-                            list.add(
-                              GestureDetector(
-                                onTap: () => moveToPage(4),
-                                child: Container(
-                                  height: size * 0.45,
-                                  width: size * 0.47,
-                                  decoration: BoxDecoration(
-                                    color: Colors.green,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Container(
-                                    margin: const EdgeInsets.all(10),
-                                    child: numProducts == 1
-                                        ? Text(
-                                            'There is 1 product in the shopping list, in the category ${categories[0]}',
-                                            style: const TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          )
-                                        : Column(
-                                            children: [
-                                              Text(
-                                                'There are $numProducts products in the shopping list',
-                                                style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                              ),
-                                              const Divider(),
-                                              Expanded(
-                                                child: ListView(
-                                                    shrinkWrap: true,
-                                                    children: () {
-                                                      List<Widget> list = [];
-                                                      for (int i = 0;
-                                                          i <
-                                                              categoriesInList
-                                                                  .length;
-                                                          i++) {
-                                                        list.add(
-                                                          Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .spaceBetween,
-                                                            children: [
-                                                              Row(
-                                                                children: [
-                                                                  () {
-                                                                    switch (
-                                                                        categoriesInList[
-                                                                            i]) {
-                                                                      case 'Fruit':
-                                                                        return Image
-                                                                            .asset(
-                                                                          'assets/icons/fruit.png',
-                                                                          width:
-                                                                              25,
-                                                                        );
-                                                                      case 'Meat':
-                                                                        return Image
-                                                                            .asset(
-                                                                          'assets/icons/meat.png',
-                                                                          width:
-                                                                              25,
-                                                                        );
-                                                                      case 'Vegetables':
-                                                                        return Image
-                                                                            .asset(
-                                                                          'assets/icons/vegetables.png',
-                                                                          width:
-                                                                              25,
-                                                                        );
-                                                                      default:
-                                                                        return Image
-                                                                            .asset(
-                                                                          'assets/icons/other.png',
-                                                                          width:
-                                                                              25,
-                                                                        );
-                                                                    }
-                                                                  }(),
-                                                                  const VerticalDivider(),
-                                                                  Text(
-                                                                    categoriesInList[
-                                                                        i],
-                                                                    style:
-                                                                        const TextStyle(
-                                                                      color: Colors
-                                                                          .black,
-                                                                      fontWeight:
-                                                                          FontWeight
-                                                                              .w600,
-                                                                    ),
-                                                                  ),
-                                                                ],
-                                                              ),
-                                                              Text(
-                                                                numPerCategory[
-                                                                        i]
-                                                                    .toString(),
-                                                                style:
-                                                                    const TextStyle(
-                                                                  color: Colors
-                                                                      .black,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        );
-                                                        list.add(const SizedBox(
-                                                          height: 5,
-                                                        ));
-                                                      }
-                                                      return list;
-                                                    }()),
-                                              ),
-                                            ],
-                                          ),
-                                  ),
+                      ),
+                      /*
+                      child: Wrap(
+                        runSpacing: 10,
+                        spacing: 10,
+                        alignment: WrapAlignment.spaceBetween,
+                        children: [
+                          ...() {
+                            List<Widget> list = [];
+                            if (listener.getPaymentsList().isNotEmpty) {
+                              list.add(
+                                GestureDetector(
+                                  onTap: () => moveToPage(2),
+                                  child: (constraints.maxWidth >
+                                          constraints.maxHeight
+                                      ? _paymentWidgetWideScreen(width, height)
+                                      : _paymentWidgetNarrowScreen(size)),
                                 ),
-                              ),
-                            );
-                          }
-                          return list;
-                        }(),
-                      ],
+                              );
+                            }
+                            if (listener.getShoppingList().isNotEmpty) {
+                              list.add(_buildShoppingWidget(size));
+                            }
+                            List reminders = listener.getRemindersList();
+                            if (reminders.isNotEmpty &&
+                                (reminders[0]['dateTime'] as Timestamp)
+                                    .toDate()
+                                    .isAfter(DateTime.now())) {
+                              list.add(_buildRemindersWidget(size, reminders));
+                            }
+                            return list;
+                          }(),
+                        ],
+                      ),
+                      */
                     ),
                   ),
-                ),
-              ],
-            );
-          }),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

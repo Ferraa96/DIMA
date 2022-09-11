@@ -1,11 +1,11 @@
 import 'dart:ui';
 
 import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:dima/models/chart_series.dart';
 import 'package:dima/models/payment_message.dart';
 import 'package:dima/models/return_payment.dart';
 import 'package:dima/services/app_data.dart';
 import 'package:dima/services/database.dart';
+import 'package:dima/services/payment_services.dart';
 import 'package:dima/shared/constants.dart';
 import 'package:dima/shared/themes.dart';
 import 'package:flutter/material.dart';
@@ -28,62 +28,15 @@ class PaymentsPage extends StatelessWidget {
   List<int> selectedItems = [];
   List<Payment> allPayments = [];
   late BuildContext context;
+  final PaymentServices _paymentServices = PaymentServices();
 
-  bool _atLeastOneTarget() {
-    for (bool check in checkList) {
-      if (check == true) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  List<charts.Series<ChartSeries, String>> _createSeriesList(
-      List<double> balances) {
-    final List<ChartSeries> data = [];
-    for (int i = 0; i < balances.length; i++) {
-      data.add(ChartSeries(name: uids[i], balance: balances[i]));
-    }
-    return [
-      charts.Series<ChartSeries, String>(
-        id: 'balances',
-        domainFn: (ChartSeries s, _) =>
-            AppData().group.getUserFromId(s.name)!.getName(),
-        measureFn: (ChartSeries s, _) => s.balance,
-        colorFn: (ChartSeries s, _) {
-          if (s.balance > 0) {
-            return charts.MaterialPalette.green.makeShades(2)[0];
-          } else {
-            return charts.MaterialPalette.red.makeShades(1)[0];
-          }
-        },
-        data: data,
-      )
-    ];
-  }
-
-  Widget _buildSummary(List list) {
     // NAMES HAVE TO BE ALL DIFFERENT IN THE SAME GROUP!!!
-    late double balance;
-    balances.clear();
-    for (String name in uids) {
-      balance = 0;
-      for (var el in list) {
-        List<String> payedTo = List<String>.from(el['payedTo']);
-        if (el['payedBy'] == name) {
-          balance += el['amount'];
-        }
-        if (payedTo.contains(name)) {
-          balance -= el['amount'] / payedTo.length;
-        }
-      }
-      balance = (balance * 100).round().toDouble() / 100;
-      balances.add(balance);
-    }
+  Widget _buildSummary() {
+    balances = _paymentServices.computeBalances(paymentsList);
     return Container(
       margin: const EdgeInsets.only(left: 10, right: 10),
       child: charts.BarChart(
-        _createSeriesList(balances),
+        _paymentServices.createSeriesList(balances),
         primaryMeasureAxis: const charts.NumericAxisSpec(
           renderSpec: charts.GridlineRendererSpec(
             labelStyle: charts.TextStyleSpec(
@@ -142,7 +95,9 @@ class PaymentsPage extends StatelessWidget {
                 list.add(
                   Container(
                     decoration: BoxDecoration(
-                      border: Border.all(color: colors[creditor % colors.length],),
+                      border: Border.all(
+                        color: colors[creditor % colors.length],
+                      ),
                       borderRadius: BorderRadius.circular(10),
                       color: colors[creditor % colors.length].withOpacity(0.6),
                     ),
@@ -162,7 +117,8 @@ class PaymentsPage extends StatelessWidget {
                                   fontSize: 18,
                                 ),
                               ),
-                              const Text('ows',
+                              const Text(
+                                'ows',
                               ),
                               Text(
                                 'to ' +
@@ -374,7 +330,7 @@ class PaymentsPage extends StatelessWidget {
                                               double.parse(
                                                       amountController.text) >
                                                   0 &&
-                                              _atLeastOneTarget()) {
+                                              _paymentServices.atLeastOneTarget(checkList)) {
                                             List<String> payedTo = [];
                                             for (int i = 0;
                                                 i < checkList.length;
@@ -473,7 +429,7 @@ class PaymentsPage extends StatelessWidget {
                                           ).then((value) {
                                             if (value != null) {
                                               setState(() {
-                                                pickedDate = _formatDate(value);
+                                                pickedDate = _paymentServices.formatDate(value);
                                               });
                                             }
                                           });
@@ -626,17 +582,18 @@ class PaymentsPage extends StatelessWidget {
                             decoration: BoxDecoration(
                               border: Border.all(
                                 color: colors[AppData()
-                            .group
-                            .getUserIndexFromId(p.payedBy) %
-                        colors.length],
+                                        .group
+                                        .getUserIndexFromId(p.payedBy) %
+                                    colors.length],
                               ),
                               borderRadius: BorderRadius.circular(10),
                               color: selectedItems.contains(index)
                                   ? Colors.blue
                                   : colors[AppData()
-                            .group
-                            .getUserIndexFromId(p.payedBy) %
-                        colors.length].withOpacity(0.6),
+                                              .group
+                                              .getUserIndexFromId(p.payedBy) %
+                                          colors.length]
+                                      .withOpacity(0.6),
                             ),
                             margin: const EdgeInsets.only(
                               left: 10,
@@ -658,8 +615,6 @@ class PaymentsPage extends StatelessWidget {
                   builder: ((context, constraints) {
                     double height =
                         window.physicalSize.height / window.devicePixelRatio;
-                    double width =
-                        window.physicalSize.width / window.devicePixelRatio;
                     if (constraints.maxWidth < constraints.maxHeight) {
                       return Column(
                         children: [
@@ -667,7 +622,7 @@ class PaymentsPage extends StatelessWidget {
                             constraints: BoxConstraints(
                               maxHeight: height / 5,
                             ),
-                            child: _buildSummary(paymentsList),
+                            child: _buildSummary(),
                           ),
                           const Divider(),
                           _getSummaryElements(rp, paymentsList),
@@ -677,17 +632,10 @@ class PaymentsPage extends StatelessWidget {
                       return Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Container(
-                            constraints: BoxConstraints(
-                              maxWidth: width / 2,
-                            ),
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: _buildSummary(paymentsList),
+                          Flexible(
+                            child: _buildSummary(),
                           ),
-                          Container(
-                            constraints: BoxConstraints(
-                              maxWidth: width / 2,
-                            ),
+                          Flexible(
                             child: _getSummaryElements(rp, paymentsList),
                           ),
                         ],
@@ -727,18 +675,6 @@ class PaymentsPage extends StatelessWidget {
     return list;
   }
 
-  String _formatDate(DateTime date) {
-    return (date.day.toString().length == 1
-            ? '0' + date.day.toString()
-            : date.day.toString()) +
-        '/' +
-        (date.day.toString().length == 1
-            ? '0' + date.month.toString()
-            : date.month.toString()) +
-        '/' +
-        date.year.toString();
-  }
-
   @override
   Widget build(BuildContext context) {
     this.context = context;
@@ -752,8 +688,9 @@ class PaymentsPage extends StatelessWidget {
       ));
       uids.add(AppData().group.getList()[i].getUid());
     }
+    _paymentServices.setUids(uids);
     DateTime date = DateTime.now();
-    pickedDate = _formatDate(date);
+    pickedDate = _paymentServices.formatDate(date);
     return StatefulBuilder(builder: (context, setState) {
       return Scaffold(
         backgroundColor: Colors.transparent,

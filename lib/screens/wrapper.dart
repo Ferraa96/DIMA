@@ -2,6 +2,7 @@ import 'package:dima/models/user.dart';
 import 'package:dima/screens/authenticate/authenticate.dart';
 import 'package:dima/screens/get_user_info.dart';
 import 'package:dima/screens/home/main_page.dart';
+import 'package:dima/screens/home/main_page.dart';
 import 'package:dima/services/app_data.dart';
 import 'package:dima/services/auth.dart';
 import 'package:dima/services/database.dart';

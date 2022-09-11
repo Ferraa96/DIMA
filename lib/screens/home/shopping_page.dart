@@ -17,6 +17,8 @@ class ShoppingPage extends StatelessWidget {
   late final String userId;
   final List<DropdownMenuItem<String>> _menuItems = [];
   String category = 'Other';
+  Color color =
+      ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white;
 
   FloatingActionButton _buildRemoveProductFloatingActionButton(
       Function setState) {
@@ -34,9 +36,7 @@ class ShoppingPage extends StatelessWidget {
             return Transform.scale(
               scale: curve,
               child: Dialog(
-                backgroundColor: ThemeProvider().isDarkMode
-                    ? const Color(0xff1e314d)
-                    : Colors.white,
+                backgroundColor: color,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -157,9 +157,7 @@ class ShoppingPage extends StatelessWidget {
                       builder: (_, controller) {
                         return Container(
                           decoration: BoxDecoration(
-                            color: ThemeProvider().isDarkMode
-                                ? const Color(0xff000624)
-                                : Colors.white,
+                            color: color,
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(30),
                               topRight: Radius.circular(30),
@@ -246,14 +244,12 @@ class ShoppingPage extends StatelessWidget {
                                       ),
                                       Container(
                                         decoration: BoxDecoration(
-                                          color: const Color.fromARGB(
-                                              255, 37, 59, 92),
+                                          color: color,
                                           borderRadius:
                                               BorderRadius.circular(10),
                                         ),
                                         child: DropdownButton<String>(
-                                          dropdownColor:
-                                              const Color(0xff1e314d),
+                                          dropdownColor: color,
                                           underline: const SizedBox(),
                                           value: category,
                                           items: _menuItems,
@@ -449,23 +445,7 @@ class ShoppingPage extends StatelessWidget {
     }
     return list;
   }
-
-/*
-  void sortList() {
-    List newList = [];
-    for (String cat in _categories) {
-      for (int i = 0; i < shoppingList.length; i++) {
-        if (newList.length == shoppingList.length) {
-          break;
-        }
-        if (shoppingList[i]['category'] == cat) {
-          newList.add(shoppingList[i]);
-        }
-      }
-    }
-    shoppingList = newList;
-  }
-*/
+  
   @override
   Widget build(BuildContext context) {
     this.context = context;
