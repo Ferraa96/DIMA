@@ -337,6 +337,7 @@ class Dates extends StatelessWidget {
                               left: 10,
                               right: 10,
                             ),
+                            child: SingleChildScrollView(
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -386,6 +387,8 @@ class Dates extends StatelessWidget {
                                   ],
                                 ),
                                 const Divider(),
+                                Row(
+                                children: [
                                 Flexible(
                                   child: TextField(
                                     textCapitalization:
@@ -406,6 +409,8 @@ class Dates extends StatelessWidget {
                                       ),
                                     ),
                                   ),
+                                ),
+                                ],
                                 ),
                                 const Divider(),
                                 GestureDetector(
@@ -467,6 +472,7 @@ class Dates extends StatelessWidget {
                                   ),
                                 ),
                               ],
+                            ),
                             ),
                           ),
                         );

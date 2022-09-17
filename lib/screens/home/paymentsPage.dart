@@ -37,17 +37,21 @@ class PaymentsPage extends StatelessWidget {
       margin: const EdgeInsets.only(left: 10, right: 10),
       child: charts.BarChart(
         _paymentServices.createSeriesList(balances),
-        primaryMeasureAxis: const charts.NumericAxisSpec(
+        primaryMeasureAxis: charts.NumericAxisSpec(
           renderSpec: charts.GridlineRendererSpec(
             labelStyle: charts.TextStyleSpec(
-              color: charts.MaterialPalette.white,
+              color: ThemeProvider().isDarkMode 
+                ? charts.MaterialPalette.white 
+                : charts.MaterialPalette.black,
             ),
           ),
         ),
-        domainAxis: const charts.OrdinalAxisSpec(
+        domainAxis: charts.OrdinalAxisSpec(
           renderSpec: charts.GridlineRendererSpec(
             labelStyle: charts.TextStyleSpec(
-              color: charts.MaterialPalette.white,
+              color: ThemeProvider().isDarkMode 
+                ? charts.MaterialPalette.white 
+                : charts.MaterialPalette.black,
             ),
           ),
         ),

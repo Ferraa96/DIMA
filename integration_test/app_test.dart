@@ -42,13 +42,10 @@ void main() {
       await app.main();
       await tester.pumpAndSettle();
       
-      // trova TextFormField "email" e "password" e inserisce i dati
-      final Finder fields = find.byType(TextFormField);
-      expect(fields, findsWidgets);
-      Finder fields_email = fields.at(0);
-      Finder fields_password = fields.at(1);
-      await tester.enterText(fields_email, EMAIL);
-      await tester.enterText(fields_password, PASSWORD);
+      final Finder email = find.widgetWithText(TextFormField, 'Email');
+      await tester.enterText(email, EMAIL);
+      final Finder password = find.widgetWithText(TextFormField, 'Password');
+      await tester.enterText(password, PASSWORD);
 
       // trova il Sign In button e lo clicka
       final Finder button = find.widgetWithText(ElevatedButton, 'Sign in');
@@ -62,7 +59,7 @@ void main() {
   });
 
 
-///*
+
   group('HOME => ', (){
   
     testWidgets('ELEMENTS', (tester) async {
@@ -179,9 +176,9 @@ void main() {
     });
     
   });
-//*/
 
-///*
+
+
   group ('CHAT => ', (){
 
     testWidgets('ELEMENTS', (tester) async {
@@ -211,9 +208,9 @@ void main() {
     });
 
   });
-//*/
 
-///*
+
+
   group ('PAYMENTS => ', (){
   
     testWidgets('ELEMENTS', (tester) async {
@@ -268,9 +265,9 @@ void main() {
     });
     
   });
-//*/
 
-///*
+
+
   group ('DATES => ', (){
 
     testWidgets('ELEMENTS', (tester) async {
@@ -278,7 +275,6 @@ void main() {
       await tester.pumpAndSettle();
       await enterPage (tester, Icons.calendar_today_rounded);
 
-      expect(find.widgetWithIcon(FloatingActionButton, Icons.lock_clock), findsOneWidget);
       await tester.tap(find.widgetWithText(FloatingActionButton, 'Add reminder'));
       await tester.pumpAndSettle();
       expect(find.text('Add reminder'), findsNWidgets(2));
@@ -293,7 +289,7 @@ void main() {
 
       String title = getRandom(15);
       expect(find.widgetWithText(Container, title), findsNothing);
-      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.lock_clock));
+      await tester.tap(find.widgetWithText(FloatingActionButton, 'Add reminder'));
       await tester.pumpAndSettle();
       await tester.enterText(find.widgetWithText(TextField, 'Title'), title);
       await tester.tap(find.widgetWithIcon(ElevatedButton, Icons.check));
@@ -310,9 +306,9 @@ void main() {
     });
 
   });
-//*/
 
-///*
+
+
   group ('PAYMENTS => ', (){
 
     testWidgets('ELEMENTS', (tester) async {
@@ -356,7 +352,7 @@ void main() {
     });
 
   });
-//*/
+
 
 
 }
