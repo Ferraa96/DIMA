@@ -118,35 +118,7 @@ void main() {
       await tester.tapAt(Offset(0, 0));
       await Future.delayed(const Duration(milliseconds: 500), (){});
     });
-    /*
-    testWidgets('SETTINGS CHANGE USERNAME', (tester) async {  // NOT WORKING !!!!!!!!!!!!!!!!
-      await app.main();
-      await tester.pumpAndSettle();
-      
-      final Finder settings = find.byIcon(Icons.settings);
-      expect(settings, findsOneWidget);
-      await tester.tap(settings);
-      await Future.delayed(const Duration(milliseconds: 500), (){});
-      await tester.tap(find.byIcon(Icons.edit), warnIfMissed: false);
-      await Future.delayed(const Duration(milliseconds: 500), (){});
-      print(find.byType(TextFormField));
-      await tester.enterText(find.byType(TextFormField), 'ABCD'); // DOESN'T FIND "TEXTFORMFIELD" => PIXEL OVERFLOW PROBLEM => COLUMN
-      await Future.delayed(const Duration(milliseconds: 500), (){});
-      await tester.tap(find.byIcon(Icons.check));
-      await tester.tapAt(Offset(0, 0));
-      await Future.delayed(const Duration(milliseconds: 500), (){});
-      expect(find.text('Welcome back, ABCD'), findsOneWidget);
 
-      await tester.tap(settings);
-      await Future.delayed(const Duration(milliseconds: 500), (){});
-      await tester.tap(find.byIcon(Icons.edit), warnIfMissed: false);
-      await tester.enterText(find.byType(TextFormField), USERNAME); // DOESN'T FIND "TEXTFORMFIELD"
-      await tester.tap(find.byIcon(Icons.check));
-      await tester.tapAt(Offset(0, 0));
-      await Future.delayed(const Duration(milliseconds: 500), (){});
-      expect(find.text('Welcome back, '+USERNAME), findsOneWidget);
-    });
-    */
     testWidgets('LOG OUT & LOG IN', (tester) async {
       await app.main();
       await tester.pumpAndSettle();
