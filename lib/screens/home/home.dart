@@ -718,11 +718,11 @@ class Home extends StatelessWidget {
       series,
       defaultRenderer: charts.ArcRendererConfig(
         arcWidth: (size / 8).round(),
-        arcRendererDecorators: [
+        /*arcRendererDecorators: [
           charts.ArcLabelDecorator(
             labelPosition: charts.ArcLabelPosition.auto,
           ),
-        ],
+        ],*/
       ),
     );
   }

@@ -46,12 +46,12 @@ void main() {
       await tester.enterText(email, EMAIL);
       final Finder password = find.widgetWithText(TextFormField, 'Password');
       await tester.enterText(password, PASSWORD);
-
+      
       // trova il Sign In button e lo clicka
       final Finder button = find.widgetWithText(ElevatedButton, 'Sign in');
       expect(button, findsWidgets);
       await tester.tap(button);
-
+      
       //carica pagina Home
       await tester.pumpAndSettle();
     });
@@ -66,14 +66,14 @@ void main() {
       await app.main();
       await tester.pumpAndSettle();
 
-      expect(find.text('Welcome back, '+USERNAME), findsOneWidget);
-      expect(find.text('Home'), findsOneWidget);
-      expect(find.text('Chat'), findsOneWidget);
-      expect(find.text('Payments'), findsOneWidget);
-      expect(find.text('Dates'), findsOneWidget);
-      expect(find.text('Shopping'), findsOneWidget);
+      expect(find.widgetWithText(Center, 'Welcome back, '+USERNAME), findsOneWidget);
+      expect(find.widgetWithText(BottomNavigationBar, 'Home'), findsOneWidget);
+      expect(find.widgetWithText(BottomNavigationBar, 'Chat'), findsOneWidget);
+      expect(find.widgetWithText(BottomNavigationBar, 'Payments'), findsOneWidget);
+      expect(find.widgetWithText(BottomNavigationBar, 'Dates'), findsOneWidget);
+      expect(find.widgetWithText(BottomNavigationBar, 'Shopping'), findsOneWidget);
     });
-
+    
     testWidgets('USER', (tester) async {
       await app.main();
       await tester.pumpAndSettle();
@@ -97,9 +97,9 @@ void main() {
       await tester.tap(add);
       await Future.delayed(const Duration(milliseconds: 500), (){});
       expect(find.text(GROUP_CODE), findsOneWidget);
-      expect(find.byIcon(Icons.copy), findsOneWidget);
-      expect(find.byIcon(Icons.share), findsOneWidget);
-      final Finder close = find.text('Close');
+      expect(find.widgetWithIcon(IconButton, Icons.copy), findsOneWidget);
+      expect(find.widgetWithIcon(IconButton, Icons.share), findsOneWidget);
+      final Finder close = find.widgetWithText(ElevatedButton, 'Close');
       expect(close, findsOneWidget);
       await tester.tap(close);
       await Future.delayed(const Duration(milliseconds: 500), (){});
@@ -109,7 +109,7 @@ void main() {
       await app.main();
       await tester.pumpAndSettle();
       
-      final Finder settings = find.byIcon(Icons.settings);
+      final Finder settings = find.widgetWithIcon(IconButton, Icons.settings);
       expect(settings, findsOneWidget);
       await tester.tap(settings);
       await Future.delayed(const Duration(milliseconds: 500), (){});
@@ -123,30 +123,23 @@ void main() {
       await app.main();
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.settings));
+      await tester.tap(find.widgetWithIcon(IconButton, Icons.settings));
       await Future.delayed(const Duration(seconds: 3), (){});
-      final Finder logout = find.text('Logout');
+      final Finder logout = find.widgetWithText(ElevatedButton, 'Logout');
       expect(logout, findsOneWidget);
       await tester.tap(logout, warnIfMissed: false);
       await Future.delayed(const Duration(seconds: 2), (){});
-      final Finder yes = find.text('Yes');
+      final Finder yes = find.widgetWithText(ElevatedButton, 'Yes');
       expect(yes, findsOneWidget);
       await tester.tap(yes, warnIfMissed: false);
       await tester.pumpAndSettle();
 
-      final Finder fields = find.byType(TextFormField);
-      expect(fields, findsWidgets);
-      Finder fields_email = fields.at(0);
-      Finder fields_password = fields.at(1);
-      await tester.enterText(fields_email, EMAIL);
-      await tester.enterText(fields_password, PASSWORD);
-      final Finder buttons = find.byType(ElevatedButton);
-      expect(buttons, findsWidgets);
-      Finder buttons_signin = buttons.at(0);
-      await tester.tap(buttons_signin);
+      await tester.enterText(find.widgetWithText(TextFormField, 'Email'), EMAIL);
+      await tester.enterText(find.widgetWithText(TextFormField, 'Password'), PASSWORD);
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Sign in'));
       await tester.pumpAndSettle();
     });
-    
+        
   });
 
 
@@ -158,23 +151,20 @@ void main() {
       await tester.pumpAndSettle();
       await enterPage (tester, Icons.chat_rounded);
 
-      expect(find.byType(IconButton), findsOneWidget);
-      expect(find.byIcon(Icons.add), findsOneWidget);
-      expect(find.byType(TextField), findsOneWidget);
-      expect(find.text("Write message..."), findsOneWidget);
-      expect(find.byType(FloatingActionButton), findsOneWidget);
-      expect(find.byIcon(Icons.send), findsOneWidget);
+      expect(find.widgetWithIcon(IconButton, Icons.add), findsOneWidget);
+      expect(find.widgetWithText(TextField, "Write message..."), findsOneWidget);
+      expect(find.widgetWithIcon(FloatingActionButton, Icons.send), findsOneWidget);
     });
 
-    testWidgets('SEND MESSAGE', (tester) async {  // PRODUCES A WARNING
+    testWidgets('SEND MESSAGE', (tester) async {
       await app.main();
       await tester.pumpAndSettle();
       await enterPage (tester, Icons.chat_rounded);
 
       String message = getRandom(40);
       expect (find.text(message), findsNothing);
-      await tester.enterText(find.byType(TextField), message);
-      await tester.tap(find.byType(FloatingActionButton));
+      await tester.enterText(find.widgetWithText(TextField, "Write message..."), message);
+      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.send));
       await tester.pumpAndSettle();
       expect(find.text(message), findsOneWidget);
     });
@@ -203,7 +193,7 @@ void main() {
       expect(find.text('Select all'), findsOneWidget);
     });
     
-    testWidgets('ADD/REMOVE PAYMENTS', (tester) async { // PRODUCES A WARNING
+    testWidgets('ADD/REMOVE PAYMENTS', (tester) async {
       await app.main();
       await tester.pumpAndSettle();
       await enterPage (tester, Icons.attach_money);
@@ -254,7 +244,7 @@ void main() {
       expect(find.widgetWithText(TextField, 'Title'), findsOneWidget);
     });
 
-    testWidgets('ADD/REMOVE REMINDER', (tester) async { // PRODUCES A WARNING
+    testWidgets('ADD/REMOVE REMINDER', (tester) async {
       await app.main();
       await tester.pumpAndSettle();
       await enterPage (tester, Icons.calendar_today_rounded);
@@ -298,7 +288,7 @@ void main() {
       expect(find.widgetWithText(TextField, 'Unit'), findsOneWidget);
     });
 
-    testWidgets('ADD/REMOVE PRODUCTS', (tester) async { // PRODUCES A WARNING
+    testWidgets('ADD/REMOVE PRODUCTS', (tester) async {
       await app.main();
       await tester.pumpAndSettle();
       await enterPage (tester, Icons.shopping_cart_outlined);

@@ -34,7 +34,7 @@ class _RegisterState extends State<Register> {
               gradient: LinearGradient(
                 begin: FractionalOffset(0.0, 0.0),
                 end: FractionalOffset(1.0, 1.0),
-                colors: [Color(0xff8e9eab), Color(0xffeef2f3)],
+                colors: [Color(0xffeef2f3), Colors.white],
               ),
             ),
             child: Scaffold(
@@ -49,12 +49,12 @@ class _RegisterState extends State<Register> {
                       },
                       icon: const Icon(
                         Icons.person,
-                        color: Colors.teal,
+                        color: Colors.blueGrey,
                       ),
                       label: const Text(
                         'Sign in',
                         style: TextStyle(
-                          color: Colors.teal,
+                          color: Colors.blueGrey,
                         ),
                       ))
                 ],
@@ -64,12 +64,13 @@ class _RegisterState extends State<Register> {
                     const EdgeInsets.symmetric(vertical: 20, horizontal: 15),
                 child: Form(
                   key: _formKey, //track the state of the form and validates it
+                  child: SingleChildScrollView(
                   child: Column(
                     children: <Widget>[
                       const Text(
                         'Sign up',
                         style: TextStyle(
-                          color: Colors.teal,
+                          color: Colors.black54,
                           fontSize: 42,
                           fontWeight: FontWeight.bold,
                         ),
@@ -78,6 +79,7 @@ class _RegisterState extends State<Register> {
                         height: 40.0,
                       ),
                       TextFormField(
+                        cursorColor: Colors.orangeAccent,
                         decoration:
                             textInputDecoration.copyWith(hintText: 'Email'),
                         validator: (val) {
@@ -97,6 +99,7 @@ class _RegisterState extends State<Register> {
                         height: 20.0,
                       ),
                       TextFormField(
+                        cursorColor: Colors.orangeAccent,
                         decoration:
                             textInputDecoration.copyWith(hintText: 'Password'),
                         validator: (val) {
@@ -117,6 +120,7 @@ class _RegisterState extends State<Register> {
                         height: 20.0,
                       ),
                       TextFormField(
+                        cursorColor: Colors.orangeAccent,
                         decoration: textInputDecoration.copyWith(
                             hintText: 'Repeat password'),
                         validator: (val) {
@@ -157,12 +161,12 @@ class _RegisterState extends State<Register> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: const Color(0xff8e9eab),
+                          primary: Colors.orangeAccent,
                           elevation: 10,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ),
-                          shadowColor: Colors.black,
+                          shadowColor: Colors.black54,
                           minimumSize: const Size(120, 40),
                         ),
                         child: const Text(
@@ -177,7 +181,7 @@ class _RegisterState extends State<Register> {
                       ),
                       const Text(
                         'Sign up with social account',
-                        style: TextStyle(color: Colors.teal),
+                        style: TextStyle(color: Colors.blueGrey),
                       ),
                       const SizedBox(
                         height: 10,
@@ -240,6 +244,7 @@ class _RegisterState extends State<Register> {
                             const TextStyle(color: Colors.red, fontSize: 14.0),
                       ),
                     ],
+                  ),
                   ),
                 ),
               ),

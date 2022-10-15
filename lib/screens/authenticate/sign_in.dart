@@ -31,7 +31,7 @@ class _SignInState extends State<SignIn> {
               gradient: LinearGradient(
                 begin: FractionalOffset(0.0, 0.0),
                 end: FractionalOffset(1.0, 1.0),
-                colors: [Color(0xff8e9eab), Color(0xffeef2f3)],
+                colors: [Color(0xffeef2f3), Colors.white],
               ),
             ),
             child: Scaffold(
@@ -46,12 +46,12 @@ class _SignInState extends State<SignIn> {
                       },
                       icon: const Icon(
                         Icons.person,
-                        color: Colors.teal,
+                        color: Colors.blueGrey,
                       ),
                       label: const Text(
                         'Register',
                         style: TextStyle(
-                          color: Colors.teal,
+                          color: Colors.blueGrey,
                         ),
                       ))
                 ],
@@ -67,7 +67,7 @@ class _SignInState extends State<SignIn> {
                       const Text(
                         'Sign in',
                         style: TextStyle(
-                          color: Colors.teal,
+                          color: Colors.black54,
                           fontSize: 42,
                           fontWeight: FontWeight.bold,
                         ),
@@ -76,6 +76,7 @@ class _SignInState extends State<SignIn> {
                         height: 40.0,
                       ),
                       TextFormField(
+                        cursorColor: Colors.orangeAccent,
                         decoration:
                             textInputDecoration.copyWith(hintText: 'Email'),
                         validator: (val) {
@@ -95,6 +96,7 @@ class _SignInState extends State<SignIn> {
                         height: 20.0,
                       ),
                       TextFormField(
+                        cursorColor: Colors.orangeAccent,
                         decoration:
                             textInputDecoration.copyWith(hintText: 'Password'),
                         validator: (val) {
@@ -131,12 +133,12 @@ class _SignInState extends State<SignIn> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: const Color(0xff8e9eab),
+                          primary: Colors.orangeAccent,
                           elevation: 10,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
                           ),
-                          shadowColor: Colors.black,
+                          shadowColor: Colors.black54,
                           minimumSize: const Size(120, 40),
                         ),
                         child: const Text(
@@ -151,7 +153,7 @@ class _SignInState extends State<SignIn> {
                       ),
                       const Text(
                         'Sign in with social account',
-                        style: TextStyle(color: Colors.teal),
+                        style: TextStyle(color: Colors.blueGrey),
                       ),
                       const SizedBox(
                         height: 10,
