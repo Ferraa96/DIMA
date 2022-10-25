@@ -550,7 +550,7 @@ class PaymentsPage extends StatelessWidget {
                         }
                         Payment p = Payment(
                           title: paymentsList[index]['title'],
-                          amount: paymentsList[index]['amount'],
+                          amount: (paymentsList[index]['amount']).toDouble(),
                           date: paymentsList[index]['date'],
                           payedBy: paymentsList[index]['payedBy'],
                           payedTo:

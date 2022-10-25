@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:badges/badges.dart';
 import 'package:dima/main.dart';
 import 'package:dima/screens/home/chat_page.dart';
@@ -300,7 +302,7 @@ class _MainPageState extends State<MainPage> {
     List<Widget> pages = screens();
     bool isWideScreen =
         MediaQuery.of(context).size.width > MediaQuery.of(context).size.height;
-  
+
     return ChangeNotifierProvider(
       create: (context) => ThemeProvider(),
       builder: (context, _) {
@@ -310,52 +312,54 @@ class _MainPageState extends State<MainPage> {
           darkTheme: MyThemes.darkTheme,
           home: DefaultTabController(
             length: 5,
-            child: Scaffold(
-              body: !isWideScreen
-                  ? pages[index]
-                  : Row(
-                      children: [
-                        NavigationRail(
-                          destinations: _getNavRailItems(),
-                          onDestinationSelected: (newIndex) {
-                            if (newIndex != index) {
-                              setState(() {
-                                index = newIndex;
-                              });
-                            }
-                          },
-                          labelType: NavigationRailLabelType.all,
-                          backgroundColor: ThemeProvider().isDarkMode
-                              ? const Color(0xff1e314d)
-                              : Colors.white,
-                          selectedIndex: index,
-                        ),
-                        Flexible(
-                          child: pages[index],
-                        ),
-                      ],
-                    ),
-              extendBody: false,
-              bottomNavigationBar: !isWideScreen
-                  ? BottomNavigationBar(
-                      elevation: 1,
-                      items: _getBottomNavBarItems(),
-                      currentIndex: index,
-                      unselectedFontSize: 10,
-                      selectedFontSize: 15,
-                      showUnselectedLabels: true,
-                      onTap: (index) {
-                        if (this.index != index) {
-                          setState(() {
-                            this.index = index;
-                            badges[index] = 0;
-                          });
-                        }
-                      },
-                    )
-                  : null,
+            child: SafeArea(
+              child: Scaffold(
+                body: !isWideScreen
+                    ? pages[index]
+                    : Row(
+                        children: [
+                          NavigationRail(
+                            destinations: _getNavRailItems(),
+                            onDestinationSelected: (newIndex) {
+                              if (newIndex != index) {
+                                setState(() {
+                                  index = newIndex;
+                                });
+                              }
+                            },
+                            labelType: NavigationRailLabelType.all,
+                            backgroundColor: ThemeProvider().isDarkMode
+                                ? const Color(0xff1e314d)
+                                : Colors.white,
+                            selectedIndex: index,
+                          ),
+                          Flexible(
+                            child: pages[index],
+                          ),
+                        ],
+                      ),
+                extendBody: false,
+                bottomNavigationBar: !isWideScreen
+                    ? BottomNavigationBar(
+                        elevation: 1,
+                        items: _getBottomNavBarItems(),
+                        currentIndex: index,
+                        unselectedFontSize: 10,
+                        selectedFontSize: 15,
+                        showUnselectedLabels: true,
+                        onTap: (index) {
+                          if (this.index != index) {
+                            setState(() {
+                              this.index = index;
+                              badges[index] = 0;
+                            });
+                          }
+                        },
+                      )
+                    : null,
+              ),
             ),
-            ),
+          ),
         );
       },
     );

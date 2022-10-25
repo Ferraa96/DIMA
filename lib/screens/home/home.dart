@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
@@ -35,10 +36,12 @@ class Home extends StatelessWidget {
   bool _modifyName = false;
   FocusNode focusNode = FocusNode();
   String name = '';
+  int currentPage = 100;
   final PageController controller = PageController(
     initialPage: 100,
   );
   late BuildContext context;
+  late Timer _timer;
 
   Widget _getUsersIcon(String name, int index) {
     double height = window.physicalSize.height / window.devicePixelRatio;
@@ -717,64 +720,143 @@ class Home extends StatelessWidget {
     return charts.PieChart(
       series,
       defaultRenderer: charts.ArcRendererConfig(
-        arcWidth: (size / 8).round(),
-        /*arcRendererDecorators: [
-          charts.ArcLabelDecorator(
-            labelPosition: charts.ArcLabelPosition.auto,
-          ),
-        ],*/
+        arcWidth: (size / 4).round(),
       ),
     );
   }
 
   Widget _paymentWidgetWideScreen(double width, double height) {
-    double size = width > height ? height : width;
+    double pieHeight = height * 4 / 5;
+    double pieWidth = width / 3;
     return Container(
-      width: width * 0.5,
-      height: height * 0.8,
+      width: width,
+      height: height,
       decoration: BoxDecoration(
         color: Colors.orangeAccent,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text(
+                "Credits",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              SizedBox(
+                height: pieHeight,
+                width: pieWidth,
+                child: _constructPie(pieHeight, true),
+              ),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              const Text(
+                "Debts",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+              ),
+              SizedBox(
+                height: pieHeight,
+                width: pieWidth,
+                child: _constructPie(pieHeight, false),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: height,
+            width: width / 4,
+            child: Center(
+              child: ListView(
+                shrinkWrap: true,
+                children: [
+                  ...() {
+                    List<Widget> list = [];
+                    for (int i = 0; i < AppData().group.users.length; i++) {
+                      list.add(
+                        Row(
+                          children: [
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(3),
+                                color: colors[i % colors.length],
+                              ),
+                              height: 10,
+                              width: 10,
+                            ),
+                            const VerticalDivider(),
+                            Text(
+                              AppData().group.users[i].getName(),
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                    return list;
+                  }(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _paymentWidgetNarrowScreen(Timer _timer, double size) {
+    double pieHeight = size * 4 / 5;
+    double pieWidth = pieHeight;
+    return Container(
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.orangeAccent,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Flexible(
-            flex: 4,
-            child: Column(
-              children: [
-                Column(
+            flex: 3,
+            child: PageView.builder(
+              scrollDirection: Axis.vertical,
+              controller: controller,
+              itemBuilder: (context, currentPage) {
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    const Text(
-                      'Credits',
-                      style: TextStyle(
+                    Text(
+                      currentPage % 2 == 0 ? 'Credits' : 'Debts',
+                      style: const TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
                     ),
-                    SizedBox(
-                      height: size / 3,
-                      child: _constructPie(size, true),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text(
-                      'Debits',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    Flexible(
+                      flex: 2,
+                      child: SizedBox(
+                        height: pieHeight,
+                        width: pieWidth,
+                        child: _constructPie(pieHeight, currentPage % 2 == 0),
                       ),
                     ),
-                    SizedBox(
-                      height: size / 3,
-                      child: _constructPie(size, false),
-                    ),
                   ],
-                ),
-              ],
+                );
+              },
             ),
           ),
           Flexible(
@@ -791,6 +873,10 @@ class Home extends StatelessWidget {
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(3),
+                              border: Border.all(
+                                color: Colors.black,
+                                width: 0.8,
+                              ),
                               color: colors[i % colors.length],
                             ),
                             height: 10,
@@ -801,6 +887,7 @@ class Home extends StatelessWidget {
                             AppData().group.users[i].getName(),
                             style: const TextStyle(
                               color: Colors.black,
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
                         ],
@@ -814,40 +901,31 @@ class Home extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _paymentWidgetNarrowScreen(double size) {
-    return Container(
-      height: size * 0.45,
-      decoration: BoxDecoration(
-        color: Colors.orangeAccent,
-        borderRadius: BorderRadius.circular(20),
-      ),
+      /*
       child: PageView.builder(
         scrollDirection: Axis.vertical,
         controller: controller,
-        itemBuilder: (context, index) {
-          return Wrap(
+        itemBuilder: (context, currentPage) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              Align(
-                alignment: Alignment.topCenter,
-                child: Text(
-                  index % 2 == 0 ? 'Credits' : 'Debts',
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
+              Text(
+                currentPage % 2 == 0 ? 'Credits' : 'Debts',
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
               ),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Flexible(
                     flex: 2,
                     child: SizedBox(
-                      height: size * 0.4,
-                      child: _constructPie(size, index % 2 == 0),
+                      height: pieHeight,
+                      width: pieWidth,
+                      child: _constructPie(pieHeight, currentPage % 2 == 0),
                     ),
                   ),
                   Flexible(
@@ -899,6 +977,7 @@ class Home extends StatelessWidget {
           );
         },
       ),
+      */
     );
   }
 
@@ -922,8 +1001,8 @@ class Home extends StatelessWidget {
     return GestureDetector(
       onTap: () => moveToPage(4),
       child: Container(
-        height: size * 0.45,
-        width: size * 0.47,
+        height: size,
+        width: size,
         decoration: BoxDecoration(
           color: Colors.green,
           borderRadius: BorderRadius.circular(20),
@@ -1054,8 +1133,8 @@ class Home extends StatelessWidget {
     return GestureDetector(
       onTap: () => moveToPage(3),
       child: Container(
-        height: size * 0.45,
-        width: size * 0.47,
+        height: size,
+        width: size,
         decoration: BoxDecoration(
           color: const Color.fromARGB(255, 78, 128, 214),
           borderRadius: BorderRadius.circular(20),
@@ -1166,13 +1245,25 @@ class Home extends StatelessWidget {
     );
   }
 
+  void autoScroll() {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      currentPage++;
+      controller.animateToPage(
+        currentPage,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeIn,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     this.context = context;
     name = AppData().user.getName();
     double width = window.physicalSize.width / window.devicePixelRatio;
     double height = window.physicalSize.height / window.devicePixelRatio;
-    double size = width > height ? height : width;
+    double widgetHeightHor = height / 3;
+    double widgetWidthVert = width / 2 - width / 50;
     return MaterialApp(
       themeMode: ThemeProvider.themeMode,
       theme: MyThemes.lightTheme,
@@ -1226,7 +1317,8 @@ class Home extends StatelessWidget {
                   Expanded(
                     child: SingleChildScrollView(
                       scrollDirection: Axis.vertical,
-                      child: Container(
+                      child: Align(
+                        alignment: Alignment.topLeft,
                         child: constraints.maxWidth < constraints.maxHeight
                             ? Wrap(
                                 runSpacing: 10,
@@ -1236,16 +1328,18 @@ class Home extends StatelessWidget {
                                   ...() {
                                     List<Widget> list = [];
                                     if (listener.getPaymentsList().isNotEmpty) {
+                                      autoScroll();
                                       list.add(
                                         GestureDetector(
                                           onTap: () => moveToPage(2),
-                                          child:
-                                              _paymentWidgetNarrowScreen(size),
+                                          child: _paymentWidgetNarrowScreen(
+                                              _timer, widgetWidthVert),
                                         ),
                                       );
                                     }
                                     if (listener.getShoppingList().isNotEmpty) {
-                                      list.add(_buildShoppingWidget(size));
+                                      list.add(_buildShoppingWidget(
+                                          widgetWidthVert));
                                     }
                                     List reminders =
                                         listener.getRemindersList();
@@ -1254,7 +1348,7 @@ class Home extends StatelessWidget {
                                             .toDate()
                                             .isAfter(DateTime.now())) {
                                       list.add(_buildRemindersWidget(
-                                          size, reminders));
+                                          widgetWidthVert, reminders));
                                     }
                                     return list;
                                   }()
@@ -1272,13 +1366,13 @@ class Home extends StatelessWidget {
                                         GestureDetector(
                                           onTap: () => moveToPage(2),
                                           child: _paymentWidgetWideScreen(
-                                              width, height),
+                                              width / 2, widgetHeightHor),
                                         ),
                                       );
                                     }
                                     if (listener.getShoppingList().isNotEmpty) {
                                       list.add(
-                                        _buildShoppingWidget(size * 0.7),
+                                        _buildShoppingWidget(widgetHeightHor),
                                       );
                                     }
                                     List reminders =
@@ -1289,49 +1383,14 @@ class Home extends StatelessWidget {
                                             .isAfter(DateTime.now())) {
                                       list.add(
                                         _buildRemindersWidget(
-                                            size * 0.7, reminders),
+                                            widgetHeightHor, reminders),
                                       );
                                     }
-
                                     return list;
                                   }()
                                 ],
                               ),
                       ),
-                      /*
-                      child: Wrap(
-                        runSpacing: 10,
-                        spacing: 10,
-                        alignment: WrapAlignment.spaceBetween,
-                        children: [
-                          ...() {
-                            List<Widget> list = [];
-                            if (listener.getPaymentsList().isNotEmpty) {
-                              list.add(
-                                GestureDetector(
-                                  onTap: () => moveToPage(2),
-                                  child: (constraints.maxWidth >
-                                          constraints.maxHeight
-                                      ? _paymentWidgetWideScreen(width, height)
-                                      : _paymentWidgetNarrowScreen(size)),
-                                ),
-                              );
-                            }
-                            if (listener.getShoppingList().isNotEmpty) {
-                              list.add(_buildShoppingWidget(size));
-                            }
-                            List reminders = listener.getRemindersList();
-                            if (reminders.isNotEmpty &&
-                                (reminders[0]['dateTime'] as Timestamp)
-                                    .toDate()
-                                    .isAfter(DateTime.now())) {
-                              list.add(_buildRemindersWidget(size, reminders));
-                            }
-                            return list;
-                          }(),
-                        ],
-                      ),
-                      */
                     ),
                   ),
                 ],

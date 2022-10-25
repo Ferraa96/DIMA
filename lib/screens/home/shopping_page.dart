@@ -170,6 +170,7 @@ class ShoppingPage extends StatelessWidget {
                             ),
                             child: Scrollbar(
                               child: ListView(
+                                shrinkWrap: true,
                                 controller: controller,
                                 children: [
                                   Row(
@@ -474,12 +475,14 @@ class ShoppingPage extends StatelessWidget {
               ),
               const Divider(),
               shoppingList.isNotEmpty
-                  ? Scrollbar(
-                      child: ListView(
-                        shrinkWrap: true,
-                        children: _buildListView(setState),
+                  ? Expanded(
+                    child: Scrollbar(
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: _buildListView(setState),
+                        ),
                       ),
-                    )
+                  )
                   : const Flexible(
                       child: Center(
                         child: Text('Add elements to the shopping list'),
