@@ -6,7 +6,7 @@ class Formatter {
             ? '0' + date.day.toString()
             : date.day.toString()) +
         '/' +
-        (date.day.toString().length == 1
+        (date.month.toString().length == 1
             ? '0' + date.month.toString()
             : date.month.toString()) +
         '/' +
@@ -28,7 +28,7 @@ class Formatter {
             ? '0' + dateTime.day.toString()
             : dateTime.day.toString()) +
         '/' +
-        (dateTime.day.toString().length == 1
+        (dateTime.month.toString().length == 1
             ? '0' + dateTime.month.toString()
             : dateTime.month.toString()) +
         '/' +
