@@ -2,21 +2,19 @@
 
 import 'package:dima/models/chart_series.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:flutter/material.dart';
 
-String NAME = 'abcd';
-double BALANCE = 23.57;
+String name = "abcd";
+double balance = 23.57;
 
 void main() {
 
-  group('Formatter Class test', () {
+  group('UNIT_TEST => ChartSeries Class => ', () {
 
-    ChartSeries cs = ChartSeries(name: NAME, balance: BALANCE);
+    ChartSeries cs = ChartSeries(name: name, balance: balance);
 
     test('class creation', () {
-      expect(cs.name, NAME);
-      expect(cs.balance, BALANCE);
+      expect(cs.name, name);
+      expect(cs.balance, balance);
     });
 
 

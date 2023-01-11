@@ -2,9 +2,6 @@
 
 import 'package:dima/models/return_payment.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:dima/models/chart_series.dart';
-import 'package:flutter/material.dart';
 
 List<List> values = [
   [ [-95.0,285.0,-45.0,-145.0], {3: [1], 0: [1], 2: [1]}, {3: [145.0], 0: [95.0], 2: [45.0]}, 3 ],
@@ -13,7 +10,7 @@ List<List> values = [
 
 void main() {
 
-  group('Formatter Class test', () {
+  group('UNIT_TEST => ReturnPayment Class => ', () {
 
     final rp = ReturnPayment();
 

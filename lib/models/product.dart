@@ -1,5 +1,6 @@
 import 'package:dima/services/app_data.dart';
 import 'package:flutter/material.dart';
+import 'package:dima/models/group.dart';
 
 class Product extends StatelessWidget {
   String item;
@@ -7,6 +8,7 @@ class Product extends StatelessWidget {
   String unit;
   String user;
   String category;
+  Group group;
 
   Product({
     Key? key,
@@ -15,6 +17,7 @@ class Product extends StatelessWidget {
     required this.unit,
     required this.user,
     required this.category,
+    required this.group
   }) : super(key: key);
 
   @override
@@ -24,19 +27,23 @@ class Product extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(item),
-              Text(quantity.toString() + ' ' + unit),
-            ],
+          Expanded(
+            child:Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item),
+                Text(quantity.toString() + ' ' + unit),
+              ],
+            ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(category),
-              Text('Added by ' + AppData().group.getUserFromId(user)!.getName()),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(category),
+                Text('Added by ' + /*AppData().*/group.getUserFromId(user)!.getName()),
+              ],
+            ),
           ),
         ],
       ),

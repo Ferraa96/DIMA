@@ -2,9 +2,6 @@
 
 import 'package:dima/models/group.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:dima/models/chart_series.dart';
-import 'package:flutter/material.dart';
 import 'package:dima/models/user.dart';
 
 List<MyUser> users = [
@@ -16,7 +13,7 @@ String groupCode = 'abcdef';
 
 void main() {
 
-  group('Formatter Class test', () {
+  group('UNIT_TEST => Group Class => ', () {
 
     final g = Group();
 

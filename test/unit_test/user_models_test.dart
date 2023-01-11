@@ -2,40 +2,37 @@
 
 import 'package:dima/models/user.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:dima/models/chart_series.dart';
-import 'package:flutter/material.dart';
 
-String UID = "AXdvsAFdfsv678GJ";
-String NAME = "AuhCDIOI887Jvd";
-String GROUPID = "VDOIyhiug78uhHd";
-String PICURL = "FDOnobSOb6776FGbhb443s";
+String uid = "AXdvsAFdfsv678GJ";
+String name = "AuhCDIOI887Jvd";
+String groupId = "VDOIyhiug78uhHd";
+String picUrl = "FDOnobSOb6776FGbhb443s";
 
 
 void main() {
 
-  group('MyUser Class test', () {
+  group('UNIT_TEST => MyUser Class => ', () {
 
     final mu = MyUser();
 
     test('setUserId(), getUid() functions', () {
-      mu.setUserId(UID);
-      expect(mu.getUid(), UID);
+      mu.setUserId(uid);
+      expect(mu.getUid(), uid);
     });
 
     test('setName(), getName() functions', () {
-      mu.setName(NAME);
-      expect(mu.getName(), NAME);
+      mu.setName(name);
+      expect(mu.getName(), name);
     });
 
     test('setGroupId(), getGroupId() functions', () {
-      mu.setGroupId(GROUPID);
-      expect(mu.getGroupId(), GROUPID);
+      mu.setGroupId(groupId);
+      expect(mu.getGroupId(), groupId);
     });
 
     test('setPicUrl(), getPicUrl() functions', () {
-      mu.setPicUrl(PICURL);
-      expect(mu.getPicUrl(), PICURL);
+      mu.setPicUrl(picUrl);
+      expect(mu.getPicUrl(), picUrl);
     });
 
   });

@@ -2,8 +2,6 @@
 
 import 'package:dima/shared/formatter.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
-import 'package:dima/models/chart_series.dart';
 import 'package:flutter/material.dart';
 
 List<List> dt = [
@@ -16,7 +14,7 @@ List<List> dt = [
 
 void main() {
 
-  group('Formatter Class test', () {
+  group('UNIT_TEST => Formatter Class => ', () {
 
     final f = Formatter();
 

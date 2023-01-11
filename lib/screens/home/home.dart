@@ -1248,11 +1248,15 @@ class Home extends StatelessWidget {
   void autoScroll() {
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       currentPage++;
+      try {
       controller.animateToPage(
         currentPage,
         duration: const Duration(milliseconds: 350),
         curve: Curves.easeIn,
       );
+      } on AssertionError catch (e) {
+        timer.cancel();
+      }
     });
   }
 

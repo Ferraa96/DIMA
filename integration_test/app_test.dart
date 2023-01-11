@@ -1,13 +1,9 @@
-
 // flutter test --no-sound-null-safety integration_test/app_test.dart
 
 import 'dart:math';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter/material.dart';
-import 'package:dima/shared/constants.dart';
-import 'package:charts_flutter/flutter.dart';
-import 'package:flutter/src/material/date_picker.dart';
 import 'package:dima/main.dart' as app;
 
 const String EMAIL = 'prova12@gmail.com';
@@ -271,7 +267,7 @@ void main() {
 
 
 
-  group ('PAYMENTS => ', (){
+  group ('PRODUCTS => ', (){
 
     testWidgets('ELEMENTS', (tester) async {
       await app.main();
