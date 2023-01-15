@@ -35,6 +35,10 @@ class _GalleryState extends State<Gallery> {
   }
 
   Future<void> _fetchAssets() async {
+    final PermissionState ps = await PhotoManager.requestPermissionExtend();
+    if (!ps.isAuth) {
+      return;
+    }
     final albums = await PhotoManager.getAssetPathList(
       type: RequestType.image,
       onlyAll: true,
@@ -54,10 +58,12 @@ class _GalleryState extends State<Gallery> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width /
+        MediaQuery.of(context).devicePixelRatio;
     double neighbour = 3;
     double left = 6;
     double right = 6;
-    int colNum = 4;
+    int colNum = (width / 140).round();
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.of(context).pop(),
@@ -81,7 +87,7 @@ class _GalleryState extends State<Gallery> {
               child: Container(
                 margin: const EdgeInsets.only(top: 3),
                 child: GridView.builder(
-                  itemCount: assets.length + 1,
+                  itemCount: assets.length,
                   controller: controller,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: colNum),

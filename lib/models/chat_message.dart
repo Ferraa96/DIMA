@@ -3,8 +3,6 @@ import 'package:dima/shared/constants.dart';
 import 'package:dima/shared/formatter.dart';
 import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
-import 'package:dima/models/group.dart';
-import 'package:dima/models/user.dart';
 
 class ChatMessage extends StatelessWidget {
   String senderId = '';
@@ -12,8 +10,6 @@ class ChatMessage extends StatelessWidget {
   bool hasMedia = false;
   Image? img;
   DateTime timestamp;
-  Group group;
-  MyUser user;
   ChatMessage({
     Key? key,
     required this.senderId,
@@ -21,10 +17,8 @@ class ChatMessage extends StatelessWidget {
     required this.timestamp,
     required this.hasMedia,
     this.img,
-    required this.group,
-    required this.user,
   }) : super(key: key);
-  
+
   final Formatter _formatter = Formatter();
 
   void setImage(Image img) {
@@ -57,13 +51,14 @@ class ChatMessage extends StatelessWidget {
   }
 
   Widget _constructTextualMessage(double width) {
-    if (senderId != /*AppData().*/user.getUid()) {
+    if (senderId != AppData().user.getUid()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
+            padding:
+                const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
             child: Align(
               alignment: Alignment.topLeft,
               child: Container(
@@ -71,7 +66,11 @@ class ChatMessage extends StatelessWidget {
                   maxWidth: width / 2,
                 ),
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.only(bottomRight: Radius.circular(20), topRight: Radius.circular(20), topLeft: Radius.circular(20), bottomLeft: Radius.zero),
+                  borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.zero),
                   color: Colors.grey.shade400,
                 ),
                 padding: const EdgeInsets.all(8),
@@ -79,12 +78,13 @@ class ChatMessage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      /*AppData().*/group.getUserFromId(senderId)!.getName(),
+                      AppData().group.getUserFromId(senderId)!.getName(),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: colors[/*AppData().*/group.getUserIndexFromId(senderId) %
-                            colors.length],
+                        color: colors[
+                            AppData().group.getUserIndexFromId(senderId) %
+                                colors.length],
                       ),
                     ),
                     Text(
@@ -101,7 +101,8 @@ class ChatMessage extends StatelessWidget {
           ),
           Container(
             margin: const EdgeInsets.only(right: 10),
-            child: Text(_formatter.formatTime(TimeOfDay.fromDateTime(timestamp)),
+            child: Text(
+              _formatter.formatTime(TimeOfDay.fromDateTime(timestamp)),
               style: const TextStyle(
                 fontSize: 12,
               ),
@@ -116,22 +117,28 @@ class ChatMessage extends StatelessWidget {
         children: [
           Container(
             margin: const EdgeInsets.only(left: 10),
-            child: Text(_formatter.formatTime(TimeOfDay.fromDateTime(timestamp)),
+            child: Text(
+              _formatter.formatTime(TimeOfDay.fromDateTime(timestamp)),
               style: const TextStyle(
                 fontSize: 12,
               ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
+            padding:
+                const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
             child: Align(
               alignment: Alignment.topRight,
               child: Container(
                 constraints: BoxConstraints(
                   maxWidth: width / 2,
                 ),
-                decoration: BoxDecoration(                  
-                  borderRadius: const BorderRadius.only(bottomRight: Radius.zero, topRight: Radius.circular(20), topLeft: Radius.circular(20), bottomLeft: Radius.circular(20)),
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.zero,
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20),
+                      bottomLeft: Radius.circular(20)),
                   color: Colors.blue[200],
                 ),
                 padding: const EdgeInsets.all(8),
@@ -155,13 +162,14 @@ class ChatMessage extends StatelessWidget {
   }
 
   Widget _constructMediaMessage(double width, BuildContext context) {
-    if (senderId != /*AppData().*/user.getUid()) {
+    if (senderId != AppData().user.getUid()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
+            padding:
+                const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
             child: Align(
               alignment: Alignment.topLeft,
               child: Container(
@@ -170,7 +178,8 @@ class ChatMessage extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(10), topRight: Radius.circular(10)),
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10)),
                   color: Colors.grey.shade200,
                 ),
                 padding: const EdgeInsets.all(1),
@@ -178,12 +187,13 @@ class ChatMessage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      /*AppData().*/group.getUserFromId(senderId)!.getName(),
+                      AppData().group.getUserFromId(senderId)!.getName(),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: colors[/*AppData().*/group.getUserIndexFromId(senderId) %
-                            colors.length],
+                        color: colors[
+                            AppData().group.getUserIndexFromId(senderId) %
+                                colors.length],
                       ),
                     ),
                     GestureDetector(
@@ -202,7 +212,8 @@ class ChatMessage extends StatelessWidget {
           ),
           Container(
             margin: const EdgeInsets.only(right: 10),
-            child: Text(_formatter.formatTime(TimeOfDay.fromDateTime(timestamp)),
+            child: Text(
+              _formatter.formatTime(TimeOfDay.fromDateTime(timestamp)),
               style: const TextStyle(
                 fontSize: 12,
               ),
@@ -217,14 +228,16 @@ class ChatMessage extends StatelessWidget {
         children: [
           Container(
             margin: const EdgeInsets.only(left: 10),
-            child: Text(_formatter.formatTime(TimeOfDay.fromDateTime(timestamp)),
+            child: Text(
+              _formatter.formatTime(TimeOfDay.fromDateTime(timestamp)),
               style: const TextStyle(
                 fontSize: 12,
               ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
+            padding:
+                const EdgeInsets.only(left: 14, right: 14, top: 5, bottom: 5),
             child: Align(
               alignment: Alignment.topRight,
               child: Container(
@@ -255,10 +268,13 @@ class ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     if (!hasMedia) {
       return _constructTextualMessage(width);
     } else {
-      return _constructMediaMessage(width, context);
+      return width > height
+          ? _constructMediaMessage(height * 2 / 3, context)
+          : _constructMediaMessage(width * 2 / 3, context);
     }
   }
 }

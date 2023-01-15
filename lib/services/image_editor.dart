@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:image_cropper/image_cropper.dart';
 
 class ImageEditor {
-  Future<File?> cropSquareImage(File file) async {
+  Future<CroppedFile?> cropSquareImage(File file) async {
     return await ImageCropper().cropImage(
       sourcePath: file.path,
       aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),

@@ -16,6 +16,7 @@ import 'package:dima/shared/themes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -162,6 +163,8 @@ class Home extends StatelessWidget {
                 color: Colors.orangeAccent,
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     groupCode,
@@ -189,8 +192,6 @@ class Home extends StatelessWidget {
                     icon: const Icon(Icons.share),
                   ),
                 ],
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
               ),
             ),
             SizedBox(
@@ -200,14 +201,14 @@ class Home extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              style: ElevatedButton.styleFrom(
+                primary: Colors.orangeAccent,
+              ),
               child: const Text(
                 'Close',
                 style: TextStyle(
                   color: Colors.black,
                 ),
-              ),
-              style: ElevatedButton.styleFrom(
-                primary: Colors.orangeAccent,
               ),
             ),
             SizedBox(
@@ -225,6 +226,7 @@ class Home extends StatelessWidget {
       names.add(user.name);
     }
     return SizedBox(
+      height: kToolbarHeight * 0.9,
       child: ListView.separated(
         itemCount: names.length + 1,
         itemBuilder: (_, index) {
@@ -239,6 +241,8 @@ class Home extends StatelessWidget {
                   color: Colors.orangeAccent,
                   borderRadius: BorderRadius.circular(40.0),
                 ),
+                height: kToolbarHeight * 0.9,
+                width: kToolbarHeight * 0.9,
                 child: Center(
                   child: IconButton(
                     onPressed: () {
@@ -264,8 +268,6 @@ class Home extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                height: kToolbarHeight * 0.9,
-                width: kToolbarHeight * 0.9,
               ),
             );
           }
@@ -278,7 +280,6 @@ class Home extends StatelessWidget {
           );
         },
       ),
-      height: kToolbarHeight * 0.9,
     );
   }
 
@@ -287,14 +288,14 @@ class Home extends StatelessWidget {
     if (path == null) {
       return;
     }
-    File? file = await ImageEditor().cropSquareImage(
+    CroppedFile? file = await ImageEditor().cropSquareImage(
       File(path),
     );
     if (file == null) {
       return;
     }
-    _myImg = Image.file(file);
-    DatabaseService().updateImage(AppData().user.getUid(), file);
+    _myImg = Image.file(File(file.path));
+    DatabaseService().updateImage(AppData().user.getUid(), File(file.path));
   }
 
   Widget _userImageDialog(BuildContext context, double size) {
@@ -512,6 +513,7 @@ class Home extends StatelessWidget {
                     callback(index == 1);
                   }
                 },
+                isSelected: isSelected,
                 children: [
                   Container(
                     decoration: BoxDecoration(
@@ -558,7 +560,6 @@ class Home extends StatelessWidget {
                     ),
                   ),
                 ],
-                isSelected: isSelected,
               ),
               SizedBox(
                 height: size / 60,
@@ -817,7 +818,7 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget _paymentWidgetNarrowScreen(Timer _timer, double size) {
+  Widget _paymentWidgetNarrowScreen(Timer timer, double size) {
     double pieHeight = size * 4 / 5;
     double pieWidth = pieHeight;
     return Container(
@@ -901,83 +902,6 @@ class Home extends StatelessWidget {
           ),
         ],
       ),
-      /*
-      child: PageView.builder(
-        scrollDirection: Axis.vertical,
-        controller: controller,
-        itemBuilder: (context, currentPage) {
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(
-                currentPage % 2 == 0 ? 'Credits' : 'Debts',
-                style: const TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: SizedBox(
-                      height: pieHeight,
-                      width: pieWidth,
-                      child: _constructPie(pieHeight, currentPage % 2 == 0),
-                    ),
-                  ),
-                  Flexible(
-                    flex: 1,
-                    fit: FlexFit.loose,
-                    child: ListView(
-                      shrinkWrap: true,
-                      children: [
-                        ...() {
-                          List<Widget> list = [];
-                          for (int i = 0;
-                              i < AppData().group.users.length;
-                              i++) {
-                            list.add(
-                              Row(
-                                children: [
-                                  Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(3),
-                                      border: Border.all(
-                                        color: Colors.black,
-                                        width: 0.8,
-                                      ),
-                                      color: colors[i % colors.length],
-                                    ),
-                                    height: 10,
-                                    width: 10,
-                                  ),
-                                  const VerticalDivider(),
-                                  Text(
-                                    AppData().group.users[i].getName(),
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          }
-                          return list;
-                        }(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          );
-        },
-      ),
-      */
     );
   }
 
@@ -1247,15 +1171,11 @@ class Home extends StatelessWidget {
 
   void autoScroll() {
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      currentPage++;
-      try {
-      controller.animateToPage(
-        currentPage,
-        duration: const Duration(milliseconds: 350),
-        curve: Curves.easeIn,
-      );
-      } on AssertionError catch (e) {
-        timer.cancel();
+      if (controller.hasClients) {
+        controller.nextPage(
+          duration: const Duration(milliseconds: 350),
+          curve: Curves.easeIn,
+        );
       }
     });
   }

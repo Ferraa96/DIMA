@@ -6,6 +6,7 @@ class ReturnPayment {
   late int debtNum;
 
   void compute(List<double> netAmountList) {
+    int iterations = 1;
     toUser = {};
     amountToUser = {};
     debtNum = 0;
@@ -31,8 +32,12 @@ class ReturnPayment {
         amountToUser[maxDebt] = [];
       }
       toUser[maxDebt]!.add(maxCred);
-      amountToUser[maxDebt]!.add(balance);
+      amountToUser[maxDebt]!.add((balance * 100).round() / 100);
       debtNum++;
+      iterations++;
+      if (iterations == netAmountList.length) {
+        break;
+      }
     }
   }
 

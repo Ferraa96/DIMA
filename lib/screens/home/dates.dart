@@ -23,6 +23,8 @@ class Dates extends StatelessWidget {
   final List<int> _remindersToBeShown = [];
   bool _showAll = false;
   late BuildContext context;
+  Color color =
+      ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white;
 
   Widget _getReminders(Function setState) {
     if (remindersList.isNotEmpty) {
@@ -60,7 +62,6 @@ class Dates extends StatelessWidget {
                   dateTime: date,
                   creatorUid: remindersList[_remindersToBeShown[index - 1]]
                       ['creator'],
-                  group: AppData().group,
                 );
                 _allReminders.add(reminder);
                 if (_reminders[date] != null) {
@@ -144,56 +145,68 @@ class Dates extends StatelessWidget {
   }
 
   Widget _buildCalendar(Function setState) {
-    return TableCalendar(
-      selectedDayPredicate: (day) {
-        return isSameDay(_selectedDay, day);
-      },
-      onDaySelected: (selectedDay, focusedDay) {
-        if (!isSameDay(_selectedDay, selectedDay)) {
-          setState(() {
-            _selectedDay = selectedDay;
-            _focusedDay = focusedDay;
-          });
-        }
-      },
-      headerStyle: const HeaderStyle(
-        formatButtonVisible: false,
+    return Container(
+      margin: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: Colors.grey,
+        ),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(10),
+        )
       ),
-      calendarStyle: const CalendarStyle(
-        selectedDecoration: BoxDecoration(
-          color: Colors.orangeAccent,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        markerDecoration: BoxDecoration(
-          color: Colors.green,
-          shape: BoxShape.circle,
-        ),
-        todayDecoration: BoxDecoration(
-          color: Colors.blueAccent,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        defaultDecoration: BoxDecoration(),
-        outsideDecoration: BoxDecoration(),
-        weekendDecoration: BoxDecoration(),
-      ),
-      eventLoader: (day) {
-        List temp = [];
-        for (var el in remindersList) {
-          if (((el['dateTime']) as Timestamp).toDate().day == day.day &&
-              ((el['dateTime']) as Timestamp).toDate().month == day.month &&
-              ((el['dateTime']) as Timestamp).toDate().year == day.year) {
-            temp.add(el);
+      child: TableCalendar(
+        shouldFillViewport: true,
+        selectedDayPredicate: (day) {
+          return isSameDay(_selectedDay, day);
+        },
+        onDaySelected: (selectedDay, focusedDay) {
+          if (!isSameDay(_selectedDay, selectedDay)) {
+            setState(() {
+              _selectedDay = selectedDay;
+              _focusedDay = focusedDay;
+            });
           }
-        }
-        return temp;
-      },
-      calendarFormat: CalendarFormat.month,
-      startingDayOfWeek: StartingDayOfWeek.monday,
-      focusedDay: _focusedDay,
-      firstDay: DateTime(2000),
-      lastDay: DateTime(2030),
+        },
+        headerStyle: const HeaderStyle(
+          formatButtonVisible: false,
+        ),
+        calendarStyle: const CalendarStyle(
+          selectedDecoration: BoxDecoration(
+            color: Colors.orangeAccent,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          markerDecoration: BoxDecoration(
+            color: Colors.green,
+            shape: BoxShape.circle,
+          ),
+          todayDecoration: BoxDecoration(
+            color: Colors.blueAccent,
+            shape: BoxShape.rectangle,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+          defaultDecoration: BoxDecoration(),
+          outsideDecoration: BoxDecoration(),
+          weekendDecoration: BoxDecoration(),
+        ),
+        eventLoader: (day) {
+          List temp = [];
+          for (var el in remindersList) {
+            if (((el['dateTime']) as Timestamp).toDate().day == day.day &&
+                ((el['dateTime']) as Timestamp).toDate().month == day.month &&
+                ((el['dateTime']) as Timestamp).toDate().year == day.year) {
+              temp.add(el);
+            }
+          }
+          return temp;
+        },
+        calendarFormat: CalendarFormat.month,
+        startingDayOfWeek: StartingDayOfWeek.monday,
+        focusedDay: _focusedDay,
+        firstDay: DateTime(2000),
+        lastDay: DateTime(2030),
+      ),
     );
   }
 
@@ -326,9 +339,7 @@ class Dates extends StatelessWidget {
                       builder: (_, controller) {
                         return Container(
                           decoration: BoxDecoration(
-                              color: ThemeProvider().isDarkMode
-                                  ? const Color(0xff000624)
-                                  : Colors.white,
+                              color: color,
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(30),
                                 topRight: Radius.circular(30),
@@ -371,9 +382,7 @@ class Dates extends StatelessWidget {
                                               title: titleController.text,
                                               dateTime: dateTime,
                                               creatorUid:
-                                                  AppData().user.getUid(),
-                                              group: AppData().group,
-                                          );
+                                                  AppData().user.getUid());
                                           db.addReminder(reminder,
                                               AppData().user.getGroupId());
                                           Navigator.of(context).pop();
@@ -501,7 +510,9 @@ class Dates extends StatelessWidget {
         if (constraints.maxWidth < constraints.maxHeight) {
           return Column(
             children: [
-              _buildCalendar(setState),
+              Expanded(
+                child: _buildCalendar(setState),
+              ),
               const Divider(),
               Expanded(
                 child: Scaffold(
@@ -522,6 +533,7 @@ class Dates extends StatelessWidget {
               Expanded(
                 child: _buildCalendar(setState),
               ),
+              const VerticalDivider(),
               Flexible(
                 child: Scaffold(
                   backgroundColor: Colors.transparent,

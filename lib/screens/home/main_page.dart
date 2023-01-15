@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:badges/badges.dart';
-import 'package:dima/main.dart';
 import 'package:dima/screens/home/chat_page.dart';
 import 'package:dima/screens/home/dates.dart';
 import 'package:dima/screens/home/home.dart';
@@ -9,9 +8,7 @@ import 'package:dima/screens/home/paymentsPage.dart';
 import 'package:dima/screens/home/shopping_page.dart';
 import 'package:dima/services/listeners.dart';
 import 'package:dima/shared/themes.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
@@ -78,53 +75,6 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     listeners = Listeners(notifyChange: notifyChange);
     listeners.startListening();
-
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      RemoteNotification notification = message.notification!;
-      if (notification != null) {
-        AndroidNotification android = message.notification!.android!;
-        if (android != null) {
-          flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body,
-            NotificationDetails(
-              android: AndroidNotificationDetails(channel.id, channel.name,
-                  channelDescription: channel.description,
-                  color: Colors.blue,
-                  playSound: true,
-                  icon: '@mipmap/ic_launcher'),
-            ),
-          );
-        }
-      }
-    });
-
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      print('New notification');
-      RemoteNotification notification = message.notification!;
-      if (notification != null) {
-        AndroidNotification android = message.notification!.android!;
-        if (android != null) {
-          showDialog(
-            context: context,
-            builder: (_) {
-              return AlertDialog(
-                title: Text(notification.title!),
-                content: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(notification.body!),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        }
-      }
-    });
   }
 
   List<BottomNavigationBarItem> _getBottomNavBarItems() {
@@ -314,6 +264,7 @@ class _MainPageState extends State<MainPage> {
             length: 5,
             child: SafeArea(
               child: Scaffold(
+                resizeToAvoidBottomInset: false,
                 body: !isWideScreen
                     ? pages[index]
                     : Row(

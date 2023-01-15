@@ -12,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import 'dart:developer';
+
 class PaymentsPage extends StatelessWidget {
   final List paymentsList;
   PaymentsPage({Key? key, required this.paymentsList}) : super(key: key);
@@ -29,8 +31,10 @@ class PaymentsPage extends StatelessWidget {
   List<Payment> allPayments = [];
   late BuildContext context;
   final PaymentServices _paymentServices = PaymentServices();
+  Color color =
+      ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white;
 
-    // NAMES HAVE TO BE ALL DIFFERENT IN THE SAME GROUP!!!
+  // NAMES HAVE TO BE ALL DIFFERENT IN THE SAME GROUP!!!
   Widget _buildSummary() {
     balances = _paymentServices.computeBalances(paymentsList);
     return Container(
@@ -40,18 +44,18 @@ class PaymentsPage extends StatelessWidget {
         primaryMeasureAxis: charts.NumericAxisSpec(
           renderSpec: charts.GridlineRendererSpec(
             labelStyle: charts.TextStyleSpec(
-              color: ThemeProvider().isDarkMode 
-                ? charts.MaterialPalette.white 
-                : charts.MaterialPalette.black,
+              color: ThemeProvider().isDarkMode
+                  ? charts.MaterialPalette.white
+                  : charts.MaterialPalette.black,
             ),
           ),
         ),
         domainAxis: charts.OrdinalAxisSpec(
           renderSpec: charts.GridlineRendererSpec(
             labelStyle: charts.TextStyleSpec(
-              color: ThemeProvider().isDarkMode 
-                ? charts.MaterialPalette.white 
-                : charts.MaterialPalette.black,
+              color: ThemeProvider().isDarkMode
+                  ? charts.MaterialPalette.white
+                  : charts.MaterialPalette.black,
             ),
           ),
         ),
@@ -100,10 +104,10 @@ class PaymentsPage extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: colors[creditor % colors.length],
+                        color: colors[debtor % colors.length],
                       ),
                       borderRadius: BorderRadius.circular(10),
-                      color: colors[creditor % colors.length].withOpacity(0.6),
+                      color: colors[debtor % colors.length].withOpacity(0.6),
                     ),
                     margin: const EdgeInsets.only(left: 10, right: 10),
                     child: Container(
@@ -125,11 +129,7 @@ class PaymentsPage extends StatelessWidget {
                                 'ows',
                               ),
                               Text(
-                                'to ' +
-                                    AppData()
-                                        .group
-                                        .getList()[creditor]
-                                        .getName(),
+                                'to ${AppData().group.getList()[creditor].getName()}',
                                 style: const TextStyle(
                                   fontSize: 18,
                                 ),
@@ -137,8 +137,7 @@ class PaymentsPage extends StatelessWidget {
                             ],
                           ),
                           Text(
-                            amountToUser.values.elementAt(i)[j].toString() +
-                                ' €',
+                            '${amountToUser.values.elementAt(i)[j]} €',
                             style: const TextStyle(
                               fontSize: 18,
                             ),
@@ -207,7 +206,7 @@ class PaymentsPage extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.orangeAccent,
+                            backgroundColor: Colors.orangeAccent,
                           ),
                           onPressed: () {
                             List<Payment> toBeRemoved = [];
@@ -279,37 +278,34 @@ class PaymentsPage extends StatelessWidget {
             ),
           ),
           context: context,
-          builder: (
-            BuildContext context,
-          ) {
+          builder: (context) {
             return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () => Navigator.of(context).pop(),
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: DraggableScrollableSheet(
-                      initialChildSize: 0.6,
-                      minChildSize: 0.1,
-                      maxChildSize: 0.9,
-                      builder: (_, controller) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: ThemeProvider().isDarkMode
-                                ? const Color(0xff000624)
-                                : Colors.white,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(30),
-                              topRight: Radius.circular(30),
+                  child: Padding(
+                    padding: MediaQuery.of(context).viewInsets,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: DraggableScrollableSheet(
+                        initialChildSize: 0.6,
+                        minChildSize: 0.1,
+                        maxChildSize: 0.8,
+                        builder: (_, controller) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(30),
+                                topRight: Radius.circular(30),
+                              ),
                             ),
-                          ),
-                          child: Container(
-                            margin: const EdgeInsets.only(
-                              right: 10,
-                              left: 10,
-                            ),
-                            child: Scrollbar(
+                            child: Container(
+                              margin: const EdgeInsets.only(
+                                right: 10,
+                                left: 10,
+                              ),
                               child: ListView(
                                 controller: controller,
                                 children: [
@@ -334,7 +330,8 @@ class PaymentsPage extends StatelessWidget {
                                               double.parse(
                                                       amountController.text) >
                                                   0 &&
-                                              _paymentServices.atLeastOneTarget(checkList)) {
+                                              _paymentServices.atLeastOneTarget(
+                                                  checkList)) {
                                             List<String> payedTo = [];
                                             for (int i = 0;
                                                 i < checkList.length;
@@ -353,8 +350,7 @@ class PaymentsPage extends StatelessWidget {
                                                 date: pickedDate,
                                                 payedBy:
                                                     uids[int.parse(payedBy)],
-                                                payedTo: payedTo,
-                                                group: AppData().group,);
+                                                payedTo: payedTo);
                                             DatabaseService().addPayment(
                                                 payment,
                                                 AppData().user.getGroupId());
@@ -434,7 +430,8 @@ class PaymentsPage extends StatelessWidget {
                                           ).then((value) {
                                             if (value != null) {
                                               setState(() {
-                                                pickedDate = _paymentServices.formatDate(value);
+                                                pickedDate = _paymentServices
+                                                    .formatDate(value);
                                               });
                                             }
                                           });
@@ -499,9 +496,9 @@ class PaymentsPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 );
@@ -556,7 +553,6 @@ class PaymentsPage extends StatelessWidget {
                           payedBy: paymentsList[index]['payedBy'],
                           payedTo:
                               List<String>.from(paymentsList[index]['payedTo']),
-                          group: AppData().group,
                         );
                         allPayments.add(p);
                         return GestureDetector(
@@ -689,8 +685,8 @@ class PaymentsPage extends StatelessWidget {
     for (int i = 0; i < AppData().group.getList().length; i++) {
       checkList.add(false);
       _menuItems.add(DropdownMenuItem(
-        child: Text(AppData().group.getList()[i].getName()),
         value: i.toString(),
+        child: Text(AppData().group.getList()[i].getName()),
       ));
       uids.add(AppData().group.getList()[i].getUid());
     }

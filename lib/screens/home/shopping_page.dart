@@ -140,38 +140,36 @@ class ShoppingPage extends StatelessWidget {
             ),
           ),
           context: context,
-          builder: (
-            BuildContext context,
-          ) {
+          builder: (context) {
             return StatefulBuilder(
               builder: (BuildContext context, StateSetter setState) {
                 return GestureDetector(
                   behavior: HitTestBehavior.opaque,
                   onTap: () => Navigator.of(context).pop(),
-                  child: GestureDetector(
-                    onTap: () {},
-                    child: DraggableScrollableSheet(
-                      initialChildSize: 0.6,
-                      minChildSize: 0.1,
-                      maxChildSize: 0.9,
-                      builder: (_, controller) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: color,
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(30),
-                              topRight: Radius.circular(30),
+                  child: Padding(
+                    padding: MediaQuery.of(context).viewInsets,
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: DraggableScrollableSheet(
+                        initialChildSize: 0.6,
+                        minChildSize: 0.1,
+                        // maxChildSize: 0.9,
+                        builder: (_, controller) {
+                          return Container(
+                            decoration: BoxDecoration(
+                              color: color,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(30),
+                                topRight: Radius.circular(30),
+                              ),
                             ),
-                          ),
-                          child: Container(
-                            margin: const EdgeInsets.only(
-                              right: 10,
-                              left: 10,
-                            ),
-                            child: Scrollbar(
-                              child: ListView(
-                                shrinkWrap: true,
-                                controller: controller,
+                            child: Container(
+                              margin: const EdgeInsets.only(
+                                right: 10,
+                                left: 10,
+                              ),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Row(
                                     mainAxisAlignment:
@@ -202,7 +200,6 @@ class ShoppingPage extends StatelessWidget {
                                               unit: unitController.text,
                                               user: userId,
                                               category: category,
-                                              group: AppData().group
                                             );
                                             DatabaseService().addProduct(
                                                 product,
@@ -321,9 +318,9 @@ class ShoppingPage extends StatelessWidget {
                                 ],
                               ),
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
                 );
@@ -339,6 +336,7 @@ class ShoppingPage extends StatelessWidget {
     for (String cat in categories) {
       _menuItems.add(
         DropdownMenuItem(
+          value: cat,
           child: Row(
             children: [
               Image.asset(
@@ -351,7 +349,6 @@ class ShoppingPage extends StatelessWidget {
               Text(cat),
             ],
           ),
-          value: cat,
         ),
       );
     }
@@ -367,7 +364,6 @@ class ShoppingPage extends StatelessWidget {
         unit: shoppingList[i]['unit'],
         category: shoppingList[i]['category'],
         user: shoppingList[i]['user'],
-        group: AppData().group,
       );
       allProducts.add(p);
       if (prevCategory == p.category) {

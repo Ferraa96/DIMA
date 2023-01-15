@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:dima/models/chart_series.dart';
 import 'package:dima/services/app_data.dart';
+
 //
 class PaymentServices {
   List<String> uids = [];
@@ -57,21 +60,13 @@ class PaymentServices {
           balance -= el['amount'] / payedTo.length;
         }
       }
-      balance = (balance * 100).round().toDouble() / 100;
+      balance = (balance * pow(10, 2)).truncate() / pow(10, 2);
       balances.add(balance);
     }
     return balances;
   }
 
   String formatDate(DateTime date) {
-    return (date.day.toString().length == 1
-            ? '0' + date.day.toString()
-            : date.day.toString()) +
-        '/' +
-        (date.day.toString().length == 1
-            ? '0' + date.month.toString()
-            : date.month.toString()) +
-        '/' +
-        date.year.toString();
+    return '${date.day.toString().length == 1 ? '0${date.day}' : date.day.toString()}/${date.day.toString().length == 1 ? '0${date.month}' : date.month.toString()}/${date.year}';
   }
 }
