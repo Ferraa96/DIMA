@@ -62,6 +62,7 @@ class Dates extends StatelessWidget {
                   dateTime: date,
                   creatorUid: remindersList[_remindersToBeShown[index - 1]]
                       ['creator'],
+                  group: AppData().group,
                 );
                 _allReminders.add(reminder);
                 if (_reminders[date] != null) {
@@ -382,7 +383,9 @@ class Dates extends StatelessWidget {
                                               title: titleController.text,
                                               dateTime: dateTime,
                                               creatorUid:
-                                                  AppData().user.getUid());
+                                                  AppData().user.getUid(),
+                                              group: AppData().group,
+                                              );
                                           db.addReminder(reminder,
                                               AppData().user.getGroupId());
                                           Navigator.of(context).pop();

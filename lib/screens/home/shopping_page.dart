@@ -200,6 +200,7 @@ class ShoppingPage extends StatelessWidget {
                                               unit: unitController.text,
                                               user: userId,
                                               category: category,
+                                              group: AppData().group,
                                             );
                                             DatabaseService().addProduct(
                                                 product,
@@ -364,6 +365,7 @@ class ShoppingPage extends StatelessWidget {
         unit: shoppingList[i]['unit'],
         category: shoppingList[i]['category'],
         user: shoppingList[i]['user'],
+        group: AppData().group,
       );
       allProducts.add(p);
       if (prevCategory == p.category) {

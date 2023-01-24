@@ -1,5 +1,6 @@
 import 'package:dima/services/app_data.dart';
 import 'package:flutter/material.dart';
+import 'package:dima/models/group.dart';
 
 class Payment extends StatelessWidget {
   String title;
@@ -7,14 +8,16 @@ class Payment extends StatelessWidget {
   String date;
   String payedBy;
   List<String> payedTo;
-
+  Group group;
   Payment(
       {Key? key,
       required this.title,
       required this.amount,
       required this.date,
       required this.payedBy,
-      required this.payedTo})
+      required this.payedTo,
+      required this.group,
+      })
       : super(key: key);
 
   String getPayedBy() {
@@ -38,7 +41,7 @@ class Payment extends StatelessWidget {
           const Divider(),
           Wrap(
             children: [
-              Text(AppData().group.getUserFromId(payedBy)!.getName()),
+              Text(group.getUserFromId(payedBy)!.getName()),
               const Text(' payed '),
               Text(amount.toString() + ' € to '),
               ...() {
@@ -46,13 +49,13 @@ class Payment extends StatelessWidget {
                 for (int i = 0; i < payedTo.length; i++) {
                   if (i == 0) {
                     list.add(Text(
-                        AppData().group.getUserFromId(payedTo[0])!.getName()));
+                        group.getUserFromId(payedTo[0])!.getName()));
                   } else if (i == payedTo.length - 1) {
                     list.add(Text(' and ' +
-                        AppData().group.getUserFromId(payedTo[i])!.getName()));
+                        group.getUserFromId(payedTo[i])!.getName()));
                   } else {
                     list.add(Text(', ' +
-                        AppData().group.getUserFromId(payedTo[i])!.getName()));
+                        group.getUserFromId(payedTo[i])!.getName()));
                   }
                 }
                 return list;

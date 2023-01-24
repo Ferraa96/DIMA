@@ -37,6 +37,8 @@ class ChatPage extends StatelessWidget {
               timestamp: DateTime.parse(
                 chatList[chatList.length - index - 1]['timestamp'],
               ),
+              group: AppData().group,
+              user: AppData().user,
             );
           } else {
             return ChatMessage(
@@ -46,6 +48,8 @@ class ChatPage extends StatelessWidget {
               timestamp: DateTime.parse(
                 chatList[chatList.length - index - 1]['timestamp'],
               ),
+              group: AppData().group,
+              user: AppData().user,
             );
           }
         },
@@ -104,6 +108,8 @@ class ChatPage extends StatelessWidget {
                           senderId: AppData().user.getUid(),
                           timestamp: DateTime.now(),
                           hasMedia: true,
+                          group: AppData().group,
+                          user: AppData().user,
                         );
                         if (value is bool) {
                           ImageGetter().selectFile(ImageSource.camera).then(
@@ -157,6 +163,8 @@ class ChatPage extends StatelessWidget {
                             messageContent: chatController.text,
                             hasMedia: false,
                             timestamp: DateTime.now(),
+                            group: AppData().group,
+                            user: AppData().user, 
                           );
                           DatabaseService()
                               .sendMessage(msg, AppData().user.getGroupId(), '');

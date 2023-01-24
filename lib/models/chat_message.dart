@@ -3,6 +3,8 @@ import 'package:dima/shared/constants.dart';
 import 'package:dima/shared/formatter.dart';
 import 'package:dismissible_page/dismissible_page.dart';
 import 'package:flutter/material.dart';
+import 'package:dima/models/group.dart';
+import 'package:dima/models/user.dart';
 
 class ChatMessage extends StatelessWidget {
   String senderId = '';
@@ -10,6 +12,8 @@ class ChatMessage extends StatelessWidget {
   bool hasMedia = false;
   Image? img;
   DateTime timestamp;
+  Group group;
+  MyUser user;
   ChatMessage({
     Key? key,
     required this.senderId,
@@ -17,6 +21,8 @@ class ChatMessage extends StatelessWidget {
     required this.timestamp,
     required this.hasMedia,
     this.img,
+    required this.group,
+    required this.user,
   }) : super(key: key);
 
   final Formatter _formatter = Formatter();
@@ -51,7 +57,7 @@ class ChatMessage extends StatelessWidget {
   }
 
   Widget _constructTextualMessage(double width) {
-    if (senderId != AppData().user.getUid()) {
+    if (senderId != user.getUid()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -78,12 +84,12 @@ class ChatMessage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      AppData().group.getUserFromId(senderId)!.getName(),
+                      group.getUserFromId(senderId)!.getName(),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: colors[
-                            AppData().group.getUserIndexFromId(senderId) %
+                            group.getUserIndexFromId(senderId) %
                                 colors.length],
                       ),
                     ),
@@ -162,7 +168,7 @@ class ChatMessage extends StatelessWidget {
   }
 
   Widget _constructMediaMessage(double width, BuildContext context) {
-    if (senderId != AppData().user.getUid()) {
+    if (senderId != user.getUid()) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.start,
@@ -187,12 +193,12 @@ class ChatMessage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      AppData().group.getUserFromId(senderId)!.getName(),
+                      group.getUserFromId(senderId)!.getName(),
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
                         color: colors[
-                            AppData().group.getUserIndexFromId(senderId) %
+                            group.getUserIndexFromId(senderId) %
                                 colors.length],
                       ),
                     ),

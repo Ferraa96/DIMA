@@ -350,7 +350,8 @@ class PaymentsPage extends StatelessWidget {
                                                 date: pickedDate,
                                                 payedBy:
                                                     uids[int.parse(payedBy)],
-                                                payedTo: payedTo);
+                                                payedTo: payedTo,
+                                                group: AppData().group);
                                             DatabaseService().addPayment(
                                                 payment,
                                                 AppData().user.getGroupId());
@@ -553,6 +554,7 @@ class PaymentsPage extends StatelessWidget {
                           payedBy: paymentsList[index]['payedBy'],
                           payedTo:
                               List<String>.from(paymentsList[index]['payedTo']),
+                          group: AppData().group
                         );
                         allPayments.add(p);
                         return GestureDetector(
