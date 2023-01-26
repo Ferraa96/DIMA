@@ -21,7 +21,7 @@ class PaymentsPage extends StatelessWidget {
   List<String> uids = [];
   String payedBy = '0';
   List<bool> checkList = [];
-  bool allChecked = false;
+  bool allChecked = true;
   late String pickedDate;
   List<double> balances = [];
   int currPage = 0;
@@ -668,6 +668,13 @@ class PaymentsPage extends StatelessWidget {
               onChanged: (isChecked) {
                 setState(() {
                   checkList[i] = isChecked!;
+                  bool b = true;
+                  for (int i=0; i < checkList.length; i++) {
+                    if (!checkList[i]) {
+                      b = checkList[i];
+                    }
+                  }
+                  allChecked = b;
                 });
               },
             ),
@@ -685,7 +692,7 @@ class PaymentsPage extends StatelessWidget {
     _menuItems.clear();
     uids.clear();
     for (int i = 0; i < AppData().group.getList().length; i++) {
-      checkList.add(false);
+      checkList.add(true);
       _menuItems.add(DropdownMenuItem(
         value: i.toString(),
         child: Text(AppData().group.getList()[i].getName()),

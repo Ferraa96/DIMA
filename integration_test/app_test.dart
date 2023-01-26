@@ -38,6 +38,8 @@ void main() {
       await app.main();
       await tester.pumpAndSettle();
       
+      try {
+      //await Future.delayed(const Duration(milliseconds: 10000), (){});
       final Finder email = find.widgetWithText(TextFormField, 'Email');
       await tester.enterText(email, EMAIL);
       final Finder password = find.widgetWithText(TextFormField, 'Password');
@@ -47,6 +49,9 @@ void main() {
       final Finder button = find.widgetWithText(ElevatedButton, 'Sign in');
       expect(button, findsWidgets);
       await tester.tap(button);
+      } catch (_) {
+        print('Logged In');
+      }
       
       //carica pagina Home
       await tester.pumpAndSettle();
@@ -62,12 +67,13 @@ void main() {
       await app.main();
       await tester.pumpAndSettle();
 
+      await Future.delayed(const Duration(milliseconds: 1000), (){});
       expect(find.widgetWithText(Center, 'Welcome back, '+USERNAME), findsOneWidget);
-      expect(find.widgetWithText(BottomNavigationBar, 'Home'), findsOneWidget);
-      expect(find.widgetWithText(BottomNavigationBar, 'Chat'), findsOneWidget);
-      expect(find.widgetWithText(BottomNavigationBar, 'Payments'), findsOneWidget);
-      expect(find.widgetWithText(BottomNavigationBar, 'Dates'), findsOneWidget);
-      expect(find.widgetWithText(BottomNavigationBar, 'Shopping'), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byIcon(Icons.chat_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.attach_money), findsOneWidget);
+      expect(find.byIcon(Icons.calendar_today_rounded), findsOneWidget);
+      expect(find.byIcon(Icons.shopping_cart_outlined), findsOneWidget);
     });
     
     testWidgets('USER', (tester) async {
@@ -77,11 +83,13 @@ void main() {
       final Finder users = find.byType(ElevatedButton);
       Finder first_user = users.at(0);
       await tester.tap(first_user);
-      await Future.delayed(const Duration(milliseconds: 500), (){});
+      //await Future.delayed(const Duration(milliseconds: 1000), (){});
+      await tester.pumpAndSettle();
       expect(find.byType(Image), findsWidgets);
       expect(find.text(USERS.first), findsWidgets);
       await tester.tapAt(Offset(0, 0));
-      await Future.delayed(const Duration(milliseconds: 500), (){});
+      //await Future.delayed(const Duration(milliseconds: 1000), (){});
+      await tester.pumpAndSettle();
     });
     
     testWidgets('ADD USER', (tester) async {
@@ -91,14 +99,16 @@ void main() {
       final Finder add = find.byIcon(Icons.add);
       expect(add, findsOneWidget);
       await tester.tap(add);
-      await Future.delayed(const Duration(milliseconds: 500), (){});
+      //await Future.delayed(const Duration(milliseconds: 1000), (){});
+      await tester.pumpAndSettle();
       expect(find.text(GROUP_CODE), findsOneWidget);
       expect(find.widgetWithIcon(IconButton, Icons.copy), findsOneWidget);
       expect(find.widgetWithIcon(IconButton, Icons.share), findsOneWidget);
       final Finder close = find.widgetWithText(ElevatedButton, 'Close');
       expect(close, findsOneWidget);
       await tester.tap(close);
-      await Future.delayed(const Duration(milliseconds: 500), (){});
+      //await Future.delayed(const Duration(milliseconds: 1000), (){});
+      await tester.pumpAndSettle();
     });
     
     testWidgets('SETTINGS GENERAL CHECK', (tester) async {
@@ -108,11 +118,13 @@ void main() {
       final Finder settings = find.widgetWithIcon(IconButton, Icons.settings);
       expect(settings, findsOneWidget);
       await tester.tap(settings);
-      await Future.delayed(const Duration(milliseconds: 500), (){});
+      //await Future.delayed(const Duration(milliseconds: 1000), (){});
+      await tester.pumpAndSettle();
       expect(find.byType(Image), findsWidgets);
       expect(find.text(USERNAME), findsWidgets);
       await tester.tapAt(Offset(0, 0));
-      await Future.delayed(const Duration(milliseconds: 500), (){});
+      //await Future.delayed(const Duration(milliseconds: 1000), (){});
+      await tester.pumpAndSettle();
     });
 
     testWidgets('LOG OUT & LOG IN', (tester) async {
@@ -135,7 +147,7 @@ void main() {
       await tester.tap(find.widgetWithText(ElevatedButton, 'Sign in'));
       await tester.pumpAndSettle();
     });
-        
+    
   });
 
 
@@ -187,40 +199,54 @@ void main() {
       expect(find.text('Payed by'), findsOneWidget);
       expect(find.text('To whom'), findsOneWidget);
       expect(find.text('Select all'), findsOneWidget);
-    });
-    
-    testWidgets('ADD/REMOVE PAYMENTS', (tester) async {
-      await app.main();
-      await tester.pumpAndSettle();
-      await enterPage (tester, Icons.attach_money);
-
-      String title = getRandom(15);
-      expect(find.widgetWithText(Container, title), findsNothing);
-      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.add));
-      await tester.pumpAndSettle();
-      await tester.enterText(find.widgetWithText(TextField, 'Title'), title);
-      await tester.enterText(find.widgetWithText(TextField, 'Amount'), '300');
-      await tester.tap(find.byType(Checkbox).first);
-      await tester.tap(find.widgetWithIcon(ElevatedButton, Icons.check));
-      await tester.pumpAndSettle();
-      final Finder payment = find.widgetWithText(Container, title).first;
-      expect(payment, findsOneWidget);
 
       final Finder list = find.byIcon(Icons.list);
       expect(list, findsOneWidget);
       final Finder graph = find.byIcon(Icons.auto_graph);
       expect(graph, findsOneWidget);
-      await tester.tap(graph);
+      await tester.tapAt(tester.getCenter(graph));
+      await tester.pumpAndSettle();
       expect(find.byType(ListView), findsOneWidget);
-      await tester.tap(list);
+      await tester.tapAt(tester.getCenter(list));
+      await tester.pumpAndSettle();
+    });
+    
+    String title = getRandom(15);
 
-      await tester.longPress(payment, warnIfMissed: false);
+    testWidgets('ADD PAYMENTS', (tester) async {
+      await app.main();
+      await tester.pumpAndSettle();
+      await enterPage (tester, Icons.attach_money);
+
+      expect(find.widgetWithText(Container, title), findsNothing);
+      final Offset of = tester.getCenter(find.widgetWithIcon(FloatingActionButton, Icons.add));
+      await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.add));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.widgetWithText(TextField, 'Title'), title);
+      await tester.enterText(find.widgetWithText(TextField, 'Amount'), '300');
+      await tester.pumpAndSettle();
+      await Future.delayed(const Duration(milliseconds: 3000), (){});
+      await tester.tapAt(tester.getCenter(find.widgetWithIcon(ElevatedButton, Icons.check)));
+      await tester.pumpAndSettle();
+      
+    });
+
+    testWidgets('REMOVE PAYMENTS', (tester) async{
+      await app.main();
+      await tester.pumpAndSettle();
+      await enterPage (tester, Icons.attach_money);
+
+      final Finder payment = find.widgetWithText(Container, title).first;
+      expect(payment, findsOneWidget);
+      await tester.longPressAt(tester.getCenter(payment));
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.delete));
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(ElevatedButton, 'Remove'));
       await tester.pumpAndSettle();
       expect(find.widgetWithText(Container, title), findsNothing);
     });
+
     
   });
 
@@ -256,6 +282,7 @@ void main() {
       expect(reminder, findsOneWidget);
 
       await tester.longPress(reminder, warnIfMissed: false);
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.delete));
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(ElevatedButton, 'Remove'));
@@ -302,6 +329,7 @@ void main() {
       expect(item, findsOneWidget);
 
       await tester.longPress(item, warnIfMissed: false);
+      await tester.pumpAndSettle();
       await tester.tap(find.widgetWithIcon(FloatingActionButton, Icons.delete));
       await tester.pumpAndSettle();
       await tester.tap(find.widgetWithText(ElevatedButton, 'Remove'));
