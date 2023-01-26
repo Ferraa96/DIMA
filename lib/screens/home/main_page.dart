@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badge;
 import 'package:dima/screens/home/chat_page.dart';
 import 'package:dima/screens/home/dates.dart';
 import 'package:dima/screens/home/home.dart';
@@ -83,7 +83,7 @@ class _MainPageState extends State<MainPage> {
         backgroundColor:
             ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white,
         label: 'Home',
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[0] != 0,
           badgeContent: Text(badges[0].toString()),
           child: const Icon(
@@ -100,7 +100,7 @@ class _MainPageState extends State<MainPage> {
         backgroundColor:
             ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white,
         label: 'Chat',
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[1] != 0,
           badgeContent: Text(badges[1].toString()),
           child: const Icon(
@@ -117,7 +117,7 @@ class _MainPageState extends State<MainPage> {
         backgroundColor:
             ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white,
         label: 'Payments',
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[2] != 0,
           badgeContent: Text(badges[2].toString()),
           child: const Icon(
@@ -134,7 +134,7 @@ class _MainPageState extends State<MainPage> {
         backgroundColor:
             ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white,
         label: 'Dates',
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[3] != 0,
           badgeContent: Text(badges[3].toString()),
           child: const Icon(
@@ -151,7 +151,7 @@ class _MainPageState extends State<MainPage> {
         backgroundColor:
             ThemeProvider().isDarkMode ? const Color(0xff1e314d) : Colors.white,
         label: 'Shopping',
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[4] != 0,
           badgeContent: Text(badges[4].toString()),
           child: const Icon(
@@ -170,7 +170,7 @@ class _MainPageState extends State<MainPage> {
   List<NavigationRailDestination> _getNavRailItems() {
     return [
       NavigationRailDestination(
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[0] != 0,
           badgeContent: Text(badges[0].toString()),
           child: const Icon(
@@ -185,7 +185,7 @@ class _MainPageState extends State<MainPage> {
         label: const Text('Home'),
       ),
       NavigationRailDestination(
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[1] != 0,
           badgeContent: Text(badges[1].toString()),
           child: const Icon(
@@ -200,7 +200,7 @@ class _MainPageState extends State<MainPage> {
         label: const Text('Chat'),
       ),
       NavigationRailDestination(
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[2] != 0,
           badgeContent: Text(badges[2].toString()),
           child: const Icon(
@@ -215,7 +215,7 @@ class _MainPageState extends State<MainPage> {
         label: const Text('Payments'),
       ),
       NavigationRailDestination(
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[3] != 0,
           badgeContent: Text(badges[3].toString()),
           child: const Icon(
@@ -230,7 +230,7 @@ class _MainPageState extends State<MainPage> {
         label: const Text('Dates'),
       ),
       NavigationRailDestination(
-        icon: Badge(
+        icon: badge.Badge(
           showBadge: badges[4] != 0,
           badgeContent: Text(badges[4].toString()),
           child: const Icon(
