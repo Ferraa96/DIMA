@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/models/reminder.dart';
 import 'package:dima/services/app_data.dart';
@@ -118,13 +116,22 @@ class Dates extends StatelessWidget {
                 );
               } else {
                 return ElevatedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      )
+                    )
+                  ),
                   onPressed: () {
                     setState(() {
                       _showAll = !_showAll;
                     });
                   },
                   child: Text(
-                    _showAll ? 'Show only for this day' : 'Show all reminders',
+                    _showAll
+                        ? 'Show only for this day'
+                        : 'Show all reminders',
                   ),
                 );
               }
@@ -139,7 +146,8 @@ class Dates extends StatelessWidget {
       );
     } else {
       return const Center(
-          child: Text('There are no reminders',
+        child: Text(
+          'There are no reminders',
         ),
       );
     }
@@ -149,13 +157,12 @@ class Dates extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.grey,
-        ),
-        borderRadius: const BorderRadius.all(
-          Radius.circular(10),
-        )
-      ),
+          border: Border.all(
+            color: Colors.grey,
+          ),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(10),
+          )),
       child: TableCalendar(
         shouldFillViewport: true,
         selectedDayPredicate: (day) {
@@ -256,7 +263,7 @@ class Dates extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.orangeAccent,
+                            backgroundColor: Colors.orangeAccent,
                           ),
                           onPressed: () {
                             List<Reminder> toBeRemoved = [];
@@ -280,7 +287,7 @@ class Dates extends StatelessWidget {
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.orangeAccent,
+                            backgroundColor: Colors.orangeAccent,
                           ),
                           onPressed: () {
                             Navigator.of(ctx).pop();
@@ -351,143 +358,143 @@ class Dates extends StatelessWidget {
                               right: 10,
                             ),
                             child: SingleChildScrollView(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      'Add reminder',
-                                      style: TextStyle(
-                                        fontSize: 18,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'Add reminder',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                        ),
                                       ),
-                                    ),
-                                    ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        shape: const CircleBorder(),
-                                      ),
-                                      onPressed: () {
-                                        if (titleController.text.isNotEmpty) {
-                                          DatabaseService db =
-                                              DatabaseService();
-                                          DateTime dateTime = DateTime(
-                                            pickedDate.year,
-                                            pickedDate.month,
-                                            pickedDate.day,
-                                            pickedTime.hour,
-                                            pickedTime.minute,
-                                          );
-                                          Reminder reminder = Reminder(
+                                      ElevatedButton(
+                                        style: ElevatedButton.styleFrom(
+                                          shape: const CircleBorder(),
+                                        ),
+                                        onPressed: () {
+                                          if (titleController.text.isNotEmpty) {
+                                            DatabaseService db =
+                                                DatabaseService();
+                                            DateTime dateTime = DateTime(
+                                              pickedDate.year,
+                                              pickedDate.month,
+                                              pickedDate.day,
+                                              pickedTime.hour,
+                                              pickedTime.minute,
+                                            );
+                                            Reminder reminder = Reminder(
                                               title: titleController.text,
                                               dateTime: dateTime,
                                               creatorUid:
                                                   AppData().user.getUid(),
                                               group: AppData().group,
-                                              );
-                                          db.addReminder(reminder,
-                                              AppData().user.getGroupId());
-                                          Navigator.of(context).pop();
-                                        } else {
-                                          Fluttertoast.showToast(
-                                              msg: 'Set a title');
-                                        }
-                                      },
-                                      child: const Icon(
-                                        Icons.check,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Divider(),
-                                Row(
-                                children: [
-                                Flexible(
-                                  child: TextField(
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
-                                    controller: titleController,
-                                    cursorColor: Colors.orangeAccent,
-                                    decoration: const InputDecoration(
-                                      label: Text(
-                                        'Title',
-                                        style: TextStyle(
-                                          color: Colors.grey,
+                                            );
+                                            db.addReminder(reminder,
+                                                AppData().user.getGroupId());
+                                            Navigator.of(context).pop();
+                                          } else {
+                                            Fluttertoast.showToast(
+                                                msg: 'Set a title');
+                                          }
+                                        },
+                                        child: const Icon(
+                                          Icons.check,
+                                          color: Colors.black,
                                         ),
                                       ),
-                                      focusedBorder: UnderlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.grey,
+                                    ],
+                                  ),
+                                  const Divider(),
+                                  Row(
+                                    children: [
+                                      Flexible(
+                                        child: TextField(
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
+                                          controller: titleController,
+                                          cursorColor: Colors.orangeAccent,
+                                          decoration: const InputDecoration(
+                                            label: Text(
+                                              'Title',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
+                                    ],
+                                  ),
+                                  const Divider(),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showDatePicker(
+                                        context: context,
+                                        initialDate: _focusedDay,
+                                        firstDate: DateTime(2000),
+                                        lastDate: DateTime(2030),
+                                      ).then(
+                                        (value) {
+                                          if (value != null &&
+                                              value != pickedDate) {
+                                            setState(
+                                              () {
+                                                pickedDate = value;
+                                              },
+                                            );
+                                          }
+                                        },
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          'assets/icons/calendar.png',
+                                          width: 30,
+                                        ),
+                                        const VerticalDivider(),
+                                        Text(formatter.formatDate(pickedDate)),
+                                      ],
                                     ),
                                   ),
-                                ),
+                                  const Divider(),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showTimePicker(
+                                        context: context,
+                                        initialTime: TimeOfDay.now(),
+                                      ).then(
+                                        (value) {
+                                          if (value != null) {
+                                            setState(() {
+                                              pickedTime = value;
+                                            });
+                                          }
+                                        },
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Image.asset(
+                                          'assets/icons/clock.png',
+                                          width: 30,
+                                        ),
+                                        const VerticalDivider(),
+                                        Text(formatter.formatTime(pickedTime)),
+                                      ],
+                                    ),
+                                  ),
                                 ],
-                                ),
-                                const Divider(),
-                                GestureDetector(
-                                  onTap: () {
-                                    showDatePicker(
-                                      context: context,
-                                      initialDate: _focusedDay,
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2030),
-                                    ).then(
-                                      (value) {
-                                        if (value != null &&
-                                            value != pickedDate) {
-                                          setState(
-                                            () {
-                                              pickedDate = value;
-                                            },
-                                          );
-                                        }
-                                      },
-                                    );
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/icons/calendar.png',
-                                        width: 30,
-                                      ),
-                                      const VerticalDivider(),
-                                      Text(formatter.formatDate(pickedDate)),
-                                    ],
-                                  ),
-                                ),
-                                const Divider(),
-                                GestureDetector(
-                                  onTap: () {
-                                    showTimePicker(
-                                      context: context,
-                                      initialTime: TimeOfDay.now(),
-                                    ).then(
-                                      (value) {
-                                        if (value != null) {
-                                          setState(() {
-                                            pickedTime = value;
-                                          });
-                                        }
-                                      },
-                                    );
-                                  },
-                                  child: Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/icons/clock.png',
-                                        width: 30,
-                                      ),
-                                      const VerticalDivider(),
-                                      Text(formatter.formatTime(pickedTime)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
+                              ),
                             ),
                           ),
                         );

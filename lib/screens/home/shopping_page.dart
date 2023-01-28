@@ -64,7 +64,7 @@ class ShoppingPage extends StatelessWidget {
                       children: [
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.orangeAccent,
+                            backgroundColor: Colors.orangeAccent,
                           ),
                           onPressed: () {
                             List<Product> toBeRemoved = [];
@@ -92,7 +92,7 @@ class ShoppingPage extends StatelessWidget {
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.orangeAccent,
+                            backgroundColor: Colors.orangeAccent,
                           ),
                           onPressed: () {
                             Navigator.of(ctx).pop();

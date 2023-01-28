@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:badges/badges.dart' as badge;
 import 'package:dima/screens/home/chat_page.dart';
 import 'package:dima/screens/home/dates.dart';
@@ -262,10 +260,10 @@ class _MainPageState extends State<MainPage> {
           darkTheme: MyThemes.darkTheme,
           home: DefaultTabController(
             length: 5,
-            child: SafeArea(
-              child: Scaffold(
-                resizeToAvoidBottomInset: false,
-                body: !isWideScreen
+            child: Scaffold(
+              resizeToAvoidBottomInset: false,
+              body: SafeArea(
+                child: !isWideScreen
                     ? pages[index]
                     : Row(
                         children: [
@@ -289,26 +287,26 @@ class _MainPageState extends State<MainPage> {
                           ),
                         ],
                       ),
-                extendBody: false,
-                bottomNavigationBar: !isWideScreen
-                    ? BottomNavigationBar(
-                        elevation: 1,
-                        items: _getBottomNavBarItems(),
-                        currentIndex: index,
-                        unselectedFontSize: 10,
-                        selectedFontSize: 15,
-                        showUnselectedLabels: true,
-                        onTap: (index) {
-                          if (this.index != index) {
-                            setState(() {
-                              this.index = index;
-                              badges[index] = 0;
-                            });
-                          }
-                        },
-                      )
-                    : null,
               ),
+              extendBody: false,
+              bottomNavigationBar: !isWideScreen
+                  ? BottomNavigationBar(
+                      elevation: 1,
+                      items: _getBottomNavBarItems(),
+                      currentIndex: index,
+                      unselectedFontSize: 10,
+                      selectedFontSize: 15,
+                      showUnselectedLabels: true,
+                      onTap: (index) {
+                        if (this.index != index) {
+                          setState(() {
+                            this.index = index;
+                            badges[index] = 0;
+                          });
+                        }
+                      },
+                    )
+                  : null,
             ),
           ),
         );

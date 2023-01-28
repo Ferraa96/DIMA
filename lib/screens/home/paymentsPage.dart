@@ -12,8 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-import 'dart:developer';
-
 class PaymentsPage extends StatelessWidget {
   final List paymentsList;
   PaymentsPage({Key? key, required this.paymentsList}) : super(key: key);
@@ -105,9 +103,10 @@ class PaymentsPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       border: Border.all(
                         color: colors[debtor % colors.length],
+                        width: 1,
                       ),
                       borderRadius: BorderRadius.circular(10),
-                      color: colors[debtor % colors.length].withOpacity(0.6),
+                      color: colors[debtor % colors.length].withOpacity(0.7),
                     ),
                     margin: const EdgeInsets.only(left: 10, right: 10),
                     child: Container(
@@ -116,20 +115,17 @@ class PaymentsPage extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          Text(
+                            AppData().group.getList()[debtor].getName(),
+                            style: const TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
                           Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              const Text("ows"),
                               Text(
-                                AppData().group.getList()[debtor].getName(),
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                ),
-                              ),
-                              const Text(
-                                'ows',
-                              ),
-                              Text(
-                                'to ${AppData().group.getList()[creditor].getName()}',
+                                '${amountToUser.values.elementAt(i)[j]} €',
                                 style: const TextStyle(
                                   fontSize: 18,
                                 ),
@@ -137,7 +133,7 @@ class PaymentsPage extends StatelessWidget {
                             ],
                           ),
                           Text(
-                            '${amountToUser.values.elementAt(i)[j]} €',
+                            "to ${AppData().group.getList()[creditor].getName()}",
                             style: const TextStyle(
                               fontSize: 18,
                             ),
@@ -154,7 +150,7 @@ class PaymentsPage extends StatelessWidget {
         },
         separatorBuilder: (context, index) {
           return const SizedBox(
-            height: 5,
+            height: 6,
           );
         },
       ),
@@ -229,7 +225,7 @@ class PaymentsPage extends StatelessWidget {
                         ),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                            primary: Colors.orangeAccent,
+                            backgroundColor: Colors.orangeAccent,
                           ),
                           onPressed: () {
                             Navigator.of(ctx).pop();
@@ -548,14 +544,13 @@ class PaymentsPage extends StatelessWidget {
                           );
                         }
                         Payment p = Payment(
-                          title: paymentsList[index]['title'],
-                          amount: (paymentsList[index]['amount']).toDouble(),
-                          date: paymentsList[index]['date'],
-                          payedBy: paymentsList[index]['payedBy'],
-                          payedTo:
-                              List<String>.from(paymentsList[index]['payedTo']),
-                          group: AppData().group
-                        );
+                            title: paymentsList[index]['title'],
+                            amount: (paymentsList[index]['amount']).toDouble(),
+                            date: paymentsList[index]['date'],
+                            payedBy: paymentsList[index]['payedBy'],
+                            payedTo: List<String>.from(
+                                paymentsList[index]['payedTo']),
+                            group: AppData().group);
                         allPayments.add(p);
                         return GestureDetector(
                           onLongPress: () {
@@ -669,7 +664,7 @@ class PaymentsPage extends StatelessWidget {
                 setState(() {
                   checkList[i] = isChecked!;
                   bool b = true;
-                  for (int i=0; i < checkList.length; i++) {
+                  for (int i = 0; i < checkList.length; i++) {
                     if (!checkList[i]) {
                       b = checkList[i];
                     }

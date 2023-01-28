@@ -44,7 +44,8 @@ class ChatPage extends StatelessWidget {
             return ChatMessage(
               senderId: chatList[chatList.length - index - 1]['sender'],
               hasMedia: true,
-              img: Image.network(chatList[chatList.length - index - 1]['image']),
+              img:
+                  Image.network(chatList[chatList.length - index - 1]['image']),
               timestamp: DateTime.parse(
                 chatList[chatList.length - index - 1]['timestamp'],
               ),
@@ -65,8 +66,13 @@ class ChatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextEditingController chatController = TextEditingController();
+    double keyboardPadding =
+        MediaQuery.of(context).orientation == Orientation.portrait
+            ? MediaQuery.of(context).viewInsets.bottom - kToolbarHeight
+            : MediaQuery.of(context).viewInsets.bottom;
     return Padding(
-      padding: MediaQuery.of(context).viewInsets,
+      padding:
+          EdgeInsets.only(bottom: keyboardPadding > 0 ? keyboardPadding : 0),
       child: Stack(
         children: <Widget>[
           _getMessages(),
@@ -164,20 +170,20 @@ class ChatPage extends StatelessWidget {
                             hasMedia: false,
                             timestamp: DateTime.now(),
                             group: AppData().group,
-                            user: AppData().user, 
+                            user: AppData().user,
                           );
-                          DatabaseService()
-                              .sendMessage(msg, AppData().user.getGroupId(), '');
+                          DatabaseService().sendMessage(
+                              msg, AppData().user.getGroupId(), '');
                           chatController.clear();
                         }
                       },
+                      backgroundColor: Colors.blue,
+                      elevation: 0,
                       child: const Icon(
                         Icons.send,
                         color: Colors.white,
                         size: 18,
                       ),
-                      backgroundColor: Colors.blue,
-                      elevation: 0,
                     ),
                   ),
                 ],

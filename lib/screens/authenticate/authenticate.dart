@@ -7,10 +7,10 @@ class Authenticate extends StatefulWidget {
 
 
   @override
-  _AuthenticateState createState() => _AuthenticateState();
+  AuthenticateState createState() => AuthenticateState();
 }
 
-class _AuthenticateState extends State<Authenticate> {
+class AuthenticateState extends State<Authenticate> {
   bool showSignIn = true;
 
   void toggleView() {

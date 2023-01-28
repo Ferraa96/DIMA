@@ -33,8 +33,8 @@ void main() {
 
     expect(find.textContaining(item), findsOneWidget);
     expect(find.textContaining(category), findsOneWidget);
-    expect(find.textContaining(quantity.toString()+' '+unit), findsOneWidget);
-    expect(find.textContaining('Added by '+users[0].getName()), findsOneWidget);
+    expect(find.textContaining('$quantity $unit'), findsOneWidget);
+    expect(find.textContaining('Added by ${users[0].getName()}'), findsOneWidget);
     
   });
 

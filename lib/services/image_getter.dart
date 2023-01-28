@@ -58,12 +58,11 @@ class _GalleryState extends State<Gallery> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width /
-        MediaQuery.of(context).devicePixelRatio;
+    double width = MediaQuery.of(context).size.width;
     double neighbour = 3;
     double left = 6;
     double right = 6;
-    int colNum = (width / 140).round();
+    int colNum = (width / 100).round();
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => Navigator.of(context).pop(),

@@ -1,5 +1,3 @@
-import 'package:dima/models/user.dart';
-import 'package:dima/services/app_data.dart';
 import 'package:dima/shared/formatter.dart';
 import 'package:flutter/material.dart';
 import 'package:dima/models/group.dart';
@@ -27,15 +25,15 @@ class Reminder extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(title),
-              Text(formatter.formatDateAndTime(dateTime)),
+              Expanded(child: Text(title)),
+              Expanded(child: Text(formatter.formatDateAndTime(dateTime))),
             ],
           ),
           const Divider(),
           Align(
             alignment: Alignment.centerRight,
             child: Text(
-              'Created by ' + group.getUserFromId(creatorUid)!.getName(),
+              'Created by ${group.getUserFromId(creatorUid)!.getName()}',
             ),
           ),
         ],

@@ -1,4 +1,3 @@
-import 'package:dima/services/app_data.dart';
 import 'package:dima/shared/constants.dart';
 import 'package:dima/shared/formatter.dart';
 import 'package:dismissible_page/dismissible_page.dart';
@@ -204,8 +203,8 @@ class ChatMessage extends StatelessWidget {
                     ),
                     GestureDetector(
                       child: Hero(
-                        child: Image(image: img!.image),
                         tag: identityHashCode(this),
+                        child: Image(image: img!.image),
                       ),
                       onTap: () {
                         _buildMediaViewer(context);
@@ -256,8 +255,8 @@ class ChatMessage extends StatelessWidget {
                 padding: const EdgeInsets.all(1),
                 child: GestureDetector(
                   child: Hero(
-                    child: Image(image: img!.image),
                     tag: identityHashCode(this),
+                    child: Image(image: img!.image),
                   ),
                   onTap: () {
                     _buildMediaViewer(context);

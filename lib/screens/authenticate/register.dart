@@ -9,10 +9,10 @@ class Register extends StatefulWidget {
   const Register({Key? key, required this.toggleView}) : super(key: key);
 
   @override
-  _RegisterState createState() => _RegisterState();
+  RegisterState createState() => RegisterState();
 }
 
-class _RegisterState extends State<Register> {
+class RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
 
@@ -161,7 +161,7 @@ class _RegisterState extends State<Register> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.orangeAccent,
+                          backgroundColor: Colors.orangeAccent,
                           elevation: 10,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
@@ -205,15 +205,15 @@ class _RegisterState extends State<Register> {
                                     auth.getUser()!.getUid(), email);
                               }
                             },
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              fixedSize: const Size(30, 30),
+                              shape: const CircleBorder(),
+                            ),
                             child: Image.asset(
                               'assets/logos/google.png',
                               width: 30,
                               height: 30,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
-                              fixedSize: const Size(30, 30),
-                              shape: const CircleBorder(),
                             ),
                           ),
                           ElevatedButton(
@@ -228,12 +228,12 @@ class _RegisterState extends State<Register> {
                                 });
                               }
                             },
-                            child: Image.asset('assets/logos/facebook.png'),
                             style: ElevatedButton.styleFrom(
-                              primary: Colors.white,
+                              backgroundColor: Colors.white,
                               fixedSize: const Size(30, 30),
                               shape: const CircleBorder(),
                             ),
+                            child: Image.asset('assets/logos/facebook.png'),
                           ),
                         ],
                       ),

@@ -1,14 +1,19 @@
+import 'dart:developer';
+
 import 'package:dima/models/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:twitter_login/entity/auth_result.dart';
+import 'package:twitter_login/twitter_login.dart';
 
 class AuthService {
   final FirebaseAuth auth = FirebaseAuth.instance;
   MyUser? _myUser;
 
-  void setUser(MyUser _myUser) {
-    this._myUser = _myUser;
+  void setUser(MyUser myUser) {
+    _myUser = myUser;
   }
 
   MyUser? getUser() {
@@ -43,7 +48,6 @@ class AuthService {
       _myUser = _userFromFirebaseUser(result.user);
       return true;
     } catch (e) {
-      print(e.toString());
       return false;
     }
   }
@@ -62,8 +66,22 @@ class AuthService {
       _myUser = _userFromFirebaseUser(result.user);
       return googleUser!.email;
     } catch (e) {
-      print(e.toString());
       return '';
+    }
+  }
+
+  // sign in Twitter
+  Future signInWithTwitter() async {
+    TwitterAuthProvider twitterProvider = TwitterAuthProvider();
+    try {
+      UserCredential result = await auth.signInWithProvider(twitterProvider);
+      if (result.user != null && result.user!.email != null) {
+        return result.user!.email;
+      } else {
+        return ':(';
+      }
+    } catch (e) {
+      return 'Exception';
     }
   }
 
@@ -78,7 +96,6 @@ class AuthService {
       _myUser = _userFromFirebaseUser(result.user);
       return true;
     } catch (e) {
-      print(e.toString());
       return false;
     }
   }
@@ -91,7 +108,6 @@ class AuthService {
       _myUser = _userFromFirebaseUser(result.user);
       return true;
     } catch (e) {
-      print(e.toString());
       return false;
     }
   }
@@ -101,7 +117,6 @@ class AuthService {
     try {
       return await auth.signOut();
     } catch (e) {
-      print(e.toString());
       return null;
     }
   }

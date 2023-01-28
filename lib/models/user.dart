@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class MyUser {
   late String uid = '';
   late String name = '';
-  static late String groupId = '';
+  static String groupId = '';
   String picUrl = '';
   late Image picture;
 

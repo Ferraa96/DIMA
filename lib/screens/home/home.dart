@@ -110,7 +110,7 @@ class Home extends StatelessWidget {
           );
         },
         style: ElevatedButton.styleFrom(
-          primary: Colors.transparent,
+          backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
           shape: const CircleBorder(),
         ),
@@ -184,9 +184,7 @@ class Home extends StatelessWidget {
                   IconButton(
                     onPressed: () {
                       Share.share(
-                          'Join my group on Dima\nInvitation code:\n' +
-                              groupCode +
-                              '\n',
+                          'Join my group on Dima\nInvitation code:\n$groupCode\n',
                           subject: 'Dima');
                     },
                     icon: const Icon(Icons.share),
@@ -202,7 +200,7 @@ class Home extends StatelessWidget {
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                primary: Colors.orangeAccent,
+                backgroundColor: Colors.orangeAccent,
               ),
               child: const Text(
                 'Close',
@@ -392,7 +390,7 @@ class Home extends StatelessWidget {
         : window.physicalSize.height;
     size = size / window.devicePixelRatio;
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(ctx);
-    TextEditingController _nameController = TextEditingController(
+    TextEditingController nameController = TextEditingController(
       text: name,
     );
     return StatefulBuilder(builder: (context, setState) {
@@ -451,7 +449,7 @@ class Home extends StatelessWidget {
                             : Colors.black,
                       ),
                       textCapitalization: TextCapitalization.sentences,
-                      controller: _nameController,
+                      controller: nameController,
                       onFieldSubmitted: (newName) {
                         if (newName.isNotEmpty && newName != name) {
                           db.updateUserName(AppData().user.getUid(), newName);
@@ -471,15 +469,15 @@ class Home extends StatelessWidget {
                         setState(() {
                           _modifyName = true;
                           focusNode.requestFocus();
-                          _nameController.selection = TextSelection(
+                          nameController.selection = TextSelection(
                               baseOffset: 0,
-                              extentOffset: _nameController.text.length);
+                              extentOffset: nameController.text.length);
                         });
                       } else {
-                        if (_nameController.text.isNotEmpty &&
-                            _nameController.text != name) {
+                        if (nameController.text.isNotEmpty &&
+                            nameController.text != name) {
                           db.updateUserName(
-                              AppData().user.getUid(), _nameController.text);
+                              AppData().user.getUid(), nameController.text);
                         }
                         FocusScope.of(context).unfocus();
                         setState(() {
@@ -609,7 +607,7 @@ class Home extends StatelessWidget {
                                 children: [
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.orangeAccent,
+                                      backgroundColor: Colors.orangeAccent,
                                     ),
                                     onPressed: () {
                                       AuthService().signOut();
@@ -628,7 +626,7 @@ class Home extends StatelessWidget {
                                   ),
                                   ElevatedButton(
                                     style: ElevatedButton.styleFrom(
-                                      primary: Colors.orangeAccent,
+                                      backgroundColor: Colors.orangeAccent,
                                     ),
                                     onPressed: () {
                                       Navigator.of(ctx).pop();
@@ -704,7 +702,7 @@ class Home extends StatelessWidget {
         id: 'balances',
         domainFn: (ChartSeries s, _) => s.name,
         measureFn: (ChartSeries s, _) => s.balance,
-        labelAccessorFn: (ChartSeries s, _) => s.balance.abs().toString() + '€',
+        labelAccessorFn: (ChartSeries s, _) => '${s.balance.abs()}€',
         colorFn: (ChartSeries s, _) => charts.ColorUtil.fromDartColor(
           colors[int.parse(s.name) % colors.length],
         ),
@@ -1069,11 +1067,7 @@ class Home extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                days[DateTime.now().weekday]!.toUpperCase().substring(0, 3) +
-                    ', ' +
-                    DateTime.now().day.toString() +
-                    ' ' +
-                    months[DateTime.now().month]!.toUpperCase(),
+                '${days[DateTime.now().weekday]!.toUpperCase().substring(0, 3)}, ${DateTime.now().day} ${months[DateTime.now().month]!.toUpperCase()}',
                 style: const TextStyle(
                   color: Colors.black87,
                   fontSize: 18,
@@ -1187,7 +1181,7 @@ class Home extends StatelessWidget {
     double width = window.physicalSize.width / window.devicePixelRatio;
     double height = window.physicalSize.height / window.devicePixelRatio;
     double widgetHeightHor = height / 3;
-    double widgetWidthVert = width / 2 - width / 50;
+    double widgetWidthVert = width / 2 - width / 20;
     return MaterialApp(
       themeMode: ThemeProvider.themeMode,
       theme: MyThemes.lightTheme,

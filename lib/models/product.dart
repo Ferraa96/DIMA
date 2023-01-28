@@ -1,4 +1,3 @@
-import 'package:dima/services/app_data.dart';
 import 'package:flutter/material.dart';
 import 'package:dima/models/group.dart';
 
@@ -26,19 +25,23 @@ class Product extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(item),
-              Text(quantity.toString() + ' ' + unit),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item),
+                Text('$quantity $unit'),
+              ],
+            ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(category),
-              Text('Added by ' + group.getUserFromId(user)!.getName()),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(category),
+                Text('Added by ${group.getUserFromId(user)!.getName()}'),
+              ],
+            ),
           ),
         ],
       ),

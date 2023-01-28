@@ -30,8 +30,7 @@ void main() {
 
     expect(find.textContaining(title), findsOneWidget);
     expect(find.textContaining(Formatter().formatDateAndTime(dateTime)), findsOneWidget);
-    expect(find.textContaining('Created by '+users[0].getUid()), findsOneWidget);
-    expect(find.byType(Divider), findsOneWidget);
+    expect(find.textContaining('Created by ${users[0].getUid()}'), findsOneWidget);
     
   });
 

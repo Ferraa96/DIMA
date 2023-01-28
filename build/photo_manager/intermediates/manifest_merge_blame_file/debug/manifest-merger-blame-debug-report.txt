@@ -3,10 +3,10 @@
 3    package="com.fluttercandies.photo_manager" >
 4
 5    <uses-sdk android:minSdkVersion="16" />
-5-->C:\Users\frape\Documents\flutter\.pub-cache\hosted\pub.dartlang.org\photo_manager-2.5.2\android\src\main\AndroidManifest.xml
+5-->C:\Users\Administrator\AppData\Local\Pub\Cache\hosted\pub.dev\photo_manager-2.5.2\android\src\main\AndroidManifest.xml
 6
 7    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-7-->C:\Users\frape\Documents\flutter\.pub-cache\hosted\pub.dartlang.org\photo_manager-2.5.2\android\src\main\AndroidManifest.xml:4:5-80
-7-->C:\Users\frape\Documents\flutter\.pub-cache\hosted\pub.dartlang.org\photo_manager-2.5.2\android\src\main\AndroidManifest.xml:4:22-77
+7-->C:\Users\Administrator\AppData\Local\Pub\Cache\hosted\pub.dev\photo_manager-2.5.2\android\src\main\AndroidManifest.xml:4:5-80
+7-->C:\Users\Administrator\AppData\Local\Pub\Cache\hosted\pub.dev\photo_manager-2.5.2\android\src\main\AndroidManifest.xml:4:22-77
 8
 9</manifest>

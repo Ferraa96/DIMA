@@ -10,13 +10,10 @@ import 'package:dima/models/user.dart';
 import 'dart:math';
 
 import 'package:dima/services/app_data.dart';
-import 'package:dima/services/image_editor.dart';
-import 'package:dima/services/image_getter.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 class DatabaseService {
@@ -103,9 +100,9 @@ class DatabaseService {
 
   String _getRandomString() {
     Random rand = Random();
-    const _chars =
+    const String chars =
         'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-    return List.generate(6, (index) => _chars[rand.nextInt(_chars.length)])
+    return List.generate(6, (index) => chars[rand.nextInt(chars.length)])
         .join();
   }
 
