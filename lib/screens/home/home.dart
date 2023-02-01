@@ -189,7 +189,7 @@ class Home extends StatelessWidget {
                   IconButton(
                     onPressed: () {
                       Share.share(
-                          'Join my group on Dima\nInvitation code:\n$groupCode\n',
+                          'Join my group on Housie\nInvitation code:\n$groupCode\n',
                           subject: 'Dima');
                     },
                     icon: const Icon(Icons.share),
@@ -1186,7 +1186,7 @@ class Home extends StatelessWidget {
     double width = window.physicalSize.width / window.devicePixelRatio;
     double height = window.physicalSize.height / window.devicePixelRatio;
     double widgetHeightHor = height / 3;
-    double widgetWidthVert = width / 2 - width / 20;
+    double widgetWidthVert = width / 2 - width / 50;
     return MaterialApp(
       themeMode: ThemeProvider.themeMode,
       theme: MyThemes.lightTheme,

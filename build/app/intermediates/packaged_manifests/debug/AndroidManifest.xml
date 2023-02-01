@@ -73,7 +73,6 @@
                 <!-- <category android:name="android.intent.category.BROWSABLE" /> -->
                 <!-- <data android:scheme="my.test.app" /> -->
                 <!-- <data android:scheme="twitter-firebase-auth"/> -->
-                <data android:scheme="housie" />
             </intent-filter>
         </activity>
         <activity

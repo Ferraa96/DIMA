@@ -448,6 +448,7 @@ class PaymentsPage extends StatelessWidget {
                                         width: 10,
                                       ),
                                       DropdownButton<String>(
+                                        dropdownColor: color,
                                         hint: Text(AppData().user.getName()),
                                         value: payedBy,
                                         items: _menuItems,

@@ -81,19 +81,18 @@ class GetUserInfo extends StatelessWidget {
     DatabaseService db = DatabaseService();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 245, 245, 255),
-      appBar: AppBar(
-        title: const Text(
-          'Housie',
-          style: TextStyle(color: Colors.orangeAccent),
-        ),
-        backgroundColor: const Color.fromARGB(255, 245, 245, 255),
-        elevation: 0.0,
-      ),
       body: Column(
         children: <Widget>[
+          const SizedBox(
+            height: 60,
+          ),
           const Text(
-            'Welcome',
-            style: TextStyle(color: Colors.orangeAccent),
+            'Welcome to Housie',
+            style: TextStyle(
+              color: Colors.orangeAccent,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(
             height: 40.0,
@@ -142,7 +141,10 @@ class GetUserInfo extends StatelessWidget {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => MainPage(user: AppData().user, group: AppData().group,)));
+                            builder: (context) => MainPage(
+                                  user: AppData().user,
+                                  group: AppData().group,
+                                )));
                   }
                 });
               } else {
@@ -163,8 +165,13 @@ class GetUserInfo extends StatelessWidget {
                 AuthService auth = AuthService();
                 db.updateUserName(auth.getUserId(), name);
                 await db.createGroup(auth.getUserId());
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => MainPage(user: AppData().user, group: AppData().group,)));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => MainPage(
+                              user: AppData().user,
+                              group: AppData().group,
+                            )));
               } else {
                 Fluttertoast.showToast(
                   msg: 'Please insert your name',

@@ -72,20 +72,24 @@ class AuthService {
 
   // sign in Twitter
   Future signInWithTwitter() async {
-    final TwitterLogin twitterLogin = TwitterLogin(
-      apiKey: "Cs5JmIydoSptkMUYQmob8NxQV",
-      apiSecretKey: "74bdO9cJoC3uajF0vJ47tCZWTqJcLWv9QwxWefZ91D0akvxwiZ",
-      redirectURI: "housie://",
-    );
-    final loginResult = await twitterLogin.login();
-    if (loginResult.status == TwitterLoginStatus.loggedIn) {
-      final AuthCredential credential = TwitterAuthProvider.credential(
-        accessToken: loginResult.authToken!,
-        secret: loginResult.authTokenSecret!,
+    try {
+      final TwitterLogin twitterLogin = TwitterLogin(
+        apiKey: "Cs5JmIydoSptkMUYQmob8NxQV",
+        apiSecretKey: "74bdO9cJoC3uajF0vJ47tCZWTqJcLWv9QwxWefZ91D0akvxwiZ",
+        redirectURI: "housie://",
       );
-      UserCredential result = await auth.signInWithCredential(credential);
-      _myUser = _userFromFirebaseUser(result.user);
-      return loginResult.user!.name;
+      final loginResult = await twitterLogin.login();
+      if (loginResult.status == TwitterLoginStatus.loggedIn) {
+        final AuthCredential credential = TwitterAuthProvider.credential(
+          accessToken: loginResult.authToken!,
+          secret: loginResult.authTokenSecret!,
+        );
+        UserCredential result = await auth.signInWithCredential(credential);
+        _myUser = _userFromFirebaseUser(result.user);
+        return loginResult.user!.name;
+      }
+    } catch (e) {
+      return '';
     }
   }
 

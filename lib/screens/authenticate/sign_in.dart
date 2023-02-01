@@ -208,7 +208,6 @@ class SignInState extends State<SignIn> {
                                   error = email;
                                   loading = false;
                                 });
-                                /*
                                 if (email == '') {
                                   setState(() {
                                     error = 'Could not sign in';
@@ -219,14 +218,13 @@ class SignInState extends State<SignIn> {
                                   db.registerUser(
                                       auth.getUser()!.getUid(), email);
                                 }
-                                */
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
                                 fixedSize: const Size(30, 30),
                                 shape: const CircleBorder(),
                               ),
-                              child: Image.asset('assets/logos/facebook.png'),
+                              child: Image.asset('assets/logos/twitter.png'),
                             ),
                           ],
                         ),

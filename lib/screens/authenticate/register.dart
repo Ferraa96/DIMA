@@ -233,7 +233,7 @@ class RegisterState extends State<Register> {
                               setState(() {
                                 loading = true;
                               });
-                              if (await auth.signInWithFacebook() == false) {
+                              if (await auth.signInWithTwitter() == false) {
                                 setState(() {
                                   error = 'Could not sign in';
                                   loading = false;
@@ -245,7 +245,7 @@ class RegisterState extends State<Register> {
                               fixedSize: const Size(30, 30),
                               shape: const CircleBorder(),
                             ),
-                            child: Image.asset('assets/logos/facebook.png'),
+                            child: Image.asset('assets/logos/twitter.png'),
                           ),
                         ],
                       ),
