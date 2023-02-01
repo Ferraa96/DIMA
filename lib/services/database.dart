@@ -106,7 +106,7 @@ class DatabaseService {
         .join();
   }
 
-  String createGroup(String uid) {
+  Future<String> createGroup(String uid) async {
     List member = [uid];
     String code = _getRandomString();
     CollectionReference groups =
@@ -114,14 +114,14 @@ class DatabaseService {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     CollectionReference invitationCode =
         FirebaseFirestore.instance.collection('invitationCode');
-    groups.doc(uid).set({
+    await groups.doc(uid).set({
       'members': member,
       'invitationCode': code,
     });
-    users.doc(uid).update({
+    await users.doc(uid).update({
       'groupId': uid,
     });
-    invitationCode.doc(code).set({
+    await invitationCode.doc(code).set({
       'group': uid,
     });
     return code;

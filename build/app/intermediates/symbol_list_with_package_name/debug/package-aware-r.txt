@@ -830,6 +830,7 @@ drawable common_google_signin_btn_text_light_normal_background
 drawable corner
 drawable googleg_disabled_color_18
 drawable googleg_standard_color_18
+drawable ic_launcher_background
 drawable launch_background
 drawable notification_action_background
 drawable notification_bg
@@ -1219,6 +1220,13 @@ layout ucrop_layout_scale_wheel
 layout ucrop_view
 menu ucrop_menu_activity
 mipmap ic_launcher
+mipmap ic_launcher_adaptive_back
+mipmap ic_launcher_adaptive_fore
+mipmap ic_launcher_background
+mipmap ic_launcher_foreground
+mipmap ic_launcher_monochrome
+mipmap ic_launcher_round
+mipmap launcher_icon
 raw firebase_common_keep
 string abc_action_bar_home_description
 string abc_action_bar_up_description

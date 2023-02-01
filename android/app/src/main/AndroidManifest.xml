@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
    <application
-        android:label="dima"
+        android:label="Housie"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -29,6 +29,12 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
+                <!-- <action android:name="android.intent.action.VIEW" /> -->
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- <category android:name="android.intent.category.BROWSABLE" /> -->
+                <!-- <data android:scheme="my.test.app" /> -->
+                <!-- <data android:scheme="twitter-firebase-auth"/> -->
+                <data android:scheme="housie"/>
             </intent-filter>
         </activity>
         <activity

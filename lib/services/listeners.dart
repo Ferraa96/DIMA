@@ -16,6 +16,7 @@ class Listeners extends ChangeNotifier {
   List shoppingList = [];
 
   void startListening() {
+    print("START LISTENING");
     String groupId = AppData().user.getGroupId();
     Stream<DocumentSnapshot<Map<String, dynamic>>> groupReference =
         FirebaseFirestore.instance
@@ -23,7 +24,8 @@ class Listeners extends ChangeNotifier {
             .doc(groupId)
             .snapshots();
     groupReference.listen((event) {
-      groupList = List.from(event.data()!['members']);
+      groupList =
+          event.data() == null ? [] : List.from(event.data()!['members']);
       notifyChange(0);
     });
 

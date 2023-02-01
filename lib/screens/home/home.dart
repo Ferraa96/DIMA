@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dima/models/chart_series.dart';
+import 'package:dima/models/group.dart';
 import 'package:dima/models/user.dart';
 import 'package:dima/services/app_data.dart';
 import 'package:dima/services/auth.dart';
@@ -26,8 +27,12 @@ class Home extends StatelessWidget {
   final Function callback;
   final Listeners listener;
   final Function moveToPage;
+  final MyUser user;
+  final Group group;
   Home({
     Key? key,
+    required this.user,
+    required this.group,
     required this.callback,
     required this.listener,
     required this.moveToPage,
@@ -36,7 +41,7 @@ class Home extends StatelessWidget {
   Image _myImg = AppData().user.picture;
   bool _modifyName = false;
   FocusNode focusNode = FocusNode();
-  String name = '';
+  //String name = '';
   int currentPage = 100;
   final PageController controller = PageController(
     initialPage: 100,
@@ -391,7 +396,7 @@ class Home extends StatelessWidget {
     size = size / window.devicePixelRatio;
     final ThemeProvider themeProvider = Provider.of<ThemeProvider>(ctx);
     TextEditingController nameController = TextEditingController(
-      text: name,
+      text: user.name,
     );
     return StatefulBuilder(builder: (context, setState) {
       List<bool> isSelected = [
@@ -451,11 +456,11 @@ class Home extends StatelessWidget {
                       textCapitalization: TextCapitalization.sentences,
                       controller: nameController,
                       onFieldSubmitted: (newName) {
-                        if (newName.isNotEmpty && newName != name) {
+                        if (newName.isNotEmpty && newName != user.name) {
                           db.updateUserName(AppData().user.getUid(), newName);
                         }
                         _modifyName = false;
-                        name = newName;
+                        user.setName(newName);
                       },
                       enabled: _modifyName,
                       decoration: const InputDecoration(
@@ -475,7 +480,7 @@ class Home extends StatelessWidget {
                         });
                       } else {
                         if (nameController.text.isNotEmpty &&
-                            nameController.text != name) {
+                            nameController.text != user.name) {
                           db.updateUserName(
                               AppData().user.getUid(), nameController.text);
                         }
@@ -1177,7 +1182,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     this.context = context;
-    name = AppData().user.getName();
+    //name = AppData().user.getName();
     double width = window.physicalSize.width / window.devicePixelRatio;
     double height = window.physicalSize.height / window.devicePixelRatio;
     double widgetHeightHor = height / 3;
@@ -1224,7 +1229,7 @@ class Home extends StatelessWidget {
                 children: [
                   Center(
                       child: Text(
-                    'Welcome back, $name',
+                    'Welcome back, ${user.name}',
                     style: const TextStyle(
                       fontSize: 30,
                       fontWeight: FontWeight.bold,

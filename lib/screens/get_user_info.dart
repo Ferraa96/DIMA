@@ -83,8 +83,8 @@ class GetUserInfo extends StatelessWidget {
       backgroundColor: const Color.fromARGB(255, 245, 245, 255),
       appBar: AppBar(
         title: const Text(
-          'DIMA',
-          style: TextStyle(color: Colors.greenAccent),
+          'Housie',
+          style: TextStyle(color: Colors.orangeAccent),
         ),
         backgroundColor: const Color.fromARGB(255, 245, 245, 255),
         elevation: 0.0,
@@ -93,7 +93,7 @@ class GetUserInfo extends StatelessWidget {
         children: <Widget>[
           const Text(
             'Welcome',
-            style: TextStyle(color: Colors.greenAccent),
+            style: TextStyle(color: Colors.orangeAccent),
           ),
           const SizedBox(
             height: 40.0,
@@ -139,8 +139,10 @@ class GetUserInfo extends StatelessWidget {
                     AuthService auth = AuthService();
                     db.updateUserName(auth.getUserId(), name);
                     AppData().user.setName(name);
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const MainPage()));
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MainPage(user: AppData().user, group: AppData().group,)));
                   }
                 });
               } else {
@@ -156,12 +158,13 @@ class GetUserInfo extends StatelessWidget {
             height: 20.0,
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (activate) {
                 AuthService auth = AuthService();
                 db.updateUserName(auth.getUserId(), name);
+                await db.createGroup(auth.getUserId());
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const MainPage()));
+                    MaterialPageRoute(builder: (context) => MainPage(user: AppData().user, group: AppData().group,)));
               } else {
                 Fluttertoast.showToast(
                   msg: 'Please insert your name',

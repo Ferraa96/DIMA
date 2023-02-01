@@ -26,6 +26,8 @@ class RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     AuthService auth = AuthService();
     return loading
         ? const Loading()
@@ -76,71 +78,81 @@ class RegisterState extends State<Register> {
                         ),
                       ),
                       const SizedBox(
+                        height: 60.0,
+                      ),
+                      SizedBox(
+                        width: width > height ? width / 2 : width,
+                        child: TextFormField(
+                          keyboardType: TextInputType.emailAddress,
+                          cursorColor: Colors.orangeAccent,
+                          decoration:
+                              textInputDecoration.copyWith(hintText: 'Email'),
+                          validator: (val) {
+                            if (val == null || val.isEmpty) {
+                              return 'Enter an email';
+                            } else {
+                              return null;
+                            }
+                          },
+                          onChanged: (val) {
+                            setState(() {
+                              email = val;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      SizedBox(
+                        width: width > height ? width / 2 : width,
+                        child: TextFormField(
+                          cursorColor: Colors.orangeAccent,
+                          decoration:
+                              textInputDecoration.copyWith(hintText: 'Password'),
+                          validator: (val) {
+                            if (val == null || val.length < 6) {
+                              return 'Enter a password of at least 6 characters';
+                            } else {
+                              return null;
+                            }
+                          },
+                          obscureText: true,
+                          onChanged: (val) {
+                            setState(() {
+                              password = val;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20.0,
+                      ),
+                      SizedBox(
+                        width: width > height ? width / 2 : width,
+                        child: TextFormField(
+                          cursorColor: Colors.orangeAccent,
+                          decoration: textInputDecoration.copyWith(
+                              hintText: 'Repeat password'),
+                          validator: (val) {
+                            if (password.length < 6) {
+                              return 'Enter a password of at least 6 characters';
+                            } else if (val == null || val != password) {
+                              return 'The password does not match';
+                            } else {
+                              return null;
+                            }
+                          },
+                          obscureText: true,
+                          onChanged: (val) {
+                            setState(() {
+                              confirmPass = val;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(
                         height: 40.0,
-                      ),
-                      TextFormField(
-                        cursorColor: Colors.orangeAccent,
-                        decoration:
-                            textInputDecoration.copyWith(hintText: 'Email'),
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return 'Enter an email';
-                          } else {
-                            return null;
-                          }
-                        },
-                        onChanged: (val) {
-                          setState(() {
-                            email = val;
-                          });
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      TextFormField(
-                        cursorColor: Colors.orangeAccent,
-                        decoration:
-                            textInputDecoration.copyWith(hintText: 'Password'),
-                        validator: (val) {
-                          if (val == null || val.length < 6) {
-                            return 'Enter a password of at least 6 characters';
-                          } else {
-                            return null;
-                          }
-                        },
-                        obscureText: true,
-                        onChanged: (val) {
-                          setState(() {
-                            password = val;
-                          });
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20.0,
-                      ),
-                      TextFormField(
-                        cursorColor: Colors.orangeAccent,
-                        decoration: textInputDecoration.copyWith(
-                            hintText: 'Repeat password'),
-                        validator: (val) {
-                          if (password.length < 6) {
-                            return 'Enter a password of at least 6 characters';
-                          } else if (val == null || val != password) {
-                            return 'The password does not match';
-                          } else {
-                            return null;
-                          }
-                        },
-                        obscureText: true,
-                        onChanged: (val) {
-                          setState(() {
-                            confirmPass = val;
-                          });
-                        },
-                      ),
-                      const SizedBox(
-                        height: 20.0,
                       ),
                       ElevatedButton(
                         onPressed: () async {

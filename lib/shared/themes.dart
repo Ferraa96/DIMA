@@ -44,7 +44,7 @@ class MyThemes {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        primary: Colors.white,
+        foregroundColor: Colors.white,
       ),
     ),
     iconTheme: const IconThemeData(color: Colors.white),
@@ -83,7 +83,7 @@ class MyThemes {
     ),
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
-        primary: Colors.black,
+        foregroundColor: Colors.black,
       ),
     ),
     iconTheme: const IconThemeData(color: Colors.black),

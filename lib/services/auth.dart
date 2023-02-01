@@ -41,7 +41,7 @@ class AuthService {
   }
 
   //sing in email + pass
-  Future signInWithEmailAndPass(String email, String password) async {
+  Future<bool> signInWithEmailAndPass(String email, String password) async {
     try {
       UserCredential result = await auth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -53,7 +53,7 @@ class AuthService {
   }
 
   //sign in Google
-  Future signInWithGoogle() async {
+  Future<String> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication? googleAuth =
@@ -72,16 +72,20 @@ class AuthService {
 
   // sign in Twitter
   Future signInWithTwitter() async {
-    TwitterAuthProvider twitterProvider = TwitterAuthProvider();
-    try {
-      UserCredential result = await auth.signInWithProvider(twitterProvider);
-      if (result.user != null && result.user!.email != null) {
-        return result.user!.email;
-      } else {
-        return ':(';
-      }
-    } catch (e) {
-      return 'Exception';
+    final TwitterLogin twitterLogin = TwitterLogin(
+      apiKey: "Cs5JmIydoSptkMUYQmob8NxQV",
+      apiSecretKey: "74bdO9cJoC3uajF0vJ47tCZWTqJcLWv9QwxWefZ91D0akvxwiZ",
+      redirectURI: "housie://",
+    );
+    final loginResult = await twitterLogin.login();
+    if (loginResult.status == TwitterLoginStatus.loggedIn) {
+      final AuthCredential credential = TwitterAuthProvider.credential(
+        accessToken: loginResult.authToken!,
+        secret: loginResult.authTokenSecret!,
+      );
+      UserCredential result = await auth.signInWithCredential(credential);
+      _myUser = _userFromFirebaseUser(result.user);
+      return loginResult.user!.name;
     }
   }
 
@@ -101,7 +105,7 @@ class AuthService {
   }
 
   //register email + pass
-  Future registerWithEmailAndPass(String email, String password) async {
+  Future<bool> registerWithEmailAndPass(String email, String password) async {
     try {
       UserCredential result = await auth.createUserWithEmailAndPassword(
           email: email, password: password);

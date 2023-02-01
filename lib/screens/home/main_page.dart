@@ -1,4 +1,6 @@
 import 'package:badges/badges.dart' as badge;
+import 'package:dima/models/group.dart';
+import 'package:dima/models/user.dart';
 import 'package:dima/screens/home/chat_page.dart';
 import 'package:dima/screens/home/dates.dart';
 import 'package:dima/screens/home/home.dart';
@@ -10,7 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  MyUser user;
+  Group group;
+  MainPage({Key? key, required MyUser this.user, required Group this.group})
+      : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -20,7 +25,7 @@ class _MainPageState extends State<MainPage> {
   late String groupId;
   int index = 0;
   late Image myImg;
-  late String myName;
+  late String myName = widget.user.name;
   List<int> badges = [0, 0, 0, 0, 0];
   late Listeners listeners;
 
@@ -37,6 +42,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   void notifyChange(int num) {
+    print("NOTIFY ${num}");
     if (num != index && mounted) {
       setState(() {
         badges[num]++;
@@ -50,6 +56,8 @@ class _MainPageState extends State<MainPage> {
 
   List<Widget> screens() => [
         Home(
+          user: widget.user,
+          group: widget.group,
           callback: callback,
           listener: listeners,
           moveToPage: moveToPage,
@@ -247,6 +255,7 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("START BUILDING");
     List<Widget> pages = screens();
     bool isWideScreen =
         MediaQuery.of(context).size.width > MediaQuery.of(context).size.height;

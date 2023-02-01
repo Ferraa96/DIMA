@@ -123,7 +123,7 @@ class PaymentsPage extends StatelessWidget {
                           ),
                           Column(
                             children: [
-                              const Text("ows"),
+                              const Text("owes"),
                               Text(
                                 '${amountToUser.values.elementAt(i)[j]} €',
                                 style: const TextStyle(

@@ -9,7 +9,6 @@ import 'package:dima/services/auth.dart';
 import 'package:dima/services/database.dart';
 import 'package:dima/shared/loading.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 class Wrapper extends StatelessWidget {
@@ -46,7 +45,7 @@ class Wrapper extends StatelessWidget {
               if (AppData().user.getGroupId() == null) {
                 return const GetUserInfo();
               } else {
-                return const MainPage();
+                return MainPage(user: AppData().user, group: AppData().group);
               }
           }
         },
